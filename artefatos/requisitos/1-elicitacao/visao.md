@@ -238,12 +238,13 @@ reenvio do cadastro.
 
 **Marcos estimados** — considerando cerca de 20 horas semanais e sem data fixa:
 
-1. **Levantamento** (uma tarde, sem código) — cadastrar os supermercados de Goianésia com
-   endereço e coordenada, e a lista de itens sem código de barras vendidos neles. Importar o
-   recorte brasileiro do dump do Open Food Facts, filtrando com DuckDB para país e as colunas
-   de código, nome, marca e quantidade
-2. **Fundação** (1–2 semanas) — esquema no Postgres para produtos, mercados e preços;
-   autenticação; projeto React/Vite publicado como PWA
+1. **Fundação** (1–2 semanas) — aplicar o esquema no Postgres; autenticação anônima;
+   projeto React/Vite publicado como PWA. Vem primeiro porque não se carrega catálogo sem
+   ter tabela onde colocar
+2. **Carga** (uma tarde, quase sem código) — cadastrar os supermercados de Goianésia com
+   endereço e coordenada, montar a lista de itens sem código de barras vendidos neles e
+   importar o recorte brasileiro do dump do Open Food Facts, filtrando com DuckDB para país
+   e as colunas de código, nome, marca e quantidade
 3. **Cadastro** (3–4 semanas) — scanner de código de barras, integração com a base pública
    de produtos, seleção no catálogo, geolocalização do mercado, marcação de promoção, fila
    de reenvio

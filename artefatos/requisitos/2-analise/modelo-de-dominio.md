@@ -19,7 +19,9 @@ entidades — e, na prática, o rascunho do esquema do banco.
 | ***Shrinkflation*** | Redução da quantidade da embalagem sem redução proporcional do preço |
 | **Idade do preço** | Tempo desde a última observação ou confirmação. Determina o quanto se pode confiar nele |
 | **Conferido no local** | Marca de que a localização do aparelho coincidia com o mercado no momento do registro. É sinal de confiança, nunca condição para registrar |
-| **Conta anônima** | Usuário criado na primeira abertura, sem cadastro, com apelido gerado. Pode ser vinculada depois a Google ou e-mail, mantendo o mesmo identificador e todos os registros |
+| **Conta anônima** | Perfil criado na primeira abertura, sem cadastro, com apelido gerado. Pode ser vinculado depois a Google ou e-mail, mantendo o mesmo identificador e todos os registros |
+| **Perfil** | O que o sistema guarda sobre uma pessoa: apelido e estado da conta. A autenticação em si vive fora, no serviço de identidade — por isso a entidade não se chama "usuário" |
+| **Mantenedor** | Perfil com permissão para curar os catálogos de mercado e de produto. Hoje é só o autor |
 
 ## Diagrama
 
@@ -28,10 +30,10 @@ erDiagram
     REDE ||--o{ MERCADO : agrupa
     MERCADO ||--o{ REGISTRO_PRECO : recebe
     PRODUTO ||--o{ REGISTRO_PRECO : possui
-    USUARIO ||--o{ REGISTRO_PRECO : cadastra
+    PERFIL ||--o{ REGISTRO_PRECO : cadastra
     REGISTRO_PRECO ||--o{ CONFIRMACAO : valida
-    USUARIO ||--o{ CONFIRMACAO : faz
-    USUARIO ||--o{ LISTA : possui
+    PERFIL ||--o{ CONFIRMACAO : faz
+    PERFIL ||--o{ LISTA : possui
     LISTA ||--o{ ITEM_LISTA : contem
     PRODUTO ||--o{ ITEM_LISTA : referencia
 
@@ -64,18 +66,22 @@ erDiagram
         text tipo "tabela ou promocional"
         text condicao "nulo, ou leve 3 pague 2"
         boolean local_conferido "GPS coincidiu com o mercado"
-        timestamptz observado_em
+        timestamptz observado_em "instante em que o preco foi visto"
+        timestamptz criado_em "instante da gravacao, posterior se veio da fila"
     }
     CONFIRMACAO {
         uuid id
         uuid registro_id
         uuid usuario_id
+        boolean autoconfirmacao "autor confirmando o proprio registro"
         timestamptz confirmado_em
+        date dia "sustenta a regra de uma por dia"
     }
-    USUARIO {
+    PERFIL {
         uuid id
         text apelido "gerado, alteravel"
         boolean anonimo "falso apos vincular identidade"
+        boolean mantenedor "cura os catalogos de produto e mercado"
     }
     LISTA {
         uuid id
@@ -198,6 +204,8 @@ triagem do brainstorm.
 | RD-11 | Excluir a conta anonimiza a autoria dos registros de preço; os preços permanecem, sem dono |
 | RD-12 | Lista de compras apagada pelo dono sai por exclusão lógica; exclusão de conta a remove de fato |
 | RD-13 | A coordenada do dispositivo nunca é persistida: dela restam apenas o mercado escolhido e o indicador de conferência |
+| RD-14 | Uma confirmação por pessoa, por registro, por dia. Renovar a idade mês a mês é permitido; clicar várias vezes no mesmo dia não conta duas |
+| RD-15 | Um produto aparece no máximo uma vez em cada lista de compras; repetir ajusta a quantidade |
 
 ## Evolução prevista
 

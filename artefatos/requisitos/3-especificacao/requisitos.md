@@ -42,6 +42,10 @@ referenciam o `RF-xx` de origem.
 | RF-39 | O sistema deve convidar o usuário a instalar o app na tela inicial | ✅ | `Der` |
 | RF-40 | O sistema deve permitir excluir a conta, anonimizando a autoria dos registros de preço e preservando os preços | ✅ | `Der` · RD-11 |
 
+> RF-40 é a única operação que exige código no servidor: apagar a conta significa apagar do
+> serviço de identidade, com privilégio que o cliente não tem nem deve ter. O desenho está
+> em [`design.md`](../../design/design.md).
+
 > O convite de RF-39 não é estética: no iOS, um web app aberto pelo navegador tem o
 > armazenamento apagado após 7 dias sem interação, e com ele a sessão anônima. Instalado na
 > tela inicial, fica isento dessa limpeza. RF-38 cobre o resto — troca ou perda de aparelho.

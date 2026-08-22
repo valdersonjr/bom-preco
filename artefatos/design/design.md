@@ -32,6 +32,8 @@ domínio deixaram de ser texto e viraram estrutura:
 | RD-04 · vale o mais recente do dia | Visão `registro_vigente`, com `distinct on` |
 | RD-05 e RD-06 · comparação normalizada | Colunas geradas `dimensao` e `quantidade_base`. Impossível gravar produto sem a normalização |
 | RD-03 · autoconfirmação marcada | *Trigger* na inserção, para o sinal sobreviver à anonimização da autoria |
+| RD-14 · uma confirmação por dia | Restrição única sobre registro, pessoa e dia. O dia é coluna, e não expressão no índice, porque conversão de fuso não é imutável |
+| RD-15 · produto único por lista | Restrição única sobre lista e produto |
 | RD-08 e RD-10 · usuário não cria produto sem GTIN nem mercado | Políticas de inserção |
 | RD-11 · exclusão anonimiza autoria | `on delete set null` em `registro_preco.usuario_id` |
 | RD-12 · exclusão lógica da lista | Coluna `excluida_em`, e `on delete cascade` quando a conta some |
@@ -51,25 +53,44 @@ usuário autenticado, anônimo ou vinculado — não há distinção de permiss�
 
 | Tabela | Ler | Inserir | Alterar | Apagar |
 | ------ | --- | ------- | ------- | ------ |
-| `perfil` | só o próprio | só o próprio | só o próprio | não |
+| `perfil` | só o próprio | só o próprio | só o próprio | por função de servidor |
 | `rede`, `mercado` | todos | **mantenedor** | **mantenedor** | **mantenedor** |
 | `produto` | todos | só com GTIN | **mantenedor** | **mantenedor** |
-| `registro_preco` | todos | só como autor | **ninguém** | **ninguém** |
-| `confirmacao` | todos | só como autor | não | não |
+| `registro_preco` | **só pela visão** | só como autor | **ninguém** | **ninguém** |
+| `confirmacao` | **só pela visão** | só como autor | não | não |
 | `lista`, `item_lista` | só o dono | só o dono | só o dono | só o dono |
 
-Três linhas merecem atenção:
+Quatro linhas merecem atenção:
 
 **`registro_preco` não aceita alteração de ninguém, nem do mantenedor.** É a RD-02 levada a
 sério. Corrigir preço errado se faz com registro novo, o que preserva o histórico e a
 auditoria. Se um dia for preciso remover um registro, isso é migração consciente, não
 operação de rotina.
 
-**A leitura de preço é pública, mas passa pela visão `preco_publico`**, que não projeta
-`usuario_id`. A tabela em si tem a coluna; a superfície exposta ao app, não.
+**Preço e confirmação não são legíveis diretamente — só através de `preco_publico`.** Aqui
+há uma distinção que é fácil errar: **política de acesso decide quais linhas; privilégio
+decide se a tabela é alcançável.** Enquanto o cliente puder consultar `registro_preco` pela
+API REST gerada, ele enxerga `usuario_id`, e uma visão que omite a coluna não protege coisa
+alguma. Por isso o `select` da tabela é revogado e concedido só na visão — é o privilégio,
+não a política, que impõe o RNF-12.
+
+Consequência disso: as duas visões rodam com os privilégios do dono, **sem**
+`security_invoker`. É deliberado. Com ele, a visão exigiria do chamador o mesmo acesso à
+tabela que estamos justamente revogando.
 
 **Lista de compras é a única coisa privada do sistema.** É também o dado que mais revela
 sobre a pessoa — hábito de consumo — e por isso a política é a mais restrita das oito.
+
+### Exclusão de conta
+
+RF-40 não cabe numa política: apagar uma conta significa apagar de `auth.users`, o que exige
+privilégio de administração que o cliente não tem, e nem deve ter.
+
+O caminho é uma função de servidor, acionada pelo dono da conta, que apaga o usuário com a
+chave de serviço. O resto o banco resolve sozinho: `perfil` e `lista` caem por cascata,
+enquanto a autoria de preços e confirmações vira nula, preservando o dado coletivo (RD-11).
+
+É a única operação do sistema que precisa de código no servidor.
 
 ### O que esta matriz não protege
 
@@ -127,8 +148,9 @@ entre os itens fora do MVP.
 
 ## Rastreabilidade
 
-`esquema.sql` implementa RD-01 a RD-13, RNF-04, RNF-12 e RNF-13. A matriz de acesso
-implementa RD-02, RD-08, RD-10 e RNF-12. A fila implementa RNF-06 e sustenta RF-08.
+`esquema.sql` implementa RD-01 a RD-15, RNF-04, RNF-12 e RNF-13. A matriz de acesso
+implementa RD-02, RD-08, RD-10 e RNF-12. A fila implementa RNF-06 e sustenta RF-08. A função
+de servidor de exclusão implementa RF-40 e RD-11.
 
 O que ainda não tem contrapartida no esquema são os requisitos fora do MVP: foto da
 etiqueta, reputação, denúncia e gamificação não têm tabela, por decisão de escopo.

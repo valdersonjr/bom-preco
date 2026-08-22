@@ -107,13 +107,21 @@ create table confirmacao (
   usuario_id      uuid references perfil (id) on delete set null,
   autoconfirmacao boolean not null default false,
   confirmado_em   timestamptz not null default now(),
-  unique (registro_id, usuario_id)
+  dia             date not null,                   -- preenchido pelo trigger
+
+  -- Uma confirmação por pessoa, por registro, por dia. Não pode ser uma por
+  -- pessoa e registro: o autor precisa renovar a idade do próprio preço mês a
+  -- mês enquanto houver poucos usuários, que é a razão de RD-03 existir.
+  unique (registro_id, usuario_id, dia)
 );
 
--- Marca a autoconfirmação no momento da inserção, para o sinal sobreviver
--- à anonimização da autoria quando a conta for excluída.
-create function marcar_autoconfirmacao() returns trigger as $$
+-- Marca a autoconfirmação e fixa o dia na inserção. A marca precisa ser gravada
+-- aqui para o sinal sobreviver à anonimização da autoria na exclusão da conta;
+-- o dia precisa ser coluna porque conversão de fuso não é imutável e portanto
+-- não pode entrar num índice.
+create function preparar_confirmacao() returns trigger as $$
 begin
+  new.dia := (new.confirmado_em at time zone 'America/Sao_Paulo')::date;
   new.autoconfirmacao := exists (
     select 1 from registro_preco r
      where r.id = new.registro_id and r.usuario_id = new.usuario_id
@@ -122,9 +130,9 @@ begin
 end;
 $$ language plpgsql;
 
-create trigger confirmacao_autoconfirmacao
+create trigger confirmacao_preparar
   before insert on confirmacao
-  for each row execute function marcar_autoconfirmacao();
+  for each row execute function preparar_confirmacao();
 
 -- ---------------------------------------------------------------------------
 -- Lista de compras. Exclusão lógica pelo dono; some de vez com a conta (RD-12).
@@ -152,9 +160,11 @@ create table item_lista (
 
 -- RD-04: entre vários registros do mesmo usuário para o mesmo produto e mercado
 -- no mesmo dia, vale o mais recente. Os superados ficam gravados, fora daqui.
--- security_invoker: a visão respeita as políticas de quem consulta, em vez de
--- rodar com os privilégios do dono e furar a RLS.
-create view registro_vigente with (security_invoker = true) as
+-- Estas duas visões são deliberadamente SEM security_invoker: elas rodam com os
+-- privilégios do dono, e é justamente isso que permite revogar o acesso direto
+-- às tabelas mais abaixo. A visão passa a ser a única porta de leitura, e a
+-- projeção de colunas dela é o que impõe o RNF-12.
+create view registro_vigente as
 select distinct on (
          usuario_id, produto_id, mercado_id,
          (observado_em at time zone 'America/Sao_Paulo')::date
@@ -166,7 +176,7 @@ select distinct on (
 
 -- Idade = tempo desde a observação ou a última confirmação.
 -- RNF-12: usuario_id não aparece — a autoria não é exposta.
-create view preco_publico with (security_invoker = true) as
+create view preco_publico as
 select r.id, r.produto_id, r.mercado_id, r.valor, r.tipo, r.condicao,
        r.local_conferido, r.observado_em,
        greatest(r.observado_em, coalesce(max(c.confirmado_em), r.observado_em))
@@ -216,15 +226,29 @@ create policy produto_insercao on produto for insert
   with check (gtin is not null and origem in ('api', 'usuario'));
 create policy produto_admin   on produto for all using (e_mantenedor());
 
--- Preço: todos leem, cada um insere o seu. Sem update nem delete (RD-02).
-create policy preco_leitura  on registro_preco for select using (true);
+-- Preço e confirmação: cada um insere o seu. Sem update nem delete (RD-02).
+-- Não há política de select porque o cliente não lê estas tabelas — ver os
+-- privilégios logo abaixo.
 create policy preco_insercao on registro_preco for insert
   with check (usuario_id = auth.uid());
 
--- Confirmação: todos leem, cada um insere a sua.
-create policy conf_leitura  on confirmacao for select using (true);
 create policy conf_insercao on confirmacao for insert
   with check (usuario_id = auth.uid());
+
+-- ---------------------------------------------------------------------------
+-- Privilégios. Política de acesso controla QUAIS LINHAS; privilégio controla
+-- SE A TABELA é alcançável. O RNF-12 depende do segundo: enquanto o cliente
+-- puder consultar registro_preco direto pela API REST gerada, ele enxerga
+-- usuario_id, e a visão que omite a coluna não protege nada.
+-- ---------------------------------------------------------------------------
+
+revoke select on registro_preco from anon, authenticated;
+revoke select on confirmacao    from anon, authenticated;
+
+grant insert on registro_preco to anon, authenticated;
+grant insert on confirmacao    to anon, authenticated;
+
+grant select on preco_publico  to anon, authenticated;
 
 -- Lista: estritamente privada do dono.
 create policy lista_dono on lista for all using (usuario_id = auth.uid());
