@@ -1,6 +1,6 @@
 # Visão do Projeto — Bom Preço
 
-**Versão 1.6**
+**Versão 1.7**
 
 ## Histórico de Revisão
 
@@ -13,6 +13,7 @@
 | 22/08/2026 | 1.4 | Cold start reformulado para uso individual primeiro; posicionamento e métricas corrigidos; raio de busca configurável | Valderson Junior |
 | 22/08/2026 | 1.5 | Entrada sem cadastro por conta anônima; geolocalização como sinal de confiança e não como bloqueio; finalidades de dados pessoais declaradas | Valderson Junior |
 | 22/08/2026 | 1.6 | Varredura de coerência: riscos R2, R4, R6 e R9 alinhados às decisões vigentes; stakeholders, escopo e hardware atualizados | Valderson Junior |
+| 22/08/2026 | 1.7 | Base de produtos importada do dump do Open Food Facts, com a API como reserva; atribuição ODbL exigida | Valderson Junior |
 
 ---
 
@@ -181,11 +182,19 @@ localidades vem depois, quando a operação em uma cidade estiver validada.
 | Banco de dados | PostgreSQL gerenciado pelo Supabase | Definido |
 | Hospedagem do PWA | Cloudflare Pages | Definido |
 | Leitura de código de barras | BarcodeDetector API, com fallback em biblioteca JavaScript nos navegadores sem suporte | Definido |
-| Base pública de produtos | Open Food Facts, com Cosmos como alternativa paga | **A validar** — testar a cobertura com uma amostra real de produtos de Goianésia antes de decidir |
+| Base de produtos | Recorte brasileiro do dump do Open Food Facts importado ao Postgres, com a API pública como reserva | Definido |
 
 **Por que PWA.** Publicar em loja custa US$ 25 uma vez na Google Play e US$ 99 por ano na
 Apple, além do processo de revisão a cada versão. O PWA elimina os dois e permite
 atualizar sem esperar aprovação.
+
+**Por que importar a base em vez de só chamar a API.** O Open Food Facts publica dumps
+diários sob licença aberta, e a própria política dele manda usar o dump para carga em massa,
+reservando a API para escaneamento real. Importar um recorte brasileiro deixa a busca por
+código de barras local: instantânea, sem depender de serviço externo e — o que mais pesa —
+funcionando com o sinal ruim de dentro do mercado, que é onde o escaneamento acontece. A API
+fica como reserva para código ausente do recorte, e o que ela devolver é gravado localmente,
+de modo que a base cresce com o uso.
 
 **Por que Supabase.** As consultas que dão razão ao produto — comparar cesta entre
 mercados, histórico por produto, busca por proximidade — são relacionais. Um banco NoSQL
@@ -203,7 +212,7 @@ reenvio do cadastro.
 | R2 | Contribuição decai e só o autor cadastra preços | Médio | Média | Esperado nos primeiros meses, por isso não é alto: o autor sustenta a base sozinho de início. Vira problema se persistir depois dos convites. Cadastro em poucos segundos como requisito de projeto; gamificação em versão futura |
 | R3 | Mesmo produto ou mercado cadastrado com nomes diferentes fragmenta a comparação | Alto | Baixa | Código de barras como identidade do produto; itens sem código e mercados vêm de catálogos mantidos pelo autor, sem criação livre pelo usuário |
 | R4 | Preço desatualizado leva a uma decisão de compra errada e queima a confiança no app | Alto | Média | Preço envelhece em vez de expirar: a idade fica sempre visível e os de mais de 30 dias saem da comparação por padrão. Confirmação em um toque renova a idade, já no MVP |
-| R5 | Base pública de produtos com cobertura baixa no Brasil ou com custo | Médio | Média | Produto com código de barras ausente da base pode ser preenchido pelo usuário, pois o GTIN garante a identidade; armazenar localmente o que já foi consultado |
+| R5 | Cobertura baixa da base pública para produtos vendidos no Brasil | Baixo | Média | Dados são gratuitos e importados, então não há custo nem dependência em tempo de uso. Cobertura baixa apenas empurra mais produtos para o preenchimento manual, que já é caminho previsto — o GTIN garante a identidade de qualquer jeito |
 | R6 | Dados pessoais sob a LGPD: autoria dos registros e lista de compras, que revela hábito de consumo | Médio | Média | Coordenada do dispositivo nunca é gravada, então não há histórico de deslocamento; entrada sem cadastro, sem nome nem telefone; identidade do contribuidor não é exposta; exclusão de conta anonimiza a autoria. Finalidades declaradas na especificação |
 | R7 | Mercados proíbem fotografar etiquetas nas lojas | Baixo | Média | Foto é opcional — o cadastro funciona sem evidência |
 | R8 | Escopo grande para um projeto individual | Alto | Baixa | Mais de 20 horas semanais disponíveis e sem prazo externo; MVP enxuto mantém o escopo sob controle |
@@ -230,7 +239,9 @@ reenvio do cadastro.
 **Marcos estimados** — considerando cerca de 20 horas semanais e sem data fixa:
 
 1. **Levantamento** (uma tarde, sem código) — cadastrar os supermercados de Goianésia com
-   endereço e coordenada, e a lista de itens sem código de barras vendidos neles
+   endereço e coordenada, e a lista de itens sem código de barras vendidos neles. Importar o
+   recorte brasileiro do dump do Open Food Facts, filtrando com DuckDB para país e as colunas
+   de código, nome, marca e quantidade
 2. **Fundação** (1–2 semanas) — esquema no Postgres para produtos, mercados e preços;
    autenticação; projeto React/Vite publicado como PWA
 3. **Cadastro** (3–4 semanas) — scanner de código de barras, integração com a base pública

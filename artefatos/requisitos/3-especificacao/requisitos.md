@@ -51,7 +51,8 @@ referenciam o `RF-xx` de origem.
 | ID | Requisito | MVP | Origem |
 | -- | --------- | :-: | ------ |
 | RF-02 | O sistema deve identificar um produto pela leitura do código de barras | ✅ | `Elic` |
-| RF-03 | O sistema deve preencher nome, marca e quantidade a partir de base pública, quando o GTIN for encontrado | ✅ | `Elic` |
+| RF-03 | O sistema deve preencher nome, marca e quantidade consultando primeiro a base local e, se não encontrar e houver conexão, a base pública externa | ✅ | `Elic` |
+| RF-42 | O sistema deve gravar localmente o produto obtido da base pública externa, para que a consulta seguinte não dependa dela | ✅ | `Der` |
 | RF-04 | O sistema deve permitir selecionar item sem código de barras a partir de catálogo curado | ✅ | `Elic` |
 | RF-05 | O sistema deve impedir que o usuário crie produto que não possua código de barras — esses vêm apenas do catálogo curado | ✅ | `Dom` RD-08 |
 | RF-06 | O sistema deve sugerir o mercado mais próximo a partir da localização do usuário | ✅ | `Elic` |
@@ -115,7 +116,7 @@ referenciam o `RF-xx` de origem.
 | RF-30 | O sistema deve importar carga inicial de preços de base pública | ❌ | `Elic` |
 | RF-31 | O sistema deve atribuir pontos e distintivos a contribuidores | ❌ | `Elic` |
 
-**Resumo:** 41 requisitos funcionais, 25 no MVP.
+**Resumo:** 42 requisitos funcionais, 26 no MVP.
 
 ---
 
@@ -159,6 +160,7 @@ método de verificação, o requisito não é verificável e portanto não é um
 | RNF-11 | Só devem ser coletados os dados pessoais necessários à função | Item de *definition of done* | Revisar o modelo de dados contra a lista de finalidades da §6 |
 | RNF-13 | A coordenada do dispositivo não deve ser persistida; só o mercado escolhido e o indicador de conferência | Modelagem | Inspecionar o esquema: nenhuma coluna de latitude ou longitude em `registro_preco` |
 | RNF-12 | A identidade de quem cadastrou um preço não deve ser exposta a outros usuários | Modelagem e critério de aceitação em UC-03 | Inspecionar a resposta da API de consulta |
+| RNF-14 | A aplicação deve exibir atribuição ao Open Food Facts, como exige a licença ODbL dos dados reutilizados | Item de *definition of done* | Conferir a presença da atribuição na tela de produto e na tela sobre |
 
 ---
 
@@ -205,12 +207,13 @@ Só o que falta decidir para um requisito ficar completo. Achados de revisão fi
 
 | Pendência | Bloqueia |
 | --------- | -------- |
-Ambas aguardam trabalho de campo e não bloqueiam a construção.
-
 | Pendência | Bloqueia |
 | --------- | -------- |
-| Cobertura da base pública de produtos para itens vendidos em Goianésia | RF-03 e RF-33, e a utilidade prática de RF-02 |
-| Número definitivo do tempo máximo de registro e do raio que conta como "conferido no local" | RNF-05 e RF-41, hoje provisórios em 15 s e 200 m |
+| Número definitivo do tempo máximo de registro e do raio que conta como "conferido no local". Aguarda medição em campo | RNF-05 e RF-41, hoje provisórios em 15 s e 200 m |
+
+A cobertura da base pública deixou de ser pendência de campo: o dump é público, então a
+medição é uma consulta sobre os dados baixados. E deixou de ser bloqueante de qualquer
+forma — cobertura baixa apenas empurra mais produtos para o preenchimento manual do RF-33.
 
 ---
 

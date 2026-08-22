@@ -53,7 +53,7 @@ erDiagram
         text marca "nulo em granel"
         numeric quantidade
         text unidade_medida "kg, g, L, mL, un"
-        text origem "base publica, catalogo curado ou preenchido pelo usuario"
+        text origem "dump publico, api publica, catalogo curado ou usuario"
     }
     REGISTRO_PRECO {
         uuid id

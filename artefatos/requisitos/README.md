@@ -11,7 +11,7 @@ Requirements** do SWEBOK.
 | [1-elicitacao/visao.md](1-elicitacao/visao.md) | Problema, objetivos, stakeholders, posicionamento, escopo, MVP, infraestrutura e riscos |
 | [2-analise/modelo-de-dominio.md](2-analise/modelo-de-dominio.md) | Glossário, entidades, decisões de modelagem e regras de domínio |
 | [2-analise/casos-de-uso.md](2-analise/casos-de-uso.md) | Comportamento do MVP em seis casos de uso breves |
-| [3-especificacao/requisitos.md](3-especificacao/requisitos.md) | 41 requisitos funcionais e 13 não funcionais, com origem, verificação e finalidades de dados pessoais |
+| [3-especificacao/requisitos.md](3-especificacao/requisitos.md) | 42 requisitos funcionais e 14 não funcionais, com origem, verificação e finalidades de dados pessoais |
 | [4-validacao/validacao.md](4-validacao/validacao.md) | Três rodadas de revisão por completude, consistência, verificabilidade e viabilidade |
 
 **Ordem de leitura sugerida:** Visão → modelo de domínio → requisitos → validação. O
@@ -30,7 +30,7 @@ brainstorm interessa só para saber de onde veio cada ideia.
 | **Análise** — alocação arquitetural | Visão §4 |
 | **Análise** — negociação | Visão §3.3: recorte do MVP e tabela do que ficou fora, com motivo |
 | **Especificação** | `requisitos.md` no papel de SRS; Visão no papel de System Definition Document. Especificação por critérios de aceitação, conforme a v4, nos RNF |
-| **Validação** | `validacao.md`, em duas rodadas. Sem revisão formal com ata, por não haver equipe para revisar |
+| **Validação** | `validacao.md`, em três rodadas. Sem revisão formal com ata, por não haver equipe para revisar |
 | **Considerações práticas** — atributos | Origem e prioridade em todo RF; método de verificação em todo RNF |
 | **Considerações práticas** — rastreabilidade | Elos embutidos nos artefatos, sem matriz separada. Cadeia em `requisitos.md` §4 |
 | **Considerações práticas** — gestão | Identificador estável por requisito; mudança registrada por commit; histórico de revisão na Visão |
@@ -42,10 +42,10 @@ dispensados por escala: uma pessoa, sem cliente externo e sem prazo.
 
 ## Estado
 
-Três rodadas de validação, **37 achados, todos resolvidos** — Visão na versão 1.6. Nada
+Três rodadas de validação, **37 achados, todos resolvidos** — Visão na versão 1.7. Nada
 bloqueia o início da construção.
 
-Três decisões moldaram o resultado:
+Quatro decisões moldaram o resultado:
 
 - **Fechar a criação de dados pelo usuário.** Itens sem código de barras e mercados vêm de
   catálogos mantidos pelo autor, não de cadastro livre. É o que torna a comparação confiável
@@ -56,10 +56,14 @@ Três decisões moldaram o resultado:
 - **Entrar sem cadastro.** Conta anônima na primeira abertura, no modelo do Waze, com
   vínculo opcional a Google ou e-mail depois. Nenhum dado pessoal é pedido para começar, e a
   coordenada do dispositivo nunca é gravada
+- **Trazer a base de produtos para dentro.** Um recorte brasileiro do dump aberto do Open
+  Food Facts é importado ao Postgres, e a API externa fica só como reserva. A busca por
+  código de barras funciona sem sinal, que é a condição real dentro do mercado
 
-**Pendências de especificação**, ambas aguardando trabalho de campo e nenhuma bloqueante:
-cobertura da base pública de produtos em Goianésia, e os números provisórios do tempo máximo
-de registro (15 s) e do raio que conta como conferido no local (200 m).
+**Pendência de especificação**, uma só e não bloqueante: os números provisórios do tempo
+máximo de registro (15 s) e do raio que conta como conferido no local (200 m), ambos
+dependentes de medição em campo.
 
 **Antes de qualquer código:** montar os catálogos de Goianésia — mercados e itens sem código
-de barras. É levantamento em campo, não programação, e é o marco 1 do cronograma.
+de barras — e importar o recorte do Open Food Facts. É levantamento e preparo de dados, não
+programação, e é o marco 1 do cronograma.
