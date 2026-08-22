@@ -10,9 +10,9 @@ Requirements** do SWEBOK.
 | [1-elicitacao/brainstorm.md](1-elicitacao/brainstorm.md) | Registro bruto das ideias, sem filtro de viabilidade |
 | [1-elicitacao/visao.md](1-elicitacao/visao.md) | Problema, objetivos, stakeholders, posicionamento, escopo, MVP, infraestrutura e riscos |
 | [2-analise/modelo-de-dominio.md](2-analise/modelo-de-dominio.md) | Glossário, entidades, decisões de modelagem e regras de domínio |
-| [2-analise/casos-de-uso.md](2-analise/casos-de-uso.md) | Comportamento do MVP em cinco casos de uso breves |
-| [3-especificacao/requisitos.md](3-especificacao/requisitos.md) | 36 requisitos funcionais e 12 não funcionais, com origem e verificação |
-| [4-validacao/validacao.md](4-validacao/validacao.md) | Duas rodadas de revisão por completude, consistência, verificabilidade e viabilidade |
+| [2-analise/casos-de-uso.md](2-analise/casos-de-uso.md) | Comportamento do MVP em seis casos de uso breves |
+| [3-especificacao/requisitos.md](3-especificacao/requisitos.md) | 41 requisitos funcionais e 13 não funcionais, com origem, verificação e finalidades de dados pessoais |
+| [4-validacao/validacao.md](4-validacao/validacao.md) | Três rodadas de revisão por completude, consistência, verificabilidade e viabilidade |
 
 **Ordem de leitura sugerida:** Visão → modelo de domínio → requisitos → validação. O
 brainstorm interessa só para saber de onde veio cada ideia.
@@ -42,10 +42,10 @@ dispensados por escala: uma pessoa, sem cliente externo e sem prazo.
 
 ## Estado
 
-Duas rodadas de validação, **20 achados, 19 resolvidos** — Visão na versão 1.4. Nada
+Três rodadas de validação, **37 achados, todos resolvidos** — Visão na versão 1.6. Nada
 bloqueia o início da construção.
 
-Duas decisões moldaram o resultado:
+Três decisões moldaram o resultado:
 
 - **Fechar a criação de dados pelo usuário.** Itens sem código de barras e mercados vêm de
   catálogos mantidos pelo autor, não de cadastro livre. É o que torna a comparação confiável
@@ -53,11 +53,13 @@ Duas decisões moldaram o resultado:
 - **Assumir o uso individual primeiro.** O autor é o usuário número um e enche a base com a
   própria compra semanal. Base vazia no lançamento deixou de ser risco, e o convite a outras
   pessoas virou questão de sequenciamento
+- **Entrar sem cadastro.** Conta anônima na primeira abertura, no modelo do Waze, com
+  vínculo opcional a Google ou e-mail depois. Nenhum dado pessoal é pedido para começar, e a
+  coordenada do dispositivo nunca é gravada
 
-**Pendências de especificação**, nenhuma bloqueante: cobertura da base pública de produtos
-em Goianésia, o número definitivo do tempo máximo de registro — hoje provisório em 15 s, a
-medir em campo — e a lista de finalidades de dados pessoais, que falta para o RNF-11 ter
-verificação objetiva.
+**Pendências de especificação**, ambas aguardando trabalho de campo e nenhuma bloqueante:
+cobertura da base pública de produtos em Goianésia, e os números provisórios do tempo máximo
+de registro (15 s) e do raio que conta como conferido no local (200 m).
 
 **Antes de qualquer código:** montar os catálogos de Goianésia — mercados e itens sem código
 de barras. É levantamento em campo, não programação, e é o marco 1 do cronograma.

@@ -20,7 +20,7 @@ O SWEBOK avalia requisitos por **completude**, **consistência**, **verificabili
 | V-03 | "Distância e tempo até o mercado" está no escopo e não tem requisito correspondente | Completude | Média | ✅ Resolvido |
 | V-04 | O MVP da especificação tinha 17 RF; o da Visão listava 9 itens | Consistência | Média | ✅ Resolvido |
 | V-05 | RF-05 exigia busca por similaridade, mas "semelhante" não estava definido | Verificabilidade | Média | ✅ Resolvido |
-| V-06 | RNF-11 não tem verificação objetiva | Verificabilidade | Baixa | ⏳ Aberto |
+| V-06 | RNF-11 não tem verificação objetiva | Verificabilidade | Baixa | ✅ Resolvido |
 | V-07 | "Diferenciar preço por filial" saiu do escopo funcional sem registro na Visão | Rastreabilidade | Baixa | ✅ Resolvido |
 
 ---
@@ -230,21 +230,79 @@ adiar o próprio modelo já classificava como baixo.
 Consequência: não existe item com custo alto de adiar neste projeto. *Shrinkflation* segue
 como objetivo, sem nada a construir agora.
 
+### V-06 · Minimização de dados agora é verificável
+
+A lista de finalidades foi escrita na §6 de `requisitos.md`: cada dado pessoal coletado, a
+função que o justifica e a retenção. O RNF-11 passou a ter verificação objetiva — revisar o
+esquema contra essa lista.
+
+Duas decisões saíram dela e reduziram a coleta:
+
+- **A coordenada do dispositivo não é persistida.** Dela sobram só o mercado escolhido e o
+  indicador de conferência (RD-13, RNF-13). Não existe histórico de deslocamento
+- **Entrada sem cadastro.** Conta anônima com apelido gerado, sem e-mail, sem telefone,
+  sem nome. E-mail só passa a existir se a pessoa optar por vincular a conta
+
 ## Aberto
 
-| ID | Por que continua aberto |
-| -- | ----------------------- |
-| V-06 | Depende da lista de finalidades de dados pessoais, ainda não escrita |
+Nenhum achado em aberto.
+
+---
+
+# Terceira rodada — varredura de coerência
+
+**Data:** 22/08/2026 · **Base:** todos os artefatos, na Visão 1.5
+
+Leitura integral em busca de trecho que tenha ficado para trás depois das duas rodadas
+anteriores. Dezessete achados, todos corrigidos na Visão 1.6.
+
+> **Um achado sobre o próprio processo.** O S-11 estava marcado como resolvido nesta
+> validação, mas a correção nunca havia sido aplicada: o R4 seguia citando "expiração
+> automática", contradizendo o modelo. Marcar resolvido sem aplicar é a falha mais cara que
+> um registro de validação pode ter, porque desliga a vigilância sobre o item. Daí a
+> necessidade desta terceira passada.
+
+| ID | Achado | Tipo |
+| -- | ------ | ---- |
+| I-01 | R4 ainda citava expiração automática — S-11 marcado como resolvido sem a correção aplicada | Consistência |
+| I-02 | R2 tratava como risco alto o que o R1 reformulado define como plano dos primeiros meses | Consistência |
+| I-03 | Stakeholder dizia que os primeiros usuários entram antes de haver base; R1 diz o contrário | Consistência |
+| I-04 | R6 descrevia geolocalização armazenada, que RD-13 e RNF-13 proíbem | Consistência |
+| I-05 | RD-12 exige exclusão lógica da lista, e a entidade não tinha campo para isso | Completude |
+| I-06 | `PRODUTO.origem` não previa produto preenchido pelo usuário, criado por RF-33 | Completude |
+| I-07 | Escopo dizia "nome, marca e imagem"; RF-03 diz quantidade; o modelo não tem imagem | Consistência |
+| I-08 | Ator descrito como "pessoa autenticada", sem autenticação de entrada desde a Visão 1.5 | Consistência |
+| I-09 | Glossário de Confirmação não refletia a distinção entre autor e terceiro | Consistência |
+| I-10 | Escopo dizia "confirmação por outro usuário", que RD-03 deixou de exigir | Consistência |
+| I-11 | Consultor tinha a responsabilidade de denunciar preço, sem mecanismo no MVP | Rastreabilidade |
+| I-12 | Hardware exigia GPS, que passou a ser opcional | Consistência |
+| I-13 | R9 dizia que instalação no iOS é limitada, e o R12 depende dela funcionar | Consistência |
+| I-14 | Código de origem `Visão` na legenda, sem uso em requisito algum | Higiene |
+| I-15 | Requisitos fora de ordem numérica dentro das seções | Higiene |
+| I-16 | RF-05 ambíguo entre "criar sem usar código" e "criar produto que não tem código" | Ambiguidade |
+| I-17 | MVP enumerado em dois lugares, já divergindo | Duplicação |
+
+**Correções de fundo.** R2 caiu para médio e passou a valer para depois dos convites; R4,
+R6 e R9 foram alinhados às decisões vigentes; a entidade `LISTA` ganhou o campo de exclusão
+lógica; a enumeração do MVP no Canvas virou ponteiro para a §3.3, para não haver duas
+listas divergindo de novo.
+
+Requisitos foram reordenados por número dentro de cada seção, **mantendo os
+identificadores** — reordenar linhas não quebra referência, renumerar quebraria.
 
 ---
 
 # Situação geral
 
-Vinte achados nas duas rodadas, **dezenove resolvidos**. Resta o V-06, de gravidade baixa.
+Trinta e sete achados em três rodadas, **todos resolvidos**. Visão na versão 1.6.
 
-Três pendências de especificação seguem registradas em `requisitos.md`: cobertura da base
-pública de produtos, o número definitivo do tempo de registro e a lista de finalidades de
-dados pessoais. Nenhuma bloqueia o início da construção.
+Duas pendências de especificação seguem registradas em `requisitos.md`, ambas aguardando
+trabalho de campo: cobertura da base pública de produtos em Goianésia, e os números
+provisórios do tempo máximo de registro e do raio que conta como conferido no local.
+Nenhuma bloqueia o início da construção.
+
+Uma quarta varredura será devida quando a construção começar: código costuma expor
+premissa que o documento não sustenta.
 
 Uma revalidação é devida em dois momentos: quando os catálogos de Goianésia estiverem
 montados — o que muda a premissa de RF-04 de "existe uma lista" para "a lista cobre o que as

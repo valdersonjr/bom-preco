@@ -9,7 +9,7 @@ Vocabulário e entidades vêm do [modelo de domínio](modelo-de-dominio.md).
 
 | Ator | Descrição |
 | ---- | --------- |
-| **Usuário** | Pessoa autenticada. Alterna entre contribuir e consultar, conforme o momento |
+| **Usuário** | Pessoa com sessão ativa, anônima ou vinculada. Alterna entre contribuir e consultar, conforme o momento |
 | **Base pública de produtos** | Sistema externo consultado por GTIN para obter nome, marca e quantidade |
 | **Serviço de localização** | Fornece as coordenadas do dispositivo |
 
@@ -35,12 +35,12 @@ flowchart LR
 
 ## UC-01 — Registrar preço de um produto
 
-**Requisitos:** RF-02, RF-03, RF-06, RF-07, RF-08, RF-11 · **RNF:** RNF-05, RNF-06
+**Requisitos:** RF-02, RF-03, RF-06, RF-07, RF-08, RF-11, RF-41 · **RNF:** RNF-05, RNF-06
 
 | | |
 | --- | --- |
 | **Ator** | Usuário |
-| **Pré-condição** | Usuário autenticado, dentro ou próximo de um mercado |
+| **Pré-condição** | Sessão ativa, anônima ou vinculada, dentro ou próximo de um mercado |
 | **Pós-condição** | Um registro de preço imutável existe para a tripla produto-mercado-instante |
 
 **Fluxo principal**
@@ -53,7 +53,8 @@ flowchart LR
 6. Sistema exibe nome, marca e quantidade do produto encontrado
 7. Usuário digita o valor observado
 8. Usuário indica se é preço normal ou promoção (RF-11)
-9. Sistema grava o registro de preço
+9. Sistema grava o registro de preço, marcando se a localização coincidia com o mercado
+   escolhido (RF-41). A coordenada em si é descartada (RD-13)
 
 **Variações**
 
@@ -62,6 +63,7 @@ flowchart LR
 | Mercado sugerido está errado | Usuário escolhe outro da lista (RF-07). Mercado novo é cadastrado pelo mantenedor, nunca pelo usuário (RD-10) |
 | GTIN não encontrado na base pública | Segue para UC-06, preenchendo os dados do produto |
 | Produto sem código de barras | Segue para UC-02, escolhendo o item no catálogo |
+| Localização não coincide com o mercado escolhido, ou o GPS não fixa | Registro é gravado normalmente, apenas sem a marca de conferido no local. Nunca bloqueia — dentro do prédio o erro de GPS chega a dezenas de metros (RF-41) |
 | Sem conectividade | Registro entra na fila local e é reenviado quando a conexão voltar (RNF-06). O usuário é informado de que está pendente |
 | Já existe registro do mesmo usuário para este produto e mercado hoje | Sistema grava um registro novo. O anterior fica superado e sai do histórico exibido — nada é editado nem apagado (RD-02, RD-04) |
 
@@ -208,8 +210,15 @@ flowchart LR
 
 ## Fora dos casos de uso
 
-**Criar conta e autenticar** (RF-01) fica delegado ao Supabase Auth, sem fluxo próprio: é
-comportamento padrão de biblioteca, e descrevê-lo não acrescenta informação.
+**Entrar no app** (RF-01, RF-37) não tem fluxo porque não tem passos: na primeira abertura
+o sistema cria uma sessão anônima com apelido gerado, e a pessoa já pode usar. Nada é
+pedido.
+
+**Instalar na tela inicial** (RF-39) e **vincular identidade** (RF-38) são convites
+oportunos, não casos de uso: o primeiro aparece cedo, porque no iOS é o que impede o
+navegador de apagar a sessão; o segundo, depois de alguns registros, quando a pessoa já tem
+algo a perder ao trocar de aparelho. Vincular preserva o mesmo usuário e todos os seus
+registros.
 
 Os demais requisitos funcionais estão fora do MVP e ganharão caso de uso quando forem
 priorizados.

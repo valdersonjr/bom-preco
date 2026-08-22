@@ -1,6 +1,6 @@
 # Visão do Projeto — Bom Preço
 
-**Versão 1.4**
+**Versão 1.6**
 
 ## Histórico de Revisão
 
@@ -11,6 +11,8 @@
 | 22/08/2026 | 1.2 | Correções de coerência apontadas na validação: posicionamento, escopo, MVP e catálogo de itens sem código de barras | Valderson Junior |
 | 22/08/2026 | 1.3 | Revisão de engenharia: marcação de promoção no MVP, auto-confirmação, catálogo de mercados e risco de GPS em ambiente fechado | Valderson Junior |
 | 22/08/2026 | 1.4 | Cold start reformulado para uso individual primeiro; posicionamento e métricas corrigidos; raio de busca configurável | Valderson Junior |
+| 22/08/2026 | 1.5 | Entrada sem cadastro por conta anônima; geolocalização como sinal de confiança e não como bloqueio; finalidades de dados pessoais declaradas | Valderson Junior |
+| 22/08/2026 | 1.6 | Varredura de coerência: riscos R2, R4, R6 e R9 alinhados às decisões vigentes; stakeholders, escopo e hardware atualizados | Valderson Junior |
 
 ---
 
@@ -48,9 +50,9 @@ preço dos mercados; não vende nem intermedeia compra.
 | Nome | Descrição | Responsabilidades |
 | ---- | --------- | ----------------- |
 | Autor / mantenedor | Desenvolvedor do produto e também usuário-alvo. Projeto individual: acumula os papéis de análise, desenvolvimento, testes e moderação | Define escopo e prioridades; desenvolve e mantém o sistema; garante que o esforço de manutenção continue viável para uma pessoa só |
-| Primeiros usuários | Pessoas próximas ao autor, em Goianésia, que aceitarem usar o app antes de ele ter base formada | Sustentam a base nos primeiros meses, quando ainda há pouco dado; dizem se o produto resolve um problema real de rotina |
+| Primeiros convidados | Pessoas próximas ao autor, em Goianésia, convidadas depois que a base já tiver dado suficiente para ser útil | Ampliam a cobertura para além dos mercados que o autor frequenta; dizem se o produto resolve um problema real de rotina |
 | Contribuidor | Usuário que cadastra preços enquanto está no mercado | Alimenta a base com preços corretos; confirma preços cadastrados por outros. É de quem depende a existência do dado |
-| Consultor | Usuário que consulta preços antes de comprar, sem necessariamente contribuir | Usa o produto para decidir a compra; reporta preço errado que encontrar na loja |
+| Consultor | Usuário que consulta preços antes de comprar, sem necessariamente contribuir | Usa o produto para decidir a compra; corrige preço errado registrando o valor correto que viu na prateleira |
 | Moderador | Papel de quem trata denúncias e preços marcados como suspeitos | Corrige ou remove dado errado; mantém a confiabilidade da base |
 | Mercados | Estabelecimentos cujos preços são cadastrados | Não são clientes e têm interesse conflitante: comparação de preços pressiona margem. Alguns proíbem fotografar etiquetas na loja |
 
@@ -79,7 +81,8 @@ preço dos mercados; não vende nem intermedeia compra.
 **Cadastro de preço**
 
 - Escaneamento de código de barras
-- Preenchimento automático de nome, marca e imagem via base pública de produtos
+- Preenchimento automático de nome, marca e quantidade via base pública de produtos
+- Imagem do produto vinda da base pública
 - Catálogo curado de itens sem código de barras (hortifruti, açougue), mantido pelo autor
 - Solicitação de inclusão de item ausente do catálogo
 - Foto da etiqueta como evidência do cadastro
@@ -99,9 +102,10 @@ preço dos mercados; não vende nem intermedeia compra.
 
 **Confiabilidade**
 
+- Marca de conferência da localização no momento do registro
 - Percentual de confiabilidade por preço cadastrado
 - Reputação do usuário baseada no histórico de cadastros
-- Confirmação de preço por outro usuário, sem recadastro
+- Confirmação de preço sem recadastro, distinguindo a do autor da de terceiro
 - Cruzamento de cadastros independentes para elevar a confiança
 - Sinalização de preço fora da média histórica
 - Denúncia de preço errado e moderação
@@ -125,19 +129,22 @@ Recorte mínimo para o produto ser lançável e já responder à pergunta
 **Lançamento.** Goianésia–GO, com acesso aberto a quem pedir. A abertura para outras
 localidades vem depois, quando a operação em uma cidade estiver validada.
 
-- Criação de conta e autenticação
+- Uso imediato com conta anônima, sem cadastro, com apelido gerado
+- Vínculo opcional a Google ou e-mail depois, preservando conta e registros
 - Cadastro de preço por escaneamento de código de barras, com preenchimento automático
   do produto via base pública
 - Seleção de item sem código de barras a partir de catálogo curado
-- Identificação do mercado por geolocalização, escolhido de lista mantida pelo autor
+- Sugestão do mercado por geolocalização, escolhido de lista mantida pelo autor
+- Marca de "conferido no local" quando a localização coincide com o mercado
 - Marcação do preço como normal ou promocional
 - Cadastro salvo localmente e reenviado sozinho quando a conexão volta
 - Confirmação de preço em um toque, distinguindo a de terceiro da do próprio autor
-- Consulta do preço de um produto nos mercados próximos
+- Consulta do preço de um produto nos mercados dentro do raio escolhido
 - Lista de compras indicando o mercado mais barato por item
 - Preço por unidade
 - Histórico de preço por produto e mercado, com data do último cadastro visível
 - Preços com mais de 30 dias fora da comparação por padrão
+- Exclusão de conta com anonimização da autoria dos preços
 
 **Fora do MVP e por quê**
 
@@ -160,7 +167,7 @@ localidades vem depois, quando a operação em uma cidade estiver validada.
 
 | Perfil | Tipo | Configuração | Observação |
 | ------ | ---- | ------------ | ---------- |
-| Usuário | Smartphone | Câmera traseira, GPS e navegador atualizado | O cadastro acontece de pé, dentro do mercado, com o carrinho na mão |
+| Usuário | Smartphone | Câmera traseira e navegador atualizado. GPS é opcional: sem ele o app funciona, apenas exige escolher o mercado na lista e o registro sai sem a marca de conferido | O cadastro acontece de pé, dentro do mercado, com o carrinho na mão |
 | Desenvolvedor | Máquina de desenvolvimento | - | Já disponível |
 | Teste | Aparelho Android e aparelho iOS | - | Necessários para validar o PWA nos dois navegadores. O Safari é o caso crítico |
 
@@ -193,16 +200,17 @@ reenvio do cadastro.
 | # | Risco | Impacto | Prob. | Mitigação |
 | - | ----- | :-----: | :---: | --------- |
 | R1 | Uma terceira pessoa chega, encontra só os dados do autor e não vê utilidade | Médio | Média | O autor usa o app sozinho por algumas semanas antes de convidar alguém — compra semanal gera histórico próprio depressa. Convite só quando houver o que ver. É sequenciamento, não requisito |
-| R2 | Contribuição decai e só o autor cadastra preços | Alto | Alta | Cadastro em poucos segundos como requisito de projeto; gamificação em versão futura |
+| R2 | Contribuição decai e só o autor cadastra preços | Médio | Média | Esperado nos primeiros meses, por isso não é alto: o autor sustenta a base sozinho de início. Vira problema se persistir depois dos convites. Cadastro em poucos segundos como requisito de projeto; gamificação em versão futura |
 | R3 | Mesmo produto ou mercado cadastrado com nomes diferentes fragmenta a comparação | Alto | Baixa | Código de barras como identidade do produto; itens sem código e mercados vêm de catálogos mantidos pelo autor, sem criação livre pelo usuário |
-| R4 | Preço desatualizado leva a uma decisão de compra errada e queima a confiança no app | Alto | Média | Data do cadastro sempre visível e confirmação em um toque já no MVP; expiração automática em versão futura |
+| R4 | Preço desatualizado leva a uma decisão de compra errada e queima a confiança no app | Alto | Média | Preço envelhece em vez de expirar: a idade fica sempre visível e os de mais de 30 dias saem da comparação por padrão. Confirmação em um toque renova a idade, já no MVP |
 | R5 | Base pública de produtos com cobertura baixa no Brasil ou com custo | Médio | Média | Produto com código de barras ausente da base pode ser preenchido pelo usuário, pois o GTIN garante a identidade; armazenar localmente o que já foi consultado |
-| R6 | Dados pessoais: geolocalização e histórico de compra estão sob a LGPD | Alto | Média | Consentimento explícito; coletar o mínimo; não expor a identidade do contribuidor |
+| R6 | Dados pessoais sob a LGPD: autoria dos registros e lista de compras, que revela hábito de consumo | Médio | Média | Coordenada do dispositivo nunca é gravada, então não há histórico de deslocamento; entrada sem cadastro, sem nome nem telefone; identidade do contribuidor não é exposta; exclusão de conta anonimiza a autoria. Finalidades declaradas na especificação |
 | R7 | Mercados proíbem fotografar etiquetas nas lojas | Baixo | Média | Foto é opcional — o cadastro funciona sem evidência |
 | R8 | Escopo grande para um projeto individual | Alto | Baixa | Mais de 20 horas semanais disponíveis e sem prazo externo; MVP enxuto mantém o escopo sob controle |
-| R9 | PWA no iOS: o Safari não expõe a API nativa de leitura de código de barras, e instalação e notificações são limitadas | Médio | Alta | Fallback de leitura em JavaScript; priorizar Android, majoritário no público inicial; testar em aparelho iOS real antes do lançamento |
+| R9 | PWA no iOS: o Safari não expõe a API nativa de leitura de código de barras, e notificações exigem o app instalado na tela inicial | Médio | Alta | Fallback de leitura em JavaScript; priorizar Android, majoritário no público inicial; testar em aparelho iOS real antes do lançamento. A instalação em si funciona, e é dela que depende a mitigação do R12 |
 | R10 | Acesso aberto sem reputação permite inserir preços errados em massa | Médio | Baixa | Volume inicial baixo e usuários majoritariamente conhecidos; confirmação por outro usuário dá sinal; reputação e moderação entram se o problema aparecer |
-| R11 | Fixação de GPS dentro do mercado é lenta ou imprecisa, comprometendo a identificação automática e o tempo de cadastro | Médio | Alta | Sugerir o mercado pela última localização conhecida em vez de esperar precisão; permitir corrigir na lista; medir o tempo real de fixação em campo antes de fechar o requisito de 15 segundos |
+| R11 | Fixação de GPS dentro do mercado é lenta ou imprecisa | Baixo | Alta | O GPS é sugestão e sinal, nunca condição: se falhar, custa um toque a mais para escolher o mercado na lista e o registro sai sem a marca de conferido. Medir o tempo real em campo antes de fechar o requisito de 15 segundos |
+| R12 | Sessão anônima perdida por limpeza do armazenamento do navegador, levando junto a autoria dos registros | Médio | Média | Convite para instalar na tela inicial já nas primeiras visitas, o que isenta o app da limpeza automática no iOS; convite para vincular Google ou e-mail depois de alguns registros |
 
 ---
 
@@ -213,7 +221,7 @@ reenvio do cadastro.
 | **Proposta do MVP** | Um app onde as pessoas cadastram os preços que veem no mercado e consultam, pela lista de compras, onde cada item está mais barato |
 | **Segmento de clientes** | Moradores de Goianésia–GO que fazem compra de supermercado. Começa com pessoas próximas ao autor, com acesso aberto a quem pedir |
 | **Jornadas** | (1) No mercado: escanear o produto, digitar o valor e salvar, mesmo com sinal ruim. (2) Antes da compra: montar a lista e ver o mercado mais barato de cada item |
-| **Funcionalidades** | Escaneamento com preenchimento automático; catálogo curado de itens sem código de barras; mercado por geolocalização; marcação de promoção; fila de reenvio offline; confirmação de preço; consulta de preço; lista de compras comparada; preço por unidade; histórico com data |
+| **Funcionalidades** | A lista do MVP na §3.3, sem repetição aqui — duplicar a enumeração só cria duas versões que divergem |
 | **Custo** | R$ 40 por ano, referentes ao domínio `.com.br`. Infraestrutura sem custo na fase inicial (Supabase Free e Cloudflare Pages) e sem taxa de loja de aplicativos por ser PWA |
 | **Cronograma** | Sem prazo externo. Marcos estimados abaixo |
 | **Métricas para validar hipóteses** | Preços cadastrados por semana; contribuidores ativos; cobertura, medida em produtos com preço válido por mercado; consultas por usuário por semana; diferença entre o menor e o maior preço válido de um mesmo produto |

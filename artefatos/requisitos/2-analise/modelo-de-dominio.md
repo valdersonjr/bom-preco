@@ -12,12 +12,14 @@ entidades — e, na prática, o rascunho do esquema do banco.
 | **Produto** | Item comercializável concreto, com marca e quantidade definidas. "Arroz Tio João Tipo 1 5 kg" é um produto; a versão de 1 kg é outro |
 | **GTIN** | Número do código de barras. Quando existe, é a identidade do produto. Ausente em granel, hortifruti e açougue |
 | **Registro de preço** | Observação de um preço: um produto, num mercado, num instante, feita por um usuário. Nunca é alterado nem apagado |
-| **Confirmação** | Ato de um usuário atestar que um registro de preço continua válido, sem criar registro novo |
+| **Confirmação** | Ato de um usuário atestar que um registro de preço continua válido, sem criar registro novo. Confirmação de terceiro vale mais que a do próprio autor, e as duas são distinguidas (RD-03) |
 | **Preço por unidade** | Valor dividido pela quantidade, normalizado (R$/kg, R$/L, R$/un). Base de comparação entre embalagens diferentes |
 | **Preço de tabela** | Preço normal de prateleira |
 | **Preço promocional** | Preço com desconto, possivelmente condicionado a quantidade ("leve 3 pague 2") ou a app do mercado |
 | ***Shrinkflation*** | Redução da quantidade da embalagem sem redução proporcional do preço |
 | **Idade do preço** | Tempo desde a última observação ou confirmação. Determina o quanto se pode confiar nele |
+| **Conferido no local** | Marca de que a localização do aparelho coincidia com o mercado no momento do registro. É sinal de confiança, nunca condição para registrar |
+| **Conta anônima** | Usuário criado na primeira abertura, sem cadastro, com apelido gerado. Pode ser vinculada depois a Google ou e-mail, mantendo o mesmo identificador e todos os registros |
 
 ## Diagrama
 
@@ -51,16 +53,17 @@ erDiagram
         text marca "nulo em granel"
         numeric quantidade
         text unidade_medida "kg, g, L, mL, un"
-        text origem "base publica ou catalogo curado"
+        text origem "base publica, catalogo curado ou preenchido pelo usuario"
     }
     REGISTRO_PRECO {
         uuid id
         uuid produto_id
         uuid mercado_id
-        uuid usuario_id
+        uuid usuario_id "nulo apos exclusao de conta"
         numeric valor
         text tipo "tabela ou promocional"
         text condicao "nulo, ou leve 3 pague 2"
+        boolean local_conferido "GPS coincidiu com o mercado"
         timestamptz observado_em
     }
     CONFIRMACAO {
@@ -71,12 +74,14 @@ erDiagram
     }
     USUARIO {
         uuid id
-        text nome
+        text apelido "gerado, alteravel"
+        boolean anonimo "falso apos vincular identidade"
     }
     LISTA {
         uuid id
         uuid usuario_id
         text nome
+        timestamptz excluida_em "nulo enquanto ativa"
     }
     ITEM_LISTA {
         uuid id
@@ -190,6 +195,9 @@ triagem do brainstorm.
 | RD-08 | Produto sem GTIN não é criado pelo usuário: provém de catálogo curado, mantido pelo autor |
 | RD-09 | Produto com GTIN ausente da base pública pode ser preenchido pelo usuário, pois o próprio GTIN garante a identidade |
 | RD-10 | Mercados são cadastrados pelo mantenedor; o usuário escolhe da lista e não cria |
+| RD-11 | Excluir a conta anonimiza a autoria dos registros de preço; os preços permanecem, sem dono |
+| RD-12 | Lista de compras apagada pelo dono sai por exclusão lógica; exclusão de conta a remove de fato |
+| RD-13 | A coordenada do dispositivo nunca é persistida: dela restam apenas o mercado escolhido e o indicador de conferência |
 
 ## Evolução prevista
 

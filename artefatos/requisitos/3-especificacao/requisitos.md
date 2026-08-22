@@ -27,7 +27,6 @@ referenciam o `RF-xx` de origem.
 | `Elic` | Levantado no brainstorm de elicitação |
 | `Dom` | Imposto pelo modelo de domínio |
 | `Der` | Requisito derivado: nasceu de decisão interna de construção, não de stakeholder |
-| `Visão` | Decorre de decisão de escopo registrada na Visão |
 
 ---
 
@@ -37,7 +36,15 @@ referenciam o `RF-xx` de origem.
 
 | ID | Requisito | MVP | Origem |
 | -- | --------- | :-: | ------ |
-| RF-01 | O sistema deve permitir que uma pessoa crie conta e autentique-se | ✅ | `Der` |
+| RF-01 | O sistema deve criar uma sessão anônima na primeira abertura, sem exigir cadastro | ✅ | `Der` |
+| RF-37 | O sistema deve atribuir um apelido gerado ao usuário anônimo, alterável por ele | ✅ | `Der` |
+| RF-38 | O sistema deve permitir vincular a conta anônima a uma identidade Google ou e-mail, preservando o mesmo usuário e todos os seus registros | ✅ | `Der` |
+| RF-39 | O sistema deve convidar o usuário a instalar o app na tela inicial | ✅ | `Der` |
+| RF-40 | O sistema deve permitir excluir a conta, anonimizando a autoria dos registros de preço e preservando os preços | ✅ | `Der` · RD-11 |
+
+> O convite de RF-39 não é estética: no iOS, um web app aberto pelo navegador tem o
+> armazenamento apagado após 7 dias sem interação, e com ele a sessão anônima. Instalado na
+> tela inicial, fica isento dessa limpeza. RF-38 cobre o resto — troca ou perda de aparelho.
 
 ### Cadastro de preço · UC-01, UC-02, UC-06
 
@@ -46,8 +53,8 @@ referenciam o `RF-xx` de origem.
 | RF-02 | O sistema deve identificar um produto pela leitura do código de barras | ✅ | `Elic` |
 | RF-03 | O sistema deve preencher nome, marca e quantidade a partir de base pública, quando o GTIN for encontrado | ✅ | `Elic` |
 | RF-04 | O sistema deve permitir selecionar item sem código de barras a partir de catálogo curado | ✅ | `Elic` |
-| RF-05 | O sistema deve impedir que o usuário crie produto sem código de barras | ✅ | `Dom` RD-08 |
-| RF-06 | O sistema deve identificar o mercado a partir da localização do usuário | ✅ | `Elic` |
+| RF-05 | O sistema deve impedir que o usuário crie produto que não possua código de barras — esses vêm apenas do catálogo curado | ✅ | `Dom` RD-08 |
+| RF-06 | O sistema deve sugerir o mercado mais próximo a partir da localização do usuário | ✅ | `Elic` |
 | RF-07 | O sistema deve permitir corrigir o mercado sugerido, escolhendo outro da lista | ✅ | `Der` |
 | RF-08 | O sistema deve registrar o preço observado de um produto em um mercado | ✅ | `Elic` |
 | RF-09 | O sistema deve permitir anexar foto da etiqueta ao registro | ❌ | `Elic` |
@@ -56,13 +63,13 @@ referenciam o `RF-xx` de origem.
 | RF-32 | O sistema deve permitir solicitar a inclusão de item ausente do catálogo | ❌ | `Der` |
 | RF-33 | O sistema deve permitir preencher os dados de um produto cujo GTIN não for encontrado na base pública | ✅ | `Dom` RD-09 |
 | RF-34 | O sistema deve permitir registrar a condição da promoção, como "leve 3 pague 2" | ❌ | `Elic` |
+| RF-41 | O sistema deve marcar se a localização do usuário estava a menos de 200 m do mercado no momento do registro, sem impedir o registro quando não estava. Raio provisório, a confirmar em campo | ✅ | `Der` |
 
 ### Consulta · UC-03
 
 | ID | Requisito | MVP | Origem |
 | -- | --------- | :-: | ------ |
 | RF-12 | O sistema deve exibir os preços de um produto nos mercados dentro do raio escolhido pelo usuário, tendo a cidade inteira como padrão | ✅ | `Elic` |
-| RF-36 | O sistema deve permitir ao usuário ajustar o raio de busca de mercados | ✅ | `Der` |
 | RF-13 | O sistema deve exibir a idade de cada preço apresentado | ✅ | `Dom` |
 | RF-14 | O sistema deve exibir o preço por unidade normalizado | ✅ | `Elic` · RD-05, RD-06 |
 | RF-15 | O sistema deve exibir o histórico de preços de um produto em um mercado | ✅ | `Elic` |
@@ -70,6 +77,7 @@ referenciam o `RF-xx` de origem.
 | RF-17 | O sistema deve notificar o usuário quando um produto acompanhado baixar de preço | ❌ | `Elic` |
 | RF-18 | O sistema deve sinalizar redução de quantidade da embalagem sem redução proporcional de preço | ❌ | `Elic` |
 | RF-19 | O sistema deve recomendar produto alternativo mais barato equivalente | ❌ | `Elic` |
+| RF-36 | O sistema deve permitir ao usuário ajustar o raio de busca de mercados | ✅ | `Der` |
 
 ### Lista de compras · UC-04
 
@@ -107,7 +115,7 @@ referenciam o `RF-xx` de origem.
 | RF-30 | O sistema deve importar carga inicial de preços de base pública | ❌ | `Elic` |
 | RF-31 | O sistema deve atribuir pontos e distintivos a contribuidores | ❌ | `Elic` |
 
-**Resumo:** 36 requisitos funcionais, 20 no MVP.
+**Resumo:** 41 requisitos funcionais, 25 no MVP.
 
 ---
 
@@ -148,7 +156,8 @@ método de verificação, o requisito não é verificável e portanto não é um
 | ID | Requisito | Materialização | Verificação |
 | -- | --------- | -------------- | ----------- |
 | RNF-10 | A coleta de geolocalização exige consentimento explícito e revogável | Critério de aceitação em UC-01 e item de *definition of done* | Revogar a permissão e confirmar que o app degrada sem quebrar |
-| RNF-11 | Só devem ser coletados os dados pessoais necessários à função | Item de *definition of done* | Revisar o modelo de dados contra a lista de finalidades |
+| RNF-11 | Só devem ser coletados os dados pessoais necessários à função | Item de *definition of done* | Revisar o modelo de dados contra a lista de finalidades da §6 |
+| RNF-13 | A coordenada do dispositivo não deve ser persistida; só o mercado escolhido e o indicador de conferência | Modelagem | Inspecionar o esquema: nenhuma coluna de latitude ou longitude em `registro_preco` |
 | RNF-12 | A identidade de quem cadastrou um preço não deve ser exposta a outros usuários | Modelagem e critério de aceitação em UC-03 | Inspecionar a resposta da API de consulta |
 
 ---
@@ -166,6 +175,9 @@ que podem ser revistos se a decisão que os gerou mudar.
 | RF-16 | Corte de 30 dias na comparação | Decisão de tratar idade na consulta, não no dado |
 | RF-32 | Pedido de inclusão de item no catálogo | Consequência de fechar a criação de produto sem GTIN |
 | RF-36 | Ajuste do raio de busca | Consequência de "mercados próximos" não ter um número universal |
+| RF-01, RF-37 | Sessão anônima e apelido gerado | Decisão de eliminar cadastro inicial; ninguém pediu login |
+| RF-38, RF-39 | Vínculo de identidade e convite de instalação | Consequência do PWA: armazenamento do navegador pode ser apagado, e com ele a conta |
+| RF-41 | Marca de conferência no local | Uso da geolocalização como sinal de confiança em vez de bloqueio |
 | RNF-02 | Alternativa à API nativa de código de barras | Escolha do PWA somada à ausência dessa API no Safari |
 | RNF-06 | Fila local de reenvio | Escolha do PWA somada ao sinal ruim dentro do mercado |
 
@@ -193,6 +205,30 @@ Só o que falta decidir para um requisito ficar completo. Achados de revisão fi
 
 | Pendência | Bloqueia |
 | --------- | -------- |
+Ambas aguardam trabalho de campo e não bloqueiam a construção.
+
+| Pendência | Bloqueia |
+| --------- | -------- |
 | Cobertura da base pública de produtos para itens vendidos em Goianésia | RF-03 e RF-33, e a utilidade prática de RF-02 |
-| Número definitivo do tempo máximo de registro, a ser fixado após medição em campo | RNF-05, hoje provisório |
-| Lista de finalidades de uso de dados pessoais | RNF-11, que sem ela não tem verificação objetiva |
+| Número definitivo do tempo máximo de registro e do raio que conta como "conferido no local" | RNF-05 e RF-41, hoje provisórios em 15 s e 200 m |
+
+---
+
+## 6. Finalidades de uso de dados pessoais
+
+Lista exigida pelo RNF-11 e pelo princípio de minimização da LGPD. Cada dado pessoal
+coletado, para que serve e por quanto tempo fica.
+
+| Dado | Finalidade | Retenção |
+| ---- | ---------- | -------- |
+| Coordenada do dispositivo | Sugerir o mercado e verificar se coincide com ele no momento do registro | **Não é armazenada.** Usada na hora e descartada; persiste apenas o mercado escolhido e o indicador de conferência (RNF-13) |
+| Identificador do usuário | Atribuir autoria, aplicar o limite diário por produto e mercado, distinguir auto-confirmação de confirmação de terceiro | Até a exclusão da conta, quando a autoria é anonimizada e o preço permanece (RD-11) |
+| Apelido | Identificar a pessoa na interface para ela mesma | Idem |
+| E-mail ou identidade Google | Recuperar a conta em outro aparelho. Só existe se a pessoa optar por vincular | Até a exclusão da conta |
+| Lista de compras | Montar a comparação por item | Até a pessoa apagar, por exclusão lógica, ou excluir a conta, quando é removida de fato (RD-12) |
+
+**Não coletados:** nome civil, telefone, endereço, documento, foto e histórico de
+deslocamento. Nenhum é necessário a qualquer função especificada.
+
+A geolocalização depende de consentimento explícito e revogável (RNF-10); recusar reduz o
+app a escolher o mercado na lista, sem impedir nada.
