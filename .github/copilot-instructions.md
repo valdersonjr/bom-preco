@@ -7,6 +7,17 @@ Cloudflare Pages. Projeto individual.
 **O contexto completo está em [`CLAUDE.md`](../CLAUDE.md) na raiz — leia antes de começar.**
 O que segue é o essencial.
 
+## O laço de trabalho
+
+1. Pegar a próxima issue do marco corrente, respeitando as dependências do corpo
+2. **Mover o cartão para In Progress antes de escrever a primeira linha** — o comando está
+   no `CLAUDE.md`. Nunca trabalhar com o cartão parado em Todo
+3. Implementar até as caixas do critério de aceitação fecharem
+4. `npm run lint && npm run typecheck && npm run build`
+5. Commitar com `Closes #N` — isso fecha a issue e o board move para Done sozinho
+
+Issue parcialmente feita permanece em In Progress, com as caixas satisfeitas marcadas.
+
 ## Antes de implementar
 
 Leia o requisito citado na issue. Os identificadores `RF-xx`, `RNF-xx`, `RD-xx` e `UC-xx`

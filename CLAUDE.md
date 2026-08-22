@@ -85,6 +85,36 @@ de aceitação em caixa marcável — implementar é satisfazer aquelas caixas, 
 
 Issues fora do MVP têm label `pos-mvp` e não devem ser puxadas sem decisão explícita.
 
+### O laço
+
+1. **Pegar** a próxima issue do marco corrente, respeitando as dependências declaradas no
+   corpo ("Depende de #N")
+2. **Mover para In Progress antes de escrever a primeira linha** — comando abaixo
+3. **Implementar** até as caixas do critério de aceitação fecharem
+4. **Verificar**: `npm run lint && npm run typecheck && npm run build`
+5. **Commitar** com `Closes #N` no corpo
+
+O passo 5 fecha a issue, e o board move o cartão para Done sozinho — a automação nativa do
+projeto está ligada. O passo 2 é o único manual, porque não existe evento de "comecei".
+
+**Nunca trabalhar com o cartão parado em Todo.** Quem olha o board precisa ver o que está
+em andamento; cartão que pula de Todo direto para Done esconde o trabalho enquanto ele
+acontece.
+
+```bash
+# Mover a issue N para In Progress
+N=1
+ITEM=$(gh project item-list 2 --owner valdersonjr --limit 60 --format json \
+  --jq ".items[]|select(.content.number==$N)|.id")
+gh project item-edit --id "$ITEM" \
+  --project-id PVT_kwHOA-Cyus4BhKPF \
+  --field-id PVTSSF_lAHOA-Cyus4BhKPFzhgHCuA \
+  --single-select-option-id 47fc9ee4
+```
+
+Se a issue ficar parcialmente feita, ela **permanece em In Progress** e as caixas já
+satisfeitas ficam marcadas no corpo. Só fecha quando todas fecharem.
+
 ### Commits
 
 Conventional Commits, tipos em inglês e descrição em português:
