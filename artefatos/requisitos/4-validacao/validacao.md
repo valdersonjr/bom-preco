@@ -292,17 +292,47 @@ identificadores** — reordenar linhas não quebra referência, renumerar quebra
 
 ---
 
+# Quarta rodada — o esquema aplicado
+
+**Data:** 22/08/2026 · **Base:** o banco real, depois da primeira migração
+
+A terceira rodada previu que a construção exporia premissa que o documento não sustenta. Foi
+o que aconteceu na primeira hora.
+
+| ID | Achado | Grav. | Situação |
+| -- | ------ | :---: | -------- |
+| C-01 | A visão `registro_vigente` projeta `usuario_id`, roda com privilégio do dono e recebeu acesso público pelo padrão do banco — a autoria de todos os preços era legível pela API | **Crítico** | ✅ Resolvido |
+| C-02 | `TRUNCATE` concedido a papéis de cliente nas tabelas | Médio | ✅ Resolvido |
+| C-03 | O desenho tratava a sessão anônima como se fosse o papel `anon`, quando ela chega como `authenticated` | Médio | ✅ Resolvido |
+
+### C-01 · O furo mudou de lugar em vez de fechar
+
+O S-02 corrigiu a exposição de `usuario_id` revogando a leitura da tabela e criando uma visão
+que omite a coluna. Só que entre a tabela e a visão pública existe `registro_vigente`, que faz
+`select *`. Ela herdou o acesso padrão e continuou legível pela API REST.
+
+Virou regra no design: **visão intermediária que carrega dado sensível precisa ser revogada
+junto com a tabela.** Revogar só a tabela empurra o problema uma camada acima.
+
+Nada disso aparecia na leitura do arquivo. Só apareceu quando o esquema encontrou os padrões
+reais do banco.
+
+### C-02 e C-03 · Correção da abordagem, não do sintoma
+
+Os dois têm a mesma origem: conceder e revogar caso a caso num banco cujo padrão é conceder
+tudo. A segunda migração inverte a lógica — revoga em massa, trava o padrão para tabelas
+futuras e concede cada privilégio de propósito. E corrige a premissa sobre papéis: `anon`
+deixa de alcançar qualquer coisa, porque o app cria sessão antes de qualquer uso.
+
+---
+
 # Situação geral
 
-Trinta e sete achados em três rodadas, **todos resolvidos**. Visão na versão 1.6.
+Quarenta achados em quatro rodadas, **todos resolvidos**. Visão na versão 1.7.
 
-Duas pendências de especificação seguem registradas em `requisitos.md`, ambas aguardando
-trabalho de campo: cobertura da base pública de produtos em Goianésia, e os números
-provisórios do tempo máximo de registro e do raio que conta como conferido no local.
-Nenhuma bloqueia o início da construção.
-
-Uma quarta varredura será devida quando a construção começar: código costuma expor
-premissa que o documento não sustenta.
+Uma pendência de especificação segue registrada em `requisitos.md`, aguardando trabalho de
+campo: os números provisórios do tempo máximo de registro e do raio que conta como conferido
+no local.
 
 Uma revalidação é devida em dois momentos: quando os catálogos de Goianésia estiverem
 montados — o que muda a premissa de RF-04 de "existe uma lista" para "a lista cobre o que as

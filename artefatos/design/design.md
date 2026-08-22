@@ -5,7 +5,7 @@ Passagem mínima pela área de Design do SWEBOK. Três dos temas que ela chama d
 
 | Tema | Tratamento |
 | ---- | ---------- |
-| **Persistência de dados** | [`esquema.sql`](esquema.sql) |
+| **Persistência de dados** | [`20260822172146_esquema_inicial.sql`](../../supabase/migrations/20260822172146_esquema_inicial.sql) |
 | **Segurança** | Matriz de acesso abaixo, implementada como políticas no mesmo arquivo |
 | **Erro e tolerância a falhas** | Fila de reenvio, abaixo |
 | Decisões arquiteturais e rationale | Já registrado na Visão §4: cada escolha de tecnologia com o porquê |
@@ -48,16 +48,27 @@ Só o booleano sobe. A coordenada do usuário não chega nem a trafegar.
 
 ## 2. Segurança — matriz de acesso
 
-Escrita anônima é a superfície de ataque real deste sistema. A matriz vale para qualquer
-usuário autenticado, anônimo ou vinculado — não há distinção de permissão entre os dois.
+Escrita anônima é a superfície de ataque real deste sistema.
+
+**O princípio é negar por padrão.** O banco vem configurado para conceder tudo a papéis de
+cliente em cada tabela nova. Conceder e revogar caso a caso nesse terreno é insustentável:
+basta esquecer uma tabela, ou criar uma depois, para reabrir o problema. Então tudo é
+revogado de uma vez, o padrão é travado, e cada privilégio é concedido de propósito.
+
+**Sessão anônima não é o papel `anon`.** Quem faz login anônimo recebe JWT de
+`authenticated` — `anon` é para requisição sem sessão nenhuma. Como o app cria a sessão na
+primeira abertura, `anon` não precisa alcançar tabela alguma, e não alcança. A matriz abaixo
+é toda de `authenticated`.
 
 | Tabela | Ler | Inserir | Alterar | Apagar |
 | ------ | --- | ------- | ------- | ------ |
 | `perfil` | só o próprio | só o próprio | só o próprio | por função de servidor |
 | `rede`, `mercado` | todos | **mantenedor** | **mantenedor** | **mantenedor** |
 | `produto` | todos | só com GTIN | **mantenedor** | **mantenedor** |
-| `registro_preco` | **só pela visão** | só como autor | **ninguém** | **ninguém** |
-| `confirmacao` | **só pela visão** | só como autor | não | não |
+| `registro_preco` | **não** | só como autor | **ninguém** | **ninguém** |
+| `confirmacao` | **não** | só como autor | não | não |
+| `registro_vigente` | **ninguém** | — | — | — |
+| `preco_publico` | todos | — | — | — |
 | `lista`, `item_lista` | só o dono | só o dono | só o dono | só o dono |
 
 Quatro linhas merecem atenção:
@@ -77,6 +88,12 @@ não a política, que impõe o RNF-12.
 Consequência disso: as duas visões rodam com os privilégios do dono, **sem**
 `security_invoker`. É deliberado. Com ele, a visão exigiria do chamador o mesmo acesso à
 tabela que estamos justamente revogando.
+
+**E é por isso que `registro_vigente` não é alcançável por ninguém.** Ela é intermediária,
+existe só para `preco_publico` consumir, e projeta `usuario_id`. Rodando com privilégio do
+dono e exposta pela API, ela devolveria a autoria de todos os preços — refazendo, uma camada
+acima, exatamente o furo que a revogação da tabela fechou. Visão intermediária que carrega
+dado sensível precisa ser revogada junto com a tabela, não só a tabela.
 
 **Lista de compras é a única coisa privada do sistema.** É também o dado que mais revela
 sobre a pessoa — hábito de consumo — e por isso a política é a mais restrita das oito.
@@ -148,7 +165,7 @@ entre os itens fora do MVP.
 
 ## Rastreabilidade
 
-`esquema.sql` implementa RD-01 a RD-15, RNF-04, RNF-12 e RNF-13. A matriz de acesso
+A migração implementa RD-01 a RD-15, RNF-04, RNF-12 e RNF-13. A matriz de acesso
 implementa RD-02, RD-08, RD-10 e RNF-12. A fila implementa RNF-06 e sustenta RF-08. A função
 de servidor de exclusão implementa RF-40 e RD-11.
 

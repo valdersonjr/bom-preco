@@ -242,8 +242,12 @@ create policy conf_insercao on confirmacao for insert
 -- usuario_id, e a visão que omite a coluna não protege nada.
 -- ---------------------------------------------------------------------------
 
-revoke select on registro_preco from anon, authenticated;
-revoke select on confirmacao    from anon, authenticated;
+-- O Supabase concede tudo por padrão às tabelas novas do schema public, então
+-- estas revogações não são redundantes. Update e delete já seriam barrados pela
+-- ausência de política, mas retirar o privilégio também protege o dia em que
+-- alguém desligar a RLS achando que está depurando.
+revoke select, update, delete on registro_preco from anon, authenticated;
+revoke select, update, delete on confirmacao    from anon, authenticated;
 
 grant insert on registro_preco to anon, authenticated;
 grant insert on confirmacao    to anon, authenticated;
