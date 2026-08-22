@@ -1,6 +1,6 @@
 # Visão do Projeto — Bom Preço
 
-**Versão 1.7**
+**Versão 1.8**
 
 ## Histórico de Revisão
 
@@ -14,6 +14,7 @@
 | 22/08/2026 | 1.5 | Entrada sem cadastro por conta anônima; geolocalização como sinal de confiança e não como bloqueio; finalidades de dados pessoais declaradas | Valderson Junior |
 | 22/08/2026 | 1.6 | Varredura de coerência: riscos R2, R4, R6 e R9 alinhados às decisões vigentes; stakeholders, escopo e hardware atualizados | Valderson Junior |
 | 22/08/2026 | 1.7 | Base de produtos importada do dump do Open Food Facts, com a API como reserva; atribuição ODbL exigida | Valderson Junior |
+| 22/08/2026 | 1.8 | Decisões de stack do cliente: TypeScript, Tailwind, supabase-js direto e integração contínua | Valderson Junior |
 
 ---
 
@@ -177,7 +178,10 @@ localidades vem depois, quando a operação em uma cidade estiver validada.
 | Tipo | Ferramenta | Situação |
 | ---- | ---------- | -------- |
 | Controle de versão | Git e GitHub | Definido |
-| Aplicativo | PWA em React com Vite | Definido |
+| Aplicativo | PWA em React com Vite e TypeScript | Definido |
+| Estilização | Tailwind CSS | Definido |
+| Acesso ao backend | Biblioteca `supabase-js`, sem camada de cache por cima | Definido |
+| Integração contínua | GitHub Actions: lint, typecheck e build no push e no PR | Definido |
 | Backend | Supabase — autenticação, API e storage | Definido |
 | Banco de dados | PostgreSQL gerenciado pelo Supabase | Definido |
 | Hospedagem do PWA | Cloudflare Pages | Definido |

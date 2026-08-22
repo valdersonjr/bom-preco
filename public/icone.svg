@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Bom Preço">
+  <rect width="512" height="512" rx="96" fill="#15803d"/>
+  <path d="M272 96H160a32 32 0 0 0-32 32v112a32 32 0 0 0 9.4 22.6l150 150a32 32 0 0 0 45.2 0l112-112a32 32 0 0 0 0-45.2l-150-150A32 32 0 0 0 272 96Z" fill="#ffffff"/>
+  <circle cx="196" cy="164" r="26" fill="#15803d"/>
+</svg>
