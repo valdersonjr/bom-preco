@@ -131,14 +131,15 @@ Visão 1.3.
 | S-02 | RD-03 proibia auto-confirmação; com poucos usuários nada seria confirmado e a base envelheceria por inteiro em 30 dias | **Crítico** | ✅ Resolvido |
 | S-03 | Duplicidade de mercado sem tratamento algum, enquanto duplicidade de produto tinha aparato completo | **Crítico** | ✅ Resolvido |
 | S-04 | RD-02, RD-04 e UC-01 se contradiziam sobre correção de registro | **Crítico** | ✅ Resolvido |
-| S-05 | RNF-05 dá 15 s para registrar um preço; o orçamento estoura só com carregamento, GPS e chamada à base pública | Alto | ⏳ Aberto |
-| S-06 | R1, o maior risco, tem como mitigação o RF-30, que está fora do MVP | Médio | ⏳ Aberto |
+| S-05 | RNF-05 dá 15 s para registrar um preço; o orçamento estoura só com carregamento, GPS e chamada à base pública | Alto | ✅ Resolvido |
+| S-06 | R1, o maior risco, tem como mitigação o RF-30, que está fora do MVP | Médio | ✅ Resolvido |
 | S-07 | Nenhum requisito criava ou mantinha os catálogos que RF-04 e RF-07 pressupõem | Médio | ✅ Resolvido |
-| S-08 | §3.1 ainda prometia "indicador de confiabilidade", que está fora do MVP | Médio | ⏳ Aberto |
-| S-09 | RF-12 diz "mercados próximos" sem definir raio | Médio | ⏳ Aberto |
-| S-10 | Duas métricas do Canvas não são mensuráveis com o que o MVP coleta | Médio | ⏳ Aberto |
+| S-08 | §3.1 ainda prometia "indicador de confiabilidade", que está fora do MVP | Médio | ✅ Resolvido |
+| S-09 | RF-12 diz "mercados próximos" sem definir raio | Médio | ✅ Resolvido |
+| S-10 | Duas métricas do Canvas não são mensuráveis com o que o MVP coleta | Médio | ✅ Resolvido |
 | S-11 | R4 citava "expiração automática", contradizendo a decisão de que preço envelhece | Médio | ✅ Resolvido |
 | S-12 | Marcos não incluíam a montagem dos catálogos, pré-requisito do lançamento | Médio | ✅ Resolvido |
+| S-13 | Premissa errada sobre *shrinkflation* levou o modelo a classificar o adiamento como caro | Alto | ✅ Resolvido |
 
 ## Decisões da segunda rodada
 
@@ -180,24 +181,70 @@ agora está escrito que existe.
 Novo marco 1: cadastrar mercados e itens sem código de barras de Goianésia. Não é código, e
 precede tudo.
 
+### S-05 · O requisito de 15 segundos vira provisório
+
+RNF-05 passou a ser marcado como provisório, com o número a ser fixado após medição em
+campo com aparelho real dentro de um mercado. A variável desconhecida é o tempo de fixação
+de GPS em ambiente fechado, registrada como risco R11.
+
+### S-06 · O risco de base vazia estava mal formulado
+
+R1 fora escrito no molde de produto de rede, que precisa de massa crítica no lançamento. O
+Bom Preço não é isso no começo: o autor é o usuário número um, faz compra toda semana, e
+depois de três ou quatro idas já tem histórico próprio suficiente para comparar os mercados
+que frequenta. Base vazia no dia 1 não é falha, é dia 1.
+
+O risco real é outro e é posterior — a terceira pessoa chegar e encontrar só os dados do
+autor. E a defesa não é requisito, é sequenciamento: usar sozinho algumas semanas e convidar
+quando houver o que ver. R1 foi reescrito nesses termos e caiu para impacto médio e
+probabilidade média. RF-30 deixa de ser mitigação e volta a ser função opcional.
+
+### S-08 · Posicionamento deixou de prometer o indicador de confiabilidade
+
+A linha "Nosso produto" citava indicador de confiabilidade por preço, que está fora do MVP.
+Passou a citar a data em que cada preço foi visto, que é o que existirá no lançamento.
+
+### S-09 · Raio de busca configurável
+
+RF-12 passou a falar em raio escolhido pelo usuário, com a cidade inteira como padrão, e
+RF-36 dá o controle. Em Goianésia a distância não é filtro útil; em cidade maior será, e o
+requisito já nasce preparado.
+
+### S-10 · Métricas substituídas por medidas que o sistema produz
+
+"Consultas feitas antes da compra" virou consultas por usuário por semana. "Economia
+estimada por lista" virou a diferença entre o menor e o maior preço válido de um mesmo
+produto — que é mensurável e, além disso, mede exatamente a proposta de valor.
+
+### S-13 · Correção de premissa sobre *shrinkflation*
+
+O modelo de domínio afirmava que *shrinkflation* é a quantidade mudando sob o mesmo GTIN, e
+concluía daí que historizar a quantidade desde o início era obrigatório sob pena de perder a
+evidência — o único item classificado como custo alto de adiar.
+
+**A premissa está errada.** A regra do GS1 exige novo GTIN sempre que o conteúdo líquido
+declarado muda, em qualquer direção. Encolhimento de embalagem aparece como produto novo, e
+detectá-lo exige ligar o GTIN antigo ao novo, papel do produto genérico — cujo custo de
+adiar o próprio modelo já classificava como baixo.
+
+Consequência: não existe item com custo alto de adiar neste projeto. *Shrinkflation* segue
+como objetivo, sem nada a construir agora.
+
 ## Aberto
 
 | ID | Por que continua aberto |
 | -- | ----------------------- |
-| S-05 | Precisa de medição em campo. O tempo de fixação de GPS dentro do mercado é a variável desconhecida — virou o risco R11 |
-| S-06 | Depende de decidir se a carga inicial de base pública entra ou não. É a mitigação do maior risco do projeto |
-| S-08 | Edição de uma linha na Declaração de Posição do Produto |
-| S-09 | Definir o raio de "mercados próximos". Provavelmente resolvido em campo, vendo a distância real entre as lojas |
-| S-10 | Substituir as duas métricas por algo que o sistema consiga medir |
 | V-06 | Depende da lista de finalidades de dados pessoais, ainda não escrita |
 
 ---
 
 # Situação geral
 
-Dezenove achados nas duas rodadas, **treze resolvidos**. Nenhum dos abertos bloqueia o
-início da construção: S-05 e S-09 dependem de medição em campo, S-06 de uma decisão de
-produto, e o resto é edição de texto.
+Vinte achados nas duas rodadas, **dezenove resolvidos**. Resta o V-06, de gravidade baixa.
+
+Três pendências de especificação seguem registradas em `requisitos.md`: cobertura da base
+pública de produtos, o número definitivo do tempo de registro e a lista de finalidades de
+dados pessoais. Nenhuma bloqueia o início da construção.
 
 Uma revalidação é devida em dois momentos: quando os catálogos de Goianésia estiverem
 montados — o que muda a premissa de RF-04 de "existe uma lista" para "a lista cobre o que as

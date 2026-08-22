@@ -195,10 +195,15 @@ triagem do brainstorm.
 
 Coisas deliberadamente **fora** do modelo agora, com a nota do que custam depois.
 
+> **Sobre *shrinkflation*.** A regra do GS1 exige novo GTIN sempre que o conteúdo líquido
+> declarado muda, para mais ou para menos. Logo, encolhimento de embalagem aparece como um
+> **produto novo**, não como a quantidade mudando sob o mesmo código — e detectá-lo exige
+> ligar o GTIN antigo ao novo, que é o papel do produto genérico. Nada se perde adiando:
+> os dois produtos ficam gravados com seus históricos, esperando serem associados.
+
 | Conceito | Quando entra | Custo de adiar |
 | -------- | ------------ | -------------- |
-| **Produto genérico** — agrupa marcas e tamanhos do mesmo item, para recomendar alternativo mais barato | Quando "recomendar alternativo" sair do backlog | Baixo: tabela nova e chave estrangeira anulável em `produto` |
-| **Histórico de quantidade do produto** — necessário para detectar *shrinkflation*, que é justamente a quantidade mudando sob o mesmo GTIN | Junto com a detecção de *shrinkflation* | **Alto.** Sem historizar, a mudança sobrescreve o valor antigo e a evidência se perde. Se *shrinkflation* importa, historizar desde o começo |
+| **Produto genérico** — agrupa marcas e tamanhos do mesmo item. Serve para recomendar alternativo mais barato e para detectar *shrinkflation* | Quando qualquer uma das duas funções sair do backlog | Baixo: tabela nova e chave estrangeira anulável em `produto` |
 | **Reputação e denúncia** | Se aparecer preço falso | Baixo: derivam de dados que os registros já contêm |
 | **Foto da etiqueta** | Se a evidência virar necessária | Baixo: coluna e bucket no storage |
 

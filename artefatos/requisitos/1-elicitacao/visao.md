@@ -1,6 +1,6 @@
 # Visão do Projeto — Bom Preço
 
-**Versão 1.3**
+**Versão 1.4**
 
 ## Histórico de Revisão
 
@@ -10,6 +10,7 @@
 | 21/08/2026 | 1.1 | Público-alvo e abrangência, decisões de tecnologia, MVP revisado, custo e marcos | Valderson Junior |
 | 22/08/2026 | 1.2 | Correções de coerência apontadas na validação: posicionamento, escopo, MVP e catálogo de itens sem código de barras | Valderson Junior |
 | 22/08/2026 | 1.3 | Revisão de engenharia: marcação de promoção no MVP, auto-confirmação, catálogo de mercados e risco de GPS em ambiente fechado | Valderson Junior |
+| 22/08/2026 | 1.4 | Cold start reformulado para uso individual primeiro; posicionamento e métricas corrigidos; raio de busca configurável | Valderson Junior |
 
 ---
 
@@ -71,7 +72,7 @@ preço dos mercados; não vende nem intermedeia compra.
 | **O Bom Preço** | é um aplicativo colaborativo de comparação de preços de supermercado |
 | **Que** | mostra em qual mercado cada item da sua lista sai mais barato, a partir de preços cadastrados e validados pelos próprios usuários |
 | **Ao contrário de** | encartes, aplicativos dos próprios mercados e comparadores restritos a e-commerce |
-| **Nosso produto** | cruza preços de mercados concorrentes na loja física, com histórico por produto e indicador de confiabilidade por preço cadastrado |
+| **Nosso produto** | cruza preços de mercados concorrentes na loja física, com histórico por produto e a data em que cada preço foi visto |
 
 ### 3.2 Escopo do Produto
 
@@ -191,7 +192,7 @@ reenvio do cadastro.
 
 | # | Risco | Impacto | Prob. | Mitigação |
 | - | ----- | :-----: | :---: | --------- |
-| R1 | *Cold start*: base nasce vazia e o app não tem utilidade nas primeiras semanas | Alto | Alta | Concentrar em Goianésia, cidade com cerca de dez supermercados relevantes, onde a cobertura por mercado sobe rápido; avaliar carga inicial a partir de base pública de preços |
+| R1 | Uma terceira pessoa chega, encontra só os dados do autor e não vê utilidade | Médio | Média | O autor usa o app sozinho por algumas semanas antes de convidar alguém — compra semanal gera histórico próprio depressa. Convite só quando houver o que ver. É sequenciamento, não requisito |
 | R2 | Contribuição decai e só o autor cadastra preços | Alto | Alta | Cadastro em poucos segundos como requisito de projeto; gamificação em versão futura |
 | R3 | Mesmo produto ou mercado cadastrado com nomes diferentes fragmenta a comparação | Alto | Baixa | Código de barras como identidade do produto; itens sem código e mercados vêm de catálogos mantidos pelo autor, sem criação livre pelo usuário |
 | R4 | Preço desatualizado leva a uma decisão de compra errada e queima a confiança no app | Alto | Média | Data do cadastro sempre visível e confirmação em um toque já no MVP; expiração automática em versão futura |
@@ -215,8 +216,8 @@ reenvio do cadastro.
 | **Funcionalidades** | Escaneamento com preenchimento automático; catálogo curado de itens sem código de barras; mercado por geolocalização; marcação de promoção; fila de reenvio offline; confirmação de preço; consulta de preço; lista de compras comparada; preço por unidade; histórico com data |
 | **Custo** | R$ 40 por ano, referentes ao domínio `.com.br`. Infraestrutura sem custo na fase inicial (Supabase Free e Cloudflare Pages) e sem taxa de loja de aplicativos por ser PWA |
 | **Cronograma** | Sem prazo externo. Marcos estimados abaixo |
-| **Métricas para validar hipóteses** | Preços cadastrados por semana; contribuidores ativos; cobertura, medida em produtos com preço válido por mercado; consultas feitas antes da compra; economia estimada por lista |
-| **Resultado esperado** | Os primeiros usuários passam a consultar o app antes de comprar, e a base se mantém atualizada sem depender só do autor |
+| **Métricas para validar hipóteses** | Preços cadastrados por semana; contribuidores ativos; cobertura, medida em produtos com preço válido por mercado; consultas por usuário por semana; diferença entre o menor e o maior preço válido de um mesmo produto |
+| **Resultado esperado** | O autor passa a consultar o app antes de comprar e economiza de fato. Depois disso, os primeiros convidados mantêm a base atualizada sem depender só dele |
 
 **Marcos estimados** — considerando cerca de 20 horas semanais e sem data fixa:
 

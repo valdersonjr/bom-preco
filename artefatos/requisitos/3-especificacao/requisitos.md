@@ -61,7 +61,8 @@ referenciam o `RF-xx` de origem.
 
 | ID | Requisito | MVP | Origem |
 | -- | --------- | :-: | ------ |
-| RF-12 | O sistema deve exibir os preços de um produto nos mercados próximos ao usuário | ✅ | `Elic` |
+| RF-12 | O sistema deve exibir os preços de um produto nos mercados dentro do raio escolhido pelo usuário, tendo a cidade inteira como padrão | ✅ | `Elic` |
+| RF-36 | O sistema deve permitir ao usuário ajustar o raio de busca de mercados | ✅ | `Der` |
 | RF-13 | O sistema deve exibir a idade de cada preço apresentado | ✅ | `Dom` |
 | RF-14 | O sistema deve exibir o preço por unidade normalizado | ✅ | `Elic` · RD-05, RD-06 |
 | RF-15 | O sistema deve exibir o histórico de preços de um produto em um mercado | ✅ | `Elic` |
@@ -106,7 +107,7 @@ referenciam o `RF-xx` de origem.
 | RF-30 | O sistema deve importar carga inicial de preços de base pública | ❌ | `Elic` |
 | RF-31 | O sistema deve atribuir pontos e distintivos a contribuidores | ❌ | `Elic` |
 
-**Resumo:** 35 requisitos funcionais, 19 no MVP.
+**Resumo:** 36 requisitos funcionais, 20 no MVP.
 
 ---
 
@@ -136,7 +137,7 @@ método de verificação, o requisito não é verificável e portanto não é um
 
 | ID | Requisito | Materialização | Verificação |
 | -- | --------- | -------------- | ----------- |
-| RNF-05 | Registrar um preço deve levar no máximo 15 segundos, do abrir o app ao salvar | Critério de aceitação em UC-01 | Cronometrar dez registros em mercado real |
+| RNF-05 | **Provisório.** Registrar um preço deve levar no máximo 15 segundos, do abrir o app ao salvar | Critério de aceitação em UC-01 | Cronometrar dez registros em mercado real. O número será revisto após essa medição: o tempo de fixação de GPS em ambiente fechado é a variável desconhecida (risco R11) |
 | RNF-06 | Nenhum registro iniciado sem conectividade pode ser perdido | Arquitetura: fila local com reenvio | Registrar em modo avião, restaurar a rede e conferir a gravação |
 | RNF-07 | Todos os controles do fluxo de registro devem estar na metade inferior da tela, com alvos de toque de ao menos 44 px | Critério de aceitação em UC-01 | Inspeção de layout em tela de 6 polegadas |
 | RNF-08 | O primeiro carregamento útil deve ocorrer em até 3 s sob 3G simulado, com pacote inicial de no máximo 200 KB comprimidos | Critério de aceitação global | Lighthouse com limitação de rede |
@@ -164,6 +165,7 @@ que podem ser revistos se a decisão que os gerou mudar.
 | RF-07 | Correção do mercado sugerido | Imprecisão do GPS em ambiente fechado |
 | RF-16 | Corte de 30 dias na comparação | Decisão de tratar idade na consulta, não no dado |
 | RF-32 | Pedido de inclusão de item no catálogo | Consequência de fechar a criação de produto sem GTIN |
+| RF-36 | Ajuste do raio de busca | Consequência de "mercados próximos" não ter um número universal |
 | RNF-02 | Alternativa à API nativa de código de barras | Escolha do PWA somada à ausência dessa API no Safari |
 | RNF-06 | Fila local de reenvio | Escolha do PWA somada ao sinal ruim dentro do mercado |
 
@@ -186,9 +188,11 @@ aterrissa. Para o tamanho deste projeto, isso substitui a matriz sem perder o el
 
 ## 5. Pendências
 
+Só o que falta decidir para um requisito ficar completo. Achados de revisão ficam na
+[validação](../4-validacao/validacao.md); tarefas de campo, nos marcos da Visão.
+
 | Pendência | Bloqueia |
 | --------- | -------- |
 | Cobertura da base pública de produtos para itens vendidos em Goianésia | RF-03 e RF-33, e a utilidade prática de RF-02 |
-| *Shrinkflation* é objetivo real ou ideia solta do brainstorm? | RF-18. Se for real, o histórico de quantidade precisa existir desde o início — é o único item com custo alto de adiar |
-| Montagem dos catálogos de Goianésia: itens sem código de barras e mercados | RF-04, RF-07 e RF-35. Não é código: é levantamento em campo, e precede o lançamento |
-| RNF-05 dá 15 s para registrar um preço, mas o orçamento estoura só com carregamento, fixação de GPS e chamada à base pública | Achado S-05, em aberto. Ou o número sobe, ou o escopo do requisito encolhe para não contar o tempo de GPS |
+| Número definitivo do tempo máximo de registro, a ser fixado após medição em campo | RNF-05, hoje provisório |
+| Lista de finalidades de uso de dados pessoais | RNF-11, que sem ela não tem verificação objetiva |
