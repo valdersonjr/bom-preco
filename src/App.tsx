@@ -75,6 +75,19 @@ export default function App() {
       )}
 
       <ConviteDeInstalacao />
+
+      <footer className="mt-auto border-t border-neutral-200 pt-4 text-xs text-neutral-500">
+        Dados de produtos do{' '}
+        <a
+          href="https://world.openfoodfacts.org"
+          className="underline"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Open Food Facts
+        </a>
+        , sob licença ODbL.
+      </footer>
     </main>
   )
 }
