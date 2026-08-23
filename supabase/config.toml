@@ -245,12 +245,15 @@ otp_expiry = 3600
 #
 # Sem domínio verificado o Resend só entrega no e-mail do dono da conta.
 [auth.email.smtp]
-enabled = false
+enabled = true
 host = "smtp.resend.com"
 port = 465
 user = "resend"
 pass = "env(RESEND_API_KEY)"
-admin_email = "valdersonpontes@gmail.com"
+# Remetente de testes do Resend: funciona sem domínio verificado, mas só
+# entrega no e-mail do dono da conta. Trocar por algo@seudominio.com.br assim
+# que o domínio existir — é o que libera envio para qualquer usuário.
+admin_email = "onboarding@resend.dev"
 sender_name = "Bom Preço"
 
 # Uncomment to customize email template
