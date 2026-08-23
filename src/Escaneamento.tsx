@@ -5,6 +5,7 @@ import { ProdutoNovo } from './ProdutoNovo'
 import { EscolhaDeMercado } from './EscolhaDeMercado'
 import { EscolhaDoCatalogo } from './EscolhaDoCatalogo'
 import { conferidoNoLocal, useMercados, type Mercado } from './lib/mercado'
+import { RegistroDePreco } from './RegistroDePreco'
 
 type Resultado =
   | { tipo: 'nenhum' }
@@ -14,11 +15,12 @@ type Resultado =
   | { tipo: 'offline'; gtin: string }
   | { tipo: 'erro'; gtin: string }
 
-export function Escaneamento() {
+export function Escaneamento({ usuarioId }: { usuarioId: string }) {
   const [resultado, setResultado] = useState<Resultado>({ tipo: 'nenhum' })
   const { carregando, mercados, sugerido, posicao } = useMercados()
   const [escolhaManual, setEscolhaManual] = useState<Mercado | null>(null)
   const [modo, setModo] = useState<'codigo' | 'catalogo'>('codigo')
+  const [salvos, setSalvos] = useState(0)
 
   // Derivado, não guardado: a sugestão chega depois da localização, e guardá-la
   // em estado exigiria um efeito que dispara outro render sem necessidade.
@@ -129,13 +131,33 @@ export function Escaneamento() {
         )}
       </div>
 
+      {resultado.tipo === 'achado' && mercado && (
+        <RegistroDePreco
+          produto={resultado.produto}
+          mercado={mercado}
+          conferido={conferido}
+          usuarioId={usuarioId}
+          aoSalvar={() => {
+            setSalvos((n) => n + 1)
+            setResultado({ tipo: 'nenhum' })
+          }}
+        />
+      )}
+
+      {salvos > 0 && (
+        <p className="text-green-800">
+          {salvos === 1 ? 'Preço salvo.' : `${salvos} preços salvos.`} Pode
+          escanear o próximo.
+        </p>
+      )}
+
       {resultado.tipo === 'desconhecido' ? (
         <ProdutoNovo
           gtin={resultado.gtin}
           aoCriar={(produto) => setResultado({ tipo: 'achado', produto })}
         />
       ) : (
-        <Achado resultado={resultado} />
+        resultado.tipo !== 'achado' && <Achado resultado={resultado} />
       )}
     </section>
   )

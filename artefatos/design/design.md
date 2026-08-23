@@ -139,8 +139,15 @@ do app estar instalado na tela inicial, o que já é o risco R12 e sua mitigaç�
 
 ### Idempotência
 
-O `id` é gerado no dispositivo e é a chave primária da tabela. O reenvio usa
-`insert ... on conflict (id) do nothing`. Reenviar o mesmo item dez vezes grava uma linha.
+O `id` é gerado no dispositivo e é a chave primária da tabela. Reenviar o mesmo item dez
+vezes grava uma linha.
+
+**Insert puro, nunca upsert.** O upsert do PostgREST exige privilégio de `update` mesmo
+quando a resolução é ignorar duplicata — e `update` é exatamente o que foi revogado para
+impor a imutabilidade. Tabela append-only e upsert não convivem.
+
+A idempotência sai de graça sem ele: o reenvio de um id já gravado devolve violação de
+unicidade, e **esse erro é o sinal de que já está lá**. O cliente o trata como sucesso.
 
 É por isso que o esquema não usa `gen_random_uuid()` como padrão em `registro_preco`, ao
 contrário das outras tabelas: quem manda no identificador é o cliente.

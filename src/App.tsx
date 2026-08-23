@@ -71,7 +71,9 @@ export default function App() {
         </form>
       )}
 
-      {sessao.situacao === 'pronto' && <Escaneamento />}
+      {sessao.situacao === 'pronto' && (
+        <Escaneamento usuarioId={sessao.perfil.id} />
+      )}
 
       {sessao.situacao === 'pronto' && (
         <Conta anonimo={sessao.perfil.anonimo} />
