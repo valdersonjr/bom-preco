@@ -1,6 +1,6 @@
 # Visão do Projeto — Bom Preço
 
-**Versão 1.8**
+**Versão 1.9**
 
 ## Histórico de Revisão
 
@@ -15,6 +15,7 @@
 | 22/08/2026 | 1.6 | Varredura de coerência: riscos R2, R4, R6 e R9 alinhados às decisões vigentes; stakeholders, escopo e hardware atualizados | Valderson Junior |
 | 22/08/2026 | 1.7 | Base de produtos importada do dump do Open Food Facts, com a API como reserva; atribuição ODbL exigida | Valderson Junior |
 | 22/08/2026 | 1.8 | Decisões de stack do cliente: TypeScript, Tailwind, supabase-js direto e integração contínua | Valderson Junior |
+| 22/08/2026 | 1.9 | Hospedagem definida como Vercel, desta vez por escolha e não por omissão | Valderson Junior |
 
 ---
 
@@ -184,7 +185,7 @@ localidades vem depois, quando a operação em uma cidade estiver validada.
 | Integração contínua | GitHub Actions: lint, typecheck e build no push e no PR | Definido |
 | Backend | Supabase — autenticação, API e storage | Definido |
 | Banco de dados | PostgreSQL gerenciado pelo Supabase | Definido |
-| Hospedagem do PWA | Cloudflare Pages | Definido |
+| Hospedagem do PWA | Vercel, plano gratuito | Definido — o plano gratuito é para uso pessoal e não comercial; se o produto passar a ter receita, migra para o pago |
 | Leitura de código de barras | BarcodeDetector API, com fallback em biblioteca JavaScript nos navegadores sem suporte | Definido |
 | Base de produtos | Recorte brasileiro do dump do Open Food Facts importado ao Postgres, com a API pública como reserva | Definido |
 
@@ -235,7 +236,7 @@ reenvio do cadastro.
 | **Segmento de clientes** | Moradores de Goianésia–GO que fazem compra de supermercado. Começa com pessoas próximas ao autor, com acesso aberto a quem pedir |
 | **Jornadas** | (1) No mercado: escanear o produto, digitar o valor e salvar, mesmo com sinal ruim. (2) Antes da compra: montar a lista e ver o mercado mais barato de cada item |
 | **Funcionalidades** | A lista do MVP na §3.3, sem repetição aqui — duplicar a enumeração só cria duas versões que divergem |
-| **Custo** | R$ 40 por ano, referentes ao domínio `.com.br`. Infraestrutura sem custo na fase inicial (Supabase Free e Cloudflare Pages) e sem taxa de loja de aplicativos por ser PWA |
+| **Custo** | R$ 40 por ano, referentes ao domínio `.com.br`. Infraestrutura sem custo na fase inicial (Supabase Free e Vercel Hobby) e sem taxa de loja de aplicativos por ser PWA |
 | **Cronograma** | Sem prazo externo. Marcos estimados abaixo |
 | **Métricas para validar hipóteses** | Preços cadastrados por semana; contribuidores ativos; cobertura, medida em produtos com preço válido por mercado; consultas por usuário por semana; diferença entre o menor e o maior preço válido de um mesmo produto |
 | **Resultado esperado** | O autor passa a consultar o app antes de comprar e economiza de fato. Depois disso, os primeiros convidados mantêm a base atualizada sem depender só dele |

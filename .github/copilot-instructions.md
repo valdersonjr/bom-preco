@@ -1,8 +1,8 @@
 # Instruções do projeto
 
 Comparador colaborativo de preços de supermercado para Goianésia–GO. PWA em React 19 +
-TypeScript + Vite, Tailwind 4, Supabase (Postgres, auth e API REST gerada), hospedado no
-Cloudflare Pages. Projeto individual.
+TypeScript + Vite, Tailwind 4, Supabase (Postgres, auth e API REST gerada), hospedado na
+Vercel. Projeto individual.
 
 **O contexto completo está em [`CLAUDE.md`](../CLAUDE.md) na raiz — leia antes de começar.**
 O que segue é o essencial.

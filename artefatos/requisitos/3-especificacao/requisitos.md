@@ -140,7 +140,7 @@ método de verificação, o requisito não é verificável e portanto não é um
 | -- | --------- | -------------- | ----------- |
 | RNF-01 | A aplicação deve ser um PWA instalável, sem publicação em loja | Arquitetura | Instalar na tela inicial em Android e em iOS |
 | RNF-02 | A leitura de código de barras deve funcionar em navegadores sem a API nativa | Arquitetura: biblioteca JavaScript alternativa | Ler cinco códigos reais no Safari do iOS |
-| RNF-03 | O custo mensal de infraestrutura deve ser R$ 0 enquanto o uso couber nos planos gratuitos | Arquitetura e critério de escolha de serviço | Painel de faturamento do Supabase e do Cloudflare |
+| RNF-03 | O custo mensal de infraestrutura deve ser R$ 0 enquanto o uso couber nos planos gratuitos | Arquitetura e critério de escolha de serviço | Painel de faturamento do Supabase e da Vercel |
 | RNF-04 | Os dados devem residir em banco relacional | Arquitetura | Inspeção |
 
 > RNF-03 aplica a noção de *economics of quality of service constraints* da v4: não é que

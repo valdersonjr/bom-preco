@@ -13,7 +13,7 @@ Projeto individual. Aplicativo web instalável, sem publicação em loja.
 | Estilo | Tailwind CSS 4 — sem arquivo de configuração, tudo por `@import "tailwindcss"` |
 | Backend | Supabase: Postgres, autenticação e API REST gerada |
 | Acesso a dados | `@supabase/supabase-js` direto, sem camada de cache por cima |
-| Hospedagem | Cloudflare Pages |
+| Hospedagem | Vercel |
 
 ## Onde as coisas estão
 
