@@ -41,7 +41,10 @@ as caixas do critério de aceitação da issue, nada além.
 
 `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` são públicas por natureza e ficam em
 `.env.local`. A chave `service_role` ignora toda a RLS e **nunca** entra no cliente, no
-repositório ou em qualquer mensagem.
+repositório, numa mensagem ou em saída de comando.
+
+Usá-la em manutenção é permitido; expô-la não. Passe do CLI direto para a variável de
+ambiente, sem renderizar — o comando está no `CLAUDE.md`.
 
 ## Comandos
 

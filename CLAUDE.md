@@ -76,7 +76,19 @@ privilégios, não o sigilo delas. Ficam em `.env.local`, fora do repositório; 
 `.env.example`.
 
 A chave de serviço (`service_role`) ignora toda a RLS. **Nunca no cliente, nunca no
-repositório, nunca numa mensagem.** Ela só existe na função de servidor que apaga conta.
+repositório, nunca numa mensagem, nunca impressa em saída de comando.**
+
+Isso não impede usá-la em operação de manutenção — carregar catálogo, por exemplo. Impede
+que ela seja *exposta*. A forma correta é passá-la direto do CLI para a variável de
+ambiente, sem nunca renderizá-la:
+
+```bash
+export SUPABASE_SERVICE_ROLE_KEY=$(supabase projects api-keys \
+  --project-ref qqcdwghjenveajtwvzdi -o json \
+  | python3 -c "import sys,json;print(next(k['api_key'] for k in json.load(sys.stdin) if k['name']=='service_role'))")
+```
+
+A distinção importa: a regra é sobre o segredo não vazar, não sobre quem digita o comando.
 
 ## Fluxo de trabalho
 
