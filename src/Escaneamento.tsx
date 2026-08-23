@@ -3,6 +3,7 @@ import { useLeitorDeCodigo } from './lib/leitor'
 import { buscarPorGtin, type Produto } from './lib/produto'
 import { ProdutoNovo } from './ProdutoNovo'
 import { EscolhaDeMercado } from './EscolhaDeMercado'
+import { EscolhaDoCatalogo } from './EscolhaDoCatalogo'
 import { conferidoNoLocal, useMercados, type Mercado } from './lib/mercado'
 
 type Resultado =
@@ -17,6 +18,7 @@ export function Escaneamento() {
   const [resultado, setResultado] = useState<Resultado>({ tipo: 'nenhum' })
   const { carregando, mercados, sugerido, posicao } = useMercados()
   const [escolhaManual, setEscolhaManual] = useState<Mercado | null>(null)
+  const [modo, setModo] = useState<'codigo' | 'catalogo'>('codigo')
 
   // Derivado, não guardado: a sugestão chega depois da localização, e guardá-la
   // em estado exigiria um efeito que dispara outro render sem necessidade.
@@ -53,7 +55,7 @@ export function Escaneamento() {
         playsInline
         muted
         className={
-          estado === 'lendo'
+          estado === 'lendo' && modo === 'codigo'
             ? 'aspect-video w-full rounded-lg bg-black object-cover'
             : 'hidden'
         }
@@ -72,7 +74,41 @@ export function Escaneamento() {
         </p>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 border-b border-neutral-200">
+        <button
+          type="button"
+          onClick={() => setModo('codigo')}
+          className={
+            modo === 'codigo'
+              ? 'min-h-11 border-b-2 border-green-700 px-3 font-medium text-green-800'
+              : 'min-h-11 px-3 text-neutral-600'
+          }
+        >
+          Com código de barras
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            parar()
+            setModo('catalogo')
+          }}
+          className={
+            modo === 'catalogo'
+              ? 'min-h-11 border-b-2 border-green-700 px-3 font-medium text-green-800'
+              : 'min-h-11 px-3 text-neutral-600'
+          }
+        >
+          Hortifruti, açougue, padaria
+        </button>
+      </div>
+
+      {modo === 'catalogo' && (
+        <EscolhaDoCatalogo
+          aoEscolher={(produto) => setResultado({ tipo: 'achado', produto })}
+        />
+      )}
+
+      <div className={modo === 'codigo' ? 'flex gap-2' : 'hidden'}>
         {estado === 'lendo' ? (
           <button
             type="button"
