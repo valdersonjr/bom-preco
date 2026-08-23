@@ -70,10 +70,16 @@ escolhe o mercado na lista e o registro sai sem a marca de conferido.
 
 ## Segredos
 
-`VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` são **públicas por natureza** — aparecem no
-navegador de qualquer usuário. O que protege o banco são as políticas de acesso e os
-privilégios, não o sigilo delas. Ficam em `.env.local`, fora do repositório; ver
-`.env.example`.
+Dois arquivos de ambiente, lidos por ferramentas diferentes, ambos no gitignore:
+
+| Arquivo | Quem lê | O quê |
+| ------- | ------- | ----- |
+| `.env.local` | Vite | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` |
+| `.env` | CLI do Supabase | Resolve os `env()` do `config.toml`, hoje `RESEND_API_KEY` |
+
+`.env.example` documenta os dois. As variáveis com prefixo `VITE_` são **públicas por
+natureza** — aparecem no navegador de qualquer usuário, e é por isso que o que protege o
+banco são as políticas de acesso e os privilégios, não o sigilo delas.
 
 A chave de serviço (`service_role`) ignora toda a RLS. **Nunca no cliente, nunca no
 repositório, nunca numa mensagem, nunca impressa em saída de comando.**
