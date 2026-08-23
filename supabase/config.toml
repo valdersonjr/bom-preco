@@ -233,15 +233,25 @@ otp_length = 8
 # Number of seconds before the email OTP expires (defaults to 1 hour).
 otp_expiry = 3600
 
-# Use a production-ready SMTP server
-# [auth.email.smtp]
-# enabled = true
-# host = "smtp.sendgrid.net"
-# port = 587
-# user = "apikey"
-# pass = "env(SENDGRID_API_KEY)"
-# admin_email = "admin@email.com"
-# sender_name = "Admin"
+# SMTP próprio. O serviço embutido do Supabase estoura em poucos envios por
+# hora, o que inviabiliza o link de vinculação de conta (RF-38).
+#
+# Para ligar:
+#   1. Criar conta no Resend e verificar um domínio
+#   2. Pôr RESEND_API_KEY no arquivo .env da raiz — ele está no gitignore, e a
+#      chave nunca entra no repositório
+#   3. Trocar enabled para true e ajustar sender_email para o domínio verificado
+#   4. supabase config push
+#
+# Sem domínio verificado o Resend só entrega no e-mail do dono da conta.
+[auth.email.smtp]
+enabled = false
+host = "smtp.resend.com"
+port = 465
+user = "resend"
+pass = "env(RESEND_API_KEY)"
+admin_email = "valdersonpontes@gmail.com"
+sender_name = "Bom Preço"
 
 # Uncomment to customize email template
 # [auth.email.template.invite]
