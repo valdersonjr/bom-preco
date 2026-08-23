@@ -21,14 +21,14 @@ export default defineConfig({
         display: 'standalone',
         background_color: '#ffffff',
         theme_color: '#15803d',
-        // PNG porque o iOS ignora SVG no ícone da tela inicial. O SVG fica
-        // como primeiro, para telas de alta densidade no Android.
+        // Só PNG aqui. O iOS ignora SVG no ícone da tela inicial, e o Chrome
+        // tropeça quando o SVG vem antes ao gerar o ícone do app instalado.
+        // O SVG continua servindo como favicon, declarado no index.html.
         icons: [
-          { src: 'icone.svg', sizes: 'any', type: 'image/svg+xml' },
-          { src: 'icone-192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'icone-512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/icone-192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/icone-512.png', sizes: '512x512', type: 'image/png' },
           {
-            src: 'icone-512.png',
+            src: '/icone-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
