@@ -1,7 +1,11 @@
 import { useState } from 'react'
 import { lerValor, montarRegistro, type Tipo } from './lib/registro'
 import type { Mercado } from './lib/mercado'
-import type { Produto } from './lib/produto'
+import {
+  precoPorUnidade,
+  unidadeDeComparacao,
+  type Produto,
+} from './lib/produto'
 
 type Props = {
   produto: Produto
@@ -33,10 +37,7 @@ export function RegistroDePreco({
   const [erro, setErro] = useState<string | null>(null)
 
   const valor = lerValor(texto)
-  const porUnidade =
-    valor !== null && produto.quantidade > 0
-      ? valor / produto.quantidade
-      : null
+  const porUnidade = valor === null ? null : precoPorUnidade(produto, valor)
 
   async function salvar() {
     if (valor === null) {
@@ -88,10 +89,10 @@ export function RegistroDePreco({
             className="min-h-12 flex-1 rounded-lg border border-neutral-300 px-3 text-lg"
           />
         </div>
-        {porUnidade !== null && produto.quantidade !== 1 && (
+        {porUnidade !== null && (
           <span className="text-sm text-neutral-500">
             Sai a R$ {porUnidade.toFixed(2).replace('.', ',')} por{' '}
-            {produto.unidade_medida}
+            {unidadeDeComparacao(produto)}
           </span>
         )}
       </label>

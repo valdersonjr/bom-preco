@@ -3,6 +3,7 @@ import { useSessao } from './lib/sessao'
 import { ConviteDeInstalacao } from './ConviteDeInstalacao'
 import { Conta } from './Conta'
 import { Escaneamento } from './Escaneamento'
+import { Consulta } from './Consulta'
 
 export default function App() {
   const sessao = useSessao()
@@ -70,6 +71,8 @@ export default function App() {
           </button>
         </form>
       )}
+
+      {sessao.situacao === 'pronto' && <Consulta />}
 
       {sessao.situacao === 'pronto' && (
         <Escaneamento usuarioId={sessao.perfil.id} />

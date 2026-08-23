@@ -39,7 +39,7 @@ export function ProdutoNovo({ gtin, aoCriar }: Props) {
     // aproveitamos o dela em vez de tentar criar um segundo.
     const { data: existente } = await supabase
       .from('produto')
-      .select('id, gtin, nome, marca, quantidade, unidade_medida')
+      .select('id, gtin, nome, marca, quantidade, unidade_medida, quantidade_base, dimensao')
       .eq('gtin', gtin)
       .maybeSingle()
 
@@ -58,7 +58,7 @@ export function ProdutoNovo({ gtin, aoCriar }: Props) {
         unidade_medida: unidade,
         origem: 'usuario',
       })
-      .select('id, gtin, nome, marca, quantidade, unidade_medida')
+      .select('id, gtin, nome, marca, quantidade, unidade_medida, quantidade_base, dimensao')
       .single()
 
     setSalvando(false)

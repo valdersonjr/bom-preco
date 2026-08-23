@@ -27,7 +27,7 @@ export function EscolhaDoCatalogo({ aoEscolher }: Props) {
     const id = setTimeout(async () => {
       const consulta = supabase
         .from('produto')
-        .select('id, gtin, nome, marca, quantidade, unidade_medida')
+        .select('id, gtin, nome, marca, quantidade, unidade_medida, quantidade_base, dimensao')
         .eq('origem', 'catalogo')
         .order('nome')
         .limit(40)

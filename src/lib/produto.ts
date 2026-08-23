@@ -7,6 +7,29 @@ export type Produto = {
   marca: string | null
   quantidade: number
   unidade_medida: string
+  /** Normalizada pelo banco (RD-06): massa em kg, volume em litro. */
+  quantidade_base: number | null
+  dimensao: string | null
+}
+
+/**
+ * Unidade em que o preço por unidade é apresentado.
+ *
+ * Sempre a normalizada, nunca a da embalagem: "R$ 0,06 por g" não deixa
+ * ninguém comparar nada, "R$ 61,25 por kg" deixa. É para isso que a RD-06
+ * existe.
+ */
+export function unidadeDeComparacao(p: Produto): string {
+  if (p.dimensao === 'massa') return 'kg'
+  if (p.dimensao === 'volume') return 'L'
+  return 'un'
+}
+
+/** Preço por unidade normalizada, ou nulo quando não há como calcular. */
+export function precoPorUnidade(p: Produto, valor: number): number | null {
+  const base = p.quantidade_base
+  if (!base || base <= 0) return null
+  return valor / base
 }
 
 type Busca =
@@ -36,7 +59,7 @@ function unidadeDe(texto: string | undefined): 'g' | 'mL' | null {
 export async function buscarPorGtin(gtin: string): Promise<Busca> {
   const { data: local } = await supabase
     .from('produto')
-    .select('id, gtin, nome, marca, quantidade, unidade_medida')
+    .select('id, gtin, nome, marca, quantidade, unidade_medida, quantidade_base, dimensao')
     .eq('gtin', gtin)
     .maybeSingle()
 
@@ -50,7 +73,7 @@ export async function buscarPorGtin(gtin: string): Promise<Busca> {
   const { data: gravado, error } = await supabase
     .from('produto')
     .insert({ ...externo, gtin, origem: 'api' })
-    .select('id, gtin, nome, marca, quantidade, unidade_medida')
+    .select('id, gtin, nome, marca, quantidade, unidade_medida, quantidade_base, dimensao')
     .single()
 
   if (error || !gravado) return { achou: false, motivo: 'erro', gtin }
