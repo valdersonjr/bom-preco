@@ -11,6 +11,10 @@
  *
  * Reexecutar é seguro: casa por nome e atualiza em vez de duplicar.
  *
+ * Cuidado: como a correspondência é por nome, **renomear uma loja no CSV cria
+ * uma linha nova em vez de renomear a existente**. Para renomear, altere no
+ * banco e no CSV ao mesmo tempo.
+ *
  * Dados de mercado vindos do OpenStreetMap, sob licença ODbL.
  */
 import { createClient } from '@supabase/supabase-js'
@@ -76,8 +80,12 @@ for (const l of linhas) {
     rede_id: l[col.rede] ? idDaRede[l[col.rede]] : null,
     nome,
     endereco: l[col.endereco],
-    // PostGIS espera longitude antes de latitude.
-    localizacao: `POINT(${l[col.longitude]} ${l[col.latitude]})`,
+    // PostGIS espera longitude antes de latitude. Vazio vira nulo: mercado
+    // sem coordenada medida não é sugerido por proximidade.
+    localizacao:
+      l[col.latitude] && l[col.longitude]
+        ? `POINT(${l[col.longitude]} ${l[col.latitude]})`
+        : null,
   }
 
   const { data: existente } = await sb.from('mercado').select('id').eq('nome', nome).maybeSingle()

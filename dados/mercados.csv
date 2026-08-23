@@ -1,12 +1,27 @@
 rede,nome,endereco,latitude,longitude
-Supermercado Couto,Couto 1,"Avenida Goiás",-15.3149992,-49.1173720
-Supermercado Couto,Couto 2,"Rua 40 Leste",-15.3072936,-49.1166387
-Supermercado Brasil,Brasil 1,"Avenida Brasil",-15.3264639,-49.1113798
-Supermercado Brasil,Brasil 2,"Avenida Brasil",-15.3261534,-49.1179890
-Supermercado Brasil,Brasil 3,"Avenida Goiás",-15.3080532,-49.1173326
-,Mercadinho Mota,"Avenida Bahia",-15.3142937,-49.1115046
+Supermercado Brasil,Supermercado Brasil 1,"Avenida Brasil, 267",-15.3264639,-49.1113798
+Supermercado Brasil,Supermercado Brasil 2,"Avenida Brasil, 338",-15.3261534,-49.1179890
+Supermercado Brasil,Supermercado Brasil 3,"Avenida Goiás, 126",-15.3080532,-49.1173326
+Supermercado Brasil,Supermercado Brasil 6,"Rua 34, 444",,
+Supermercado Couto,Supermercado Couto,"Avenida Goiás, 226",-15.3149992,-49.1173720
+Supermercado Couto,Super Couto 40,"Rua 40 Leste, 323",-15.3072936,-49.1166387
+Ébásico,Ébásico Supermercado,"Avenida Goiás, 452 — Centro",,
+Ébásico,Ébásico Atacado,"Avenida Goiás, 606 — saída para Goiânia",,
+,Atacadão Dia a Dia,"Avenida Goiás, 649-A — Primavera",-15.3455662,-49.1172363
+,Supermercado Favorito,"Avenida Brasil, 226",,
+,Supermercado Mundial,"Avenida Contorno",,
 ,Supermercado Itapuã,"Rua Santos Dumont, 283",-15.3179544,-49.1360441
 ,Supermercado Condal,"Avenida Goiás, 365",-15.3250145,-49.1171827
-,Atacadão Dia a Dia,"Avenida Goiás, 649 — Primavera",-15.3455662,-49.1172363
-Ébásico,Ébásico Supermercado,"Avenida Goiás, 452 — Centro",-15.331310,-49.117200
-Ébásico,Ébásico Atacado,"Avenida Goiás, 604 — saída para Goiânia",-15.342309,-49.117220
+,Supermercado São Pedro,"Avenida Goiás, 118",,
+,Supermercado Litoral,"Rua Três, 439",,
+,Supermercado Diogo,"Rua 44, 329",,
+,Supermercado Batista,"",,
+,Supermercado Bom D+,"Rua 36, 472",,
+,Supermercado Bom Brasil,"Avenida Pará, 65",,
+,Mercado Samuka's,"Avenida Minas Gerais, 37",,
+,Mercadinho Mota,"Avenida Bahia",-15.3142937,-49.1115046
+,Mercadinho Raposo,"Rua 36, 367",,
+,Mercadinho do Vale,"Rua 3 Norte, 279",,
+,Mercadinho Central,"Avenida Mato Grosso, 36",,
+,Mercadinho Pessoa,"Rua 14, 411",,
+,Super Mais,"Rua Brasília, 134",,

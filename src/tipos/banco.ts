@@ -174,7 +174,7 @@ export type Database = {
         Insert: {
           endereco: string
           id?: string
-          localizacao: unknown
+          localizacao?: unknown
           nome: string
           rede_id?: string | null
         }
