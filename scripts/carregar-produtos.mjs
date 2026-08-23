@@ -1,5 +1,9 @@
 /**
- * Carrega o recorte brasileiro do Open Food Facts na tabela `produto`.
+ * Carrega produtos na tabela `produto` a partir de um CSV.
+ *
+ * Serve para os dois catálogos: o recorte do Open Food Facts, que vem com
+ * `gtin`, e o catálogo curado de itens sem código de barras (RD-08), que não
+ * vem. A origem é lida do CSV quando existe a coluna, senão assume `dump`.
  *
  * Precisa da chave de serviço porque `origem = 'dump'` só é aceito pela
  * política do mantenedor. Ela é lida do ambiente e nunca é escrita em lugar
@@ -64,14 +68,14 @@ const cabecalho = linhas.shift()
 const col = Object.fromEntries(cabecalho.map((nome, i) => [nome, i]))
 
 const produtos = linhas
-  .filter((l) => l.length === cabecalho.length && l[col.gtin])
+  .filter((l) => l.length === cabecalho.length && l[col.nome])
   .map((l) => ({
-    gtin: l[col.gtin],
+    gtin: col.gtin === undefined ? null : l[col.gtin] || null,
     nome: l[col.nome],
-    marca: l[col.marca] || null,
+    marca: col.marca === undefined ? null : l[col.marca] || null,
     quantidade: Number(l[col.quantidade]),
     unidade_medida: l[col.unidade_medida],
-    origem: 'dump',
+    origem: col.origem === undefined ? 'dump' : l[col.origem],
   }))
 
 console.log(`lidos: ${produtos.length}`)
@@ -82,9 +86,10 @@ let inseridos = 0
 
 for (let i = 0; i < produtos.length; i += LOTE) {
   const lote = produtos.slice(i, i + LOTE)
-  const { error } = await sb
-    .from('produto')
-    .upsert(lote, { onConflict: 'gtin', ignoreDuplicates: true })
+  const comGtin = lote[0].gtin !== null
+  const { error } = comGtin
+    ? await sb.from('produto').upsert(lote, { onConflict: 'gtin', ignoreDuplicates: true })
+    : await sb.from('produto').insert(lote)
 
   if (error) {
     console.error(`falhou no lote a partir de ${i}: ${error.message}`)

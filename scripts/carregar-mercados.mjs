@@ -87,7 +87,8 @@ for (const l of linhas) {
     : await sb.from('mercado').insert(registro)
 
   if (error) { console.error(`mercado "${nome}": ${error.message}`); process.exit(1) }
-  existente ? atualizados++ : criados++
+  if (existente) atualizados++
+  else criados++
 }
 
 console.log(`mercados: ${criados} criados, ${atualizados} atualizados`)
