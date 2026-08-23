@@ -167,21 +167,27 @@ export type Database = {
         Row: {
           endereco: string
           id: string
+          latitude: number | null
           localizacao: unknown
+          longitude: number | null
           nome: string
           rede_id: string | null
         }
         Insert: {
           endereco: string
           id?: string
+          latitude?: number | null
           localizacao?: unknown
+          longitude?: number | null
           nome: string
           rede_id?: string | null
         }
         Update: {
           endereco?: string
           id?: string
+          latitude?: number | null
           localizacao?: unknown
+          longitude?: number | null
           nome?: string
           rede_id?: string | null
         }

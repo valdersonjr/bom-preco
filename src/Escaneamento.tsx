@@ -2,6 +2,8 @@ import { useCallback, useState } from 'react'
 import { useLeitorDeCodigo } from './lib/leitor'
 import { buscarPorGtin, type Produto } from './lib/produto'
 import { ProdutoNovo } from './ProdutoNovo'
+import { EscolhaDeMercado } from './EscolhaDeMercado'
+import { conferidoNoLocal, useMercados, type Mercado } from './lib/mercado'
 
 type Resultado =
   | { tipo: 'nenhum' }
@@ -13,6 +15,13 @@ type Resultado =
 
 export function Escaneamento() {
   const [resultado, setResultado] = useState<Resultado>({ tipo: 'nenhum' })
+  const { carregando, mercados, sugerido, posicao } = useMercados()
+  const [escolhaManual, setEscolhaManual] = useState<Mercado | null>(null)
+
+  // Derivado, não guardado: a sugestão chega depois da localização, e guardá-la
+  // em estado exigiria um efeito que dispara outro render sem necessidade.
+  const mercado = escolhaManual ?? sugerido
+  const conferido = mercado ? conferidoNoLocal(mercado, posicao, mercados) : false
 
   const aoLer = useCallback(async (gtin: string) => {
     setResultado({ tipo: 'buscando', gtin })
@@ -28,7 +37,16 @@ export function Escaneamento() {
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="font-medium text-neutral-800">Escanear produto</h2>
+      <h2 className="font-medium text-neutral-800">Registrar preço</h2>
+
+      <EscolhaDeMercado
+        mercados={mercados}
+        escolhido={mercado}
+        conferido={conferido}
+        temPosicao={posicao !== null}
+        carregando={carregando}
+        aoEscolher={setEscolhaManual}
+      />
 
       <video
         ref={video}
