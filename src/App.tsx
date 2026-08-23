@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSessao } from './lib/sessao'
+import { ConviteDeInstalacao } from './ConviteDeInstalacao'
 
 export default function App() {
   const sessao = useSessao()
@@ -67,6 +68,8 @@ export default function App() {
           </button>
         </form>
       )}
+
+      <ConviteDeInstalacao />
     </main>
   )
 }
