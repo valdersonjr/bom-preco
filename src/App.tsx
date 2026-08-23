@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useSessao } from './lib/sessao'
 import { ConviteDeInstalacao } from './ConviteDeInstalacao'
 import { Conta } from './Conta'
+import { Escaneamento } from './Escaneamento'
 
 export default function App() {
   const sessao = useSessao()
@@ -69,6 +70,8 @@ export default function App() {
           </button>
         </form>
       )}
+
+      {sessao.situacao === 'pronto' && <Escaneamento />}
 
       {sessao.situacao === 'pronto' && (
         <Conta anonimo={sessao.perfil.anonimo} />
