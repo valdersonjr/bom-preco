@@ -21,14 +21,16 @@ export default defineConfig({
         display: 'standalone',
         background_color: '#ffffff',
         theme_color: '#15803d',
-        // SVG cobre Android. O iOS exige PNG para o ícone da tela inicial —
-        // pendência do critério de aceitação da issue #1.
+        // PNG porque o iOS ignora SVG no ícone da tela inicial. O SVG fica
+        // como primeiro, para telas de alta densidade no Android.
         icons: [
           { src: 'icone.svg', sizes: 'any', type: 'image/svg+xml' },
+          { src: 'icone-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icone-512.png', sizes: '512x512', type: 'image/png' },
           {
-            src: 'icone.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
+            src: 'icone-512.png',
+            sizes: '512x512',
+            type: 'image/png',
             purpose: 'maskable',
           },
         ],
