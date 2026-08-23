@@ -6,6 +6,7 @@ import { EscolhaDeMercado } from './EscolhaDeMercado'
 import { EscolhaDoCatalogo } from './EscolhaDoCatalogo'
 import { conferidoNoLocal, useMercados, type Mercado } from './lib/mercado'
 import { RegistroDePreco } from './RegistroDePreco'
+import { useEnvio } from './lib/envio'
 
 type Resultado =
   | { tipo: 'nenhum' }
@@ -21,6 +22,7 @@ export function Escaneamento({ usuarioId }: { usuarioId: string }) {
   const [escolhaManual, setEscolhaManual] = useState<Mercado | null>(null)
   const [modo, setModo] = useState<'codigo' | 'catalogo'>('codigo')
   const [salvos, setSalvos] = useState(0)
+  const { naFila, enviando, registrar } = useEnvio()
 
   // Derivado, não guardado: a sugestão chega depois da localização, e guardá-la
   // em estado exigiria um efeito que dispara outro render sem necessidade.
@@ -137,6 +139,7 @@ export function Escaneamento({ usuarioId }: { usuarioId: string }) {
           mercado={mercado}
           conferido={conferido}
           usuarioId={usuarioId}
+          registrar={registrar}
           aoSalvar={() => {
             setSalvos((n) => n + 1)
             setResultado({ tipo: 'nenhum' })
@@ -144,10 +147,19 @@ export function Escaneamento({ usuarioId }: { usuarioId: string }) {
         />
       )}
 
-      {salvos > 0 && (
+      {salvos > 0 && naFila === 0 && (
         <p className="text-green-800">
           {salvos === 1 ? 'Preço salvo.' : `${salvos} preços salvos.`} Pode
           escanear o próximo.
+        </p>
+      )}
+
+      {naFila > 0 && (
+        <p className="rounded-lg bg-amber-50 p-3 text-amber-900">
+          {naFila === 1
+            ? 'Um preço aguardando sinal.'
+            : `${naFila} preços aguardando sinal.`}{' '}
+          {enviando ? 'Enviando…' : 'Sobem sozinhos quando a conexão voltar.'}
         </p>
       )}
 

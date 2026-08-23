@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { enviarRegistro, lerValor, montarRegistro, type Tipo } from './lib/registro'
+import { lerValor, montarRegistro, type Tipo } from './lib/registro'
 import type { Mercado } from './lib/mercado'
 import type { Produto } from './lib/produto'
 
@@ -8,6 +8,8 @@ type Props = {
   mercado: Mercado
   conferido: boolean
   usuarioId: string
+  /** Enfileira e tenta enviar. Nunca falha por falta de rede — ver `useEnvio`. */
+  registrar: (registro: ReturnType<typeof montarRegistro>) => Promise<void>
   aoSalvar: () => void
 }
 
@@ -22,6 +24,7 @@ export function RegistroDePreco({
   mercado,
   conferido,
   usuarioId,
+  registrar,
   aoSalvar,
 }: Props) {
   const [texto, setTexto] = useState('')
@@ -43,15 +46,13 @@ export function RegistroDePreco({
     setSalvando(true)
     setErro(null)
 
-    const resultado = await enviarRegistro(
+    // Vai para a fila antes de qualquer rede: sem sinal, fica guardado e sobe
+    // depois. Do ponto de vista de quem cadastrou, salvou.
+    await registrar(
       montarRegistro({ produto, mercado, usuarioId, valor, tipo, conferido }),
     )
 
     setSalvando(false)
-    if (!resultado.ok) {
-      setErro(resultado.motivo)
-      return
-    }
     setTexto('')
     setTipo('tabela')
     aoSalvar()
