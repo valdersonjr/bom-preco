@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { useLeitorDeCodigo } from './lib/leitor'
 import { buscarPorGtin, type Produto } from './lib/produto'
+import { ProdutoNovo } from './ProdutoNovo'
 
 type Resultado =
   | { tipo: 'nenhum' }
@@ -74,7 +75,14 @@ export function Escaneamento() {
         )}
       </div>
 
-      <Achado resultado={resultado} />
+      {resultado.tipo === 'desconhecido' ? (
+        <ProdutoNovo
+          gtin={resultado.gtin}
+          aoCriar={(produto) => setResultado({ tipo: 'achado', produto })}
+        />
+      ) : (
+        <Achado resultado={resultado} />
+      )}
     </section>
   )
 }
