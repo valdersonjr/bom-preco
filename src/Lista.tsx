@@ -15,9 +15,13 @@ const real = (n: number) => `R$ ${n.toFixed(2).replace('.', ',')}`
 export function Lista({ usuarioId }: { usuarioId: string }) {
   const { mercados } = useMercados()
   const [listaId, setListaId] = useState<string | null>(null)
-  const [itens, setItens] = useState<ItemDaLista[]>([])
+  const [itens, setItens] = useState<ItemDaLista[] | null>(null)
   const [termo, setTermo] = useState('')
   const [achados, setAchados] = useState<Produto[]>([])
+  const [removido, setRemovido] = useState<Removido | null>(null)
+
+  /** Estável de propósito: identidade nova reiniciaria o relógio do desfazer. */
+  const dispensar = useCallback(() => setRemovido(null), [])
 
   const recarregar = useCallback(
     async (id: string) => setItens(await carregarLista(id, mercados)),
@@ -48,8 +52,29 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
     }
   }, [termo])
 
-  const comPreco = itens.filter((i) => i.melhor)
-  const semPreco = itens.filter((i) => !i.melhor)
+  /**
+   * Tirar item da lista não pede confirmação: pede desfazer.
+   *
+   * Confirmação antes de toda ação barata cansa quem acerta para proteger quem
+   * erra. Desfazer inverte a conta — o acerto sai livre, e o erro custa um
+   * toque. A confirmação fica onde o dano é real, na exclusão da conta.
+   */
+  async function mudar(item: ItemDaLista, quantidade: number) {
+    await mudarQuantidade(item.itemId, quantidade)
+    if (listaId) await recarregar(listaId)
+    setRemovido(
+      quantidade <= 0
+        ? {
+            produtoId: item.produto.id,
+            nome: item.produto.nome,
+            quantidade: item.quantidade,
+          }
+        : null,
+    )
+  }
+
+  const comPreco = (itens ?? []).filter((i) => i.melhor)
+  const semPreco = (itens ?? []).filter((i) => !i.melhor)
 
   return (
     <section className="flex flex-col gap-3">
@@ -89,7 +114,22 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
         </ul>
       )}
 
-      {itens.length === 0 && (
+      {removido && (
+        <Desfazer
+          removido={removido}
+          aoDesfazer={async () => {
+            if (!listaId) return
+            await acrescentar(listaId, removido.produtoId, removido.quantidade)
+            await recarregar(listaId)
+            setRemovido(null)
+          }}
+          aoDispensar={dispensar}
+        />
+      )}
+
+      {itens === null && <Esqueleto />}
+
+      {itens?.length === 0 && (
         <p className="rounded-lg bg-neutral-100 p-4 text-neutral-800">
           Sua lista está vazia. Vá acrescentando o que precisa comprar, e o app
           diz onde cada coisa está mais barata.
@@ -102,10 +142,7 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
             <ItemLinha
               key={i.itemId}
               item={i}
-              aoMudar={async (q) => {
-                await mudarQuantidade(i.itemId, q)
-                if (listaId) await recarregar(listaId)
-              }}
+              aoMudar={(q) => void mudar(i, q)}
             />
           ))}
         </ul>
@@ -121,10 +158,7 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
               <ItemLinha
                 key={i.itemId}
                 item={i}
-                aoMudar={async (q) => {
-                  await mudarQuantidade(i.itemId, q)
-                  if (listaId) await recarregar(listaId)
-                }}
+                aoMudar={(q) => void mudar(i, q)}
               />
             ))}
           </ul>
@@ -133,6 +167,63 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
 
       {comPreco.length > 0 && <PorMercado itens={comPreco} />}
     </section>
+  )
+}
+
+type Removido = { produtoId: string; nome: string; quantidade: number }
+
+/** Sete segundos é o tempo de ler a frase e decidir. Depois some sozinha. */
+const SEGUNDOS_PARA_DESFAZER = 7
+
+function Desfazer({
+  removido,
+  aoDesfazer,
+  aoDispensar,
+}: {
+  removido: Removido
+  aoDesfazer: () => void
+  aoDispensar: () => void
+}) {
+  useEffect(() => {
+    const t = setTimeout(aoDispensar, SEGUNDOS_PARA_DESFAZER * 1000)
+    return () => clearTimeout(t)
+  }, [removido, aoDispensar])
+
+  return (
+    <div
+      role="status"
+      className="flex items-center justify-between gap-2 rounded-lg bg-neutral-800 p-3 text-white"
+    >
+      <span className="min-w-0 truncate text-sm">
+        {removido.nome} saiu da lista.
+      </span>
+      <button
+        type="button"
+        onClick={aoDesfazer}
+        className="min-h-11 shrink-0 rounded-lg px-3 font-medium text-white underline"
+      >
+        Desfazer
+      </button>
+    </div>
+  )
+}
+
+/**
+ * Esqueleto enquanto a lista carrega.
+ *
+ * Sem ele a tela afirma "sua lista está vazia" antes de saber se está — uma
+ * mentira curta, mas que faz a pessoa achar que perdeu o que tinha.
+ */
+function Esqueleto() {
+  return (
+    <ul aria-hidden="true" className="flex animate-pulse flex-col gap-2">
+      {[0, 1, 2].map((i) => (
+        <li key={i} className="h-16 rounded-lg border border-neutral-200 p-3">
+          <div className="h-4 w-2/3 rounded bg-neutral-200" />
+          <div className="mt-2 h-3 w-1/2 rounded bg-neutral-100" />
+        </li>
+      ))}
+    </ul>
   )
 }
 

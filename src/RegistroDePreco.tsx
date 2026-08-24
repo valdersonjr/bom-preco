@@ -15,6 +15,8 @@ type Props = {
   /** Enfileira e tenta enviar. Nunca falha por falta de rede — ver `useEnvio`. */
   registrar: (registro: ReturnType<typeof montarRegistro>) => Promise<void>
   aoSalvar: () => void
+  /** Escaneou o produto errado, ou mudou de ideia: sai sem registrar nada. */
+  aoDesistir: () => void
 }
 
 /**
@@ -30,6 +32,7 @@ export function RegistroDePreco({
   usuarioId,
   registrar,
   aoSalvar,
+  aoDesistir,
 }: Props) {
   const [texto, setTexto] = useState('')
   const [tipo, setTipo] = useState<Tipo>('tabela')
@@ -137,6 +140,14 @@ export function RegistroDePreco({
         className="min-h-12 rounded-lg bg-green-700 px-4 text-lg text-white disabled:opacity-60"
       >
         {salvando ? 'Salvando…' : 'Salvar preço'}
+      </button>
+
+      <button
+        type="button"
+        onClick={aoDesistir}
+        className="min-h-11 rounded-lg px-4 text-neutral-700 underline"
+      >
+        Não é esse produto
       </button>
     </form>
   )

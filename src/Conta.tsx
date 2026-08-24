@@ -1,20 +1,97 @@
 import { useState } from 'react'
 import { deveConvidarAVincular, excluirConta, useVinculo } from './lib/vinculo'
 
-export function Conta({ anonimo }: { anonimo: boolean }) {
+/**
+ * Tudo que é sobre a pessoa e não sobre preço: apelido, vínculo por e-mail,
+ * exclusão e a atribuição das fontes de dados.
+ */
+export function Conta({
+  anonimo,
+  apelido,
+  renomear,
+}: {
+  anonimo: boolean
+  apelido: string
+  renomear: (novo: string) => void
+}) {
+  return (
+    <section className="flex flex-col gap-6">
+      <h2 className="font-medium text-neutral-800">Sua conta</h2>
+      <Apelido apelido={apelido} renomear={renomear} />
+      <Vinculo anonimo={anonimo} />
+      <Excluir />
+      <Atribuicao />
+    </section>
+  )
+}
+
+function Apelido({
+  apelido,
+  renomear,
+}: {
+  apelido: string
+  renomear: (novo: string) => void
+}) {
+  const [editando, setEditando] = useState(false)
+  const [rascunho, setRascunho] = useState('')
+
+  if (!editando) {
+    return (
+      <div className="flex items-center gap-3">
+        <span className="text-neutral-800">
+          Você é <strong>{apelido}</strong>
+        </span>
+        <button
+          type="button"
+          className="min-h-11 rounded-lg px-3 text-green-800 underline"
+          onClick={() => {
+            setRascunho(apelido)
+            setEditando(true)
+          }}
+        >
+          Trocar
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <form
+      className="flex gap-2"
+      onSubmit={(e) => {
+        e.preventDefault()
+        renomear(rascunho)
+        setEditando(false)
+      }}
+    >
+      <input
+        autoFocus
+        value={rascunho}
+        onChange={(e) => setRascunho(e.target.value)}
+        aria-label="Apelido"
+        className="min-h-11 flex-1 rounded-lg border border-neutral-300 px-3"
+      />
+      <button
+        type="submit"
+        className="min-h-11 rounded-lg bg-green-700 px-4 text-white"
+      >
+        Salvar
+      </button>
+    </form>
+  )
+}
+
+function Vinculo({ anonimo }: { anonimo: boolean }) {
   const { situacao, vincularEmail } = useVinculo()
   const [aberto, setAberto] = useState(false)
   const [email, setEmail] = useState('')
 
   if (!anonimo) {
     return (
-      <section className="flex flex-col gap-2">
-        <p className="text-sm text-neutral-600">
-          Sua conta está protegida: entrando com a mesma identidade em outro
-          aparelho, você recupera tudo.
-        </p>
-        <Excluir />
-      </section>
+      <p className="text-sm text-neutral-600">
+        Sua conta está protegida: entrando com a mesma identidade em outro
+        aparelho, você recupera tudo.
+      </p>
     )
   }
 
@@ -27,66 +104,60 @@ export function Conta({ anonimo }: { anonimo: boolean }) {
     )
   }
 
-  const convidando = deveConvidarAVincular(anonimo)
+  if (!aberto) {
+    return (
+      <div className="flex flex-col gap-1">
+        {deveConvidarAVincular(anonimo) && (
+          <p className="text-amber-800">
+            Você já cadastrou alguns preços. Ligue a conta a um e-mail para não
+            perder nada se trocar de aparelho.
+          </p>
+        )}
+        <button
+          type="button"
+          onClick={() => setAberto(true)}
+          className="min-h-11 self-start rounded-lg px-3 text-green-800 underline"
+        >
+          Proteger minha conta
+        </button>
+      </div>
+    )
+  }
 
   return (
-    <section className="flex flex-col gap-2">
-      {!aberto && (
-        <div className="flex flex-col gap-1">
-          {convidando && (
-            <p className="text-amber-800">
-              Você já cadastrou alguns preços. Ligue a conta a um e-mail para
-              não perder nada se trocar de aparelho.
-            </p>
-          )}
-          <button
-            type="button"
-            onClick={() => setAberto(true)}
-            className="min-h-11 self-start rounded-lg px-3 text-green-800 underline"
-          >
-            Proteger minha conta
-          </button>
-        </div>
-      )}
-
-      {aberto && (
-        <form
-          className="flex flex-col gap-2"
-          onSubmit={(e) => {
-            e.preventDefault()
-            void vincularEmail(email)
-          }}
+    <form
+      className="flex flex-col gap-2"
+      onSubmit={(e) => {
+        e.preventDefault()
+        void vincularEmail(email)
+      }}
+    >
+      <label htmlFor="email" className="text-sm text-neutral-700">
+        Seu e-mail. Você continua sendo a mesma pessoa aqui dentro — nada do que
+        já cadastrou muda de dono.
+      </label>
+      <div className="flex gap-2">
+        <input
+          id="email"
+          type="email"
+          required
+          autoFocus
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="min-h-11 flex-1 rounded-lg border border-neutral-300 px-3"
+        />
+        <button
+          type="submit"
+          disabled={situacao.estado === 'enviando'}
+          className="min-h-11 rounded-lg bg-green-700 px-4 text-white disabled:opacity-60"
         >
-          <label htmlFor="email" className="text-sm text-neutral-700">
-            Seu e-mail. Você continua sendo a mesma pessoa aqui dentro — nada do
-            que já cadastrou muda de dono.
-          </label>
-          <div className="flex gap-2">
-            <input
-              id="email"
-              type="email"
-              required
-              autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="min-h-11 flex-1 rounded-lg border border-neutral-300 px-3"
-            />
-            <button
-              type="submit"
-              disabled={situacao.estado === 'enviando'}
-              className="min-h-11 rounded-lg bg-green-700 px-4 text-white disabled:opacity-60"
-            >
-              {situacao.estado === 'enviando' ? 'Enviando…' : 'Enviar'}
-            </button>
-          </div>
-          {situacao.estado === 'erro' && (
-            <p className="text-red-800">{situacao.mensagem}</p>
-          )}
-        </form>
+          {situacao.estado === 'enviando' ? 'Enviando…' : 'Enviar'}
+        </button>
+      </div>
+      {situacao.estado === 'erro' && (
+        <p className="text-red-800">{situacao.mensagem}</p>
       )}
-
-      <Excluir />
-    </section>
+    </form>
   )
 }
 
@@ -142,5 +213,23 @@ function Excluir() {
         </button>
       </div>
     </div>
+  )
+}
+
+/** A ODbL exige creditar a fonte. Aqui é onde o crédito fica alcançável. */
+function Atribuicao() {
+  return (
+    <p className="border-t border-neutral-200 pt-4 text-xs text-neutral-500">
+      Dados de produtos do{' '}
+      <a
+        href="https://world.openfoodfacts.org"
+        className="underline"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Open Food Facts
+      </a>
+      , sob licença ODbL.
+    </p>
   )
 }

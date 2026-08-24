@@ -326,9 +326,74 @@ deixa de alcançar qualquer coisa, porque o app cria sessão antes de qualquer u
 
 ---
 
+# Quinta rodada — a interface construída
+
+**Data:** 24/08/2026 · **Base:** o app do marco 4, contra as dez heurísticas de Nielsen
+
+Primeira revisão de interação do projeto. Até aqui a validação olhou documento e esquema; o
+app existia, mas ninguém o tinha examinado como interface.
+
+A estrutura era uma rolagem única — escolha de mercado, câmera, formulário, lista, busca,
+conta e rodapé empilhados na mesma tela. Aguentava enquanto o app fazia uma coisa. Com as
+quatro capacidades do marco 4 prontas, deixou de aguentar.
+
+| ID | Achado | Heurística |
+| -- | ------ | ---------- |
+| N-01 | Tudo numa rolagem só; nada indicava o que era principal | Estética e minimalismo |
+| N-02 | Aviso de preço represado só aparecia dentro da aba de registro | Visibilidade do estado |
+| N-03 | Escaneou o produto errado e não havia como sair sem registrar | Controle e liberdade |
+| N-04 | Tirar item da lista era silencioso e definitivo, sem desfazer | Controle e liberdade |
+| N-05 | "Sua lista está vazia" aparecia antes de a lista carregar | Visibilidade do estado |
+| N-06 | "Nenhum produto com esse nome" aparecia durante a busca, mandando escanear produto que existe | Prevenção de erro |
+| N-07 | Rótulo da aba divergia do título da seção — "Buscar" abria "Consultar preço" | Consistência |
+| N-08 | Barra de navegação fixa sobe com o teclado no Android e cobre o campo | Prevenção de erro |
+
+Todos corrigidos.
+
+### N-01 · Abas na base, não no topo
+
+Quatro seções, uma tarefa cada. Na base porque o app é usado com uma mão só — a outra
+empurra o carrinho — e o polegar não alcança o topo de um celular grande.
+
+### N-02 · A fila é do app, não da aba
+
+Achado que a própria reestruturação criou: separar em abas escondeu o aviso de fila de quem
+não estivesse registrando. O estado subiu para a casca, e a aba de registro ganhou um
+contador. Efeito colateral necessário: um `useEnvio` só no app inteiro, porque dois laços de
+esvaziamento disputariam a mesma fila.
+
+### N-04 · Desfazer em vez de confirmar
+
+Confirmação antes de toda ação barata cansa quem acerta para proteger quem erra. Desfazer
+inverte a conta: o acerto sai livre, e o erro custa um toque. A confirmação fica onde o dano
+é real e irreversível — na exclusão da conta.
+
+### N-05 e N-06 · A tela afirmando o que ainda não sabe
+
+Os dois são o mesmo defeito: estado inicial vazio sendo renderizado como resposta negativa.
+O primeiro faz a pessoa achar que perdeu a lista; o segundo manda escanear o código de um
+produto que está no banco. Esqueleto de carregamento resolve o primeiro, e uma marca de
+"ainda procurando" resolve o segundo.
+
+## O que a revisão não alcança
+
+**Ninguém nunca usou o app em um mercado.** Revisão de heurística encontra defeito de
+construção; não encontra o que só aparece com o carrinho na mão, o sinal ruim e a pressa da
+fila do caixa. Isso é o marco 5, e nenhuma rodada de validação substitui.
+
+**Preço digitado errado não tem guarda.** Um R$ 5,00 que vira R$ 50,00 passa. É deliberado:
+RD-04 já é a resposta desenhada — registra de novo, e o mais recente do dia prevalece. Se o
+campo mostrar que o erro é frequente o bastante para enganar quem lê, aí vale um aviso de
+implausibilidade. Antes disso seria um limiar inventado sem dado.
+
+**Não há ajuda nem documentação.** Intencional: os estados vazios de cada aba explicam o que
+ela faz, e um app de quatro telas que precisa de manual tem outro problema.
+
+---
+
 # Situação geral
 
-Quarenta achados em quatro rodadas, **todos resolvidos**. Visão na versão 1.7.
+Quarenta e oito achados em cinco rodadas, **todos resolvidos**. Visão na versão 1.9.
 
 Uma pendência de especificação segue registrada em `requisitos.md`, aguardando trabalho de
 campo: os números provisórios do tempo máximo de registro e do raio que conta como conferido
@@ -337,3 +402,8 @@ no local.
 Uma revalidação é devida em dois momentos: quando os catálogos de Goianésia estiverem
 montados — o que muda a premissa de RF-04 de "existe uma lista" para "a lista cobre o que as
 pessoas compram" — e depois da primeira medição real de tempo de cadastro.
+
+A quinta rodada acrescenta um terceiro momento: **depois do primeiro uso em um corredor de
+supermercado**. As quatro rodadas anteriores validaram o que está escrito; esta validou o
+que está construído; nenhuma delas validou o que acontece com uma pessoa de pé, segurando o
+carrinho.

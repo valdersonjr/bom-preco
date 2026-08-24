@@ -6,7 +6,7 @@ import { EscolhaDeMercado } from './EscolhaDeMercado'
 import { EscolhaDoCatalogo } from './EscolhaDoCatalogo'
 import { conferidoNoLocal, useMercados, type Mercado } from './lib/mercado'
 import { RegistroDePreco } from './RegistroDePreco'
-import { useEnvio } from './lib/envio'
+import type { useEnvio } from './lib/envio'
 
 type Resultado =
   | { tipo: 'nenhum' }
@@ -16,13 +16,24 @@ type Resultado =
   | { tipo: 'offline'; gtin: string }
   | { tipo: 'erro'; gtin: string }
 
-export function Escaneamento({ usuarioId }: { usuarioId: string }) {
+export function Escaneamento({
+  usuarioId,
+  envio,
+}: {
+  usuarioId: string
+  /**
+   * Vem de cima porque a fila é do app inteiro, não desta aba: o aviso de
+   * preço represado precisa aparecer em qualquer tela, e dois `useEnvio` no
+   * mesmo app dariam dois laços de esvaziamento disputando a mesma fila.
+   */
+  envio: ReturnType<typeof useEnvio>
+}) {
   const [resultado, setResultado] = useState<Resultado>({ tipo: 'nenhum' })
   const { carregando, mercados, sugerido, posicao } = useMercados()
   const [escolhaManual, setEscolhaManual] = useState<Mercado | null>(null)
   const [modo, setModo] = useState<'codigo' | 'catalogo'>('codigo')
   const [salvos, setSalvos] = useState(0)
-  const { naFila, enviando, registrar } = useEnvio()
+  const { naFila, enviando, registrar } = envio
 
   // Derivado, não guardado: a sugestão chega depois da localização, e guardá-la
   // em estado exigiria um efeito que dispara outro render sem necessidade.
@@ -144,6 +155,7 @@ export function Escaneamento({ usuarioId }: { usuarioId: string }) {
             setSalvos((n) => n + 1)
             setResultado({ tipo: 'nenhum' })
           }}
+          aoDesistir={() => setResultado({ tipo: 'nenhum' })}
         />
       )}
 

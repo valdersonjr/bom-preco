@@ -27,12 +27,15 @@ export function Consulta({ usuarioId }: { usuarioId: string }) {
   const [achados, setAchados] = useState<Produto[]>([])
   const [produto, setProduto] = useState<Produto | null>(null)
   const [raioKm, setRaioKm] = useState<number | null>(null)
+  const [buscando, setBuscando] = useState(false)
 
   useEffect(() => {
     let ativo = true
     const id = setTimeout(async () => {
       const r = await buscarProduto(termo)
-      if (ativo) setAchados(r)
+      if (!ativo) return
+      setAchados(r)
+      setBuscando(false)
     }, 250)
     return () => {
       ativo = false
@@ -42,13 +45,14 @@ export function Consulta({ usuarioId }: { usuarioId: string }) {
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="font-medium text-neutral-800">Consultar preço</h2>
+      <h2 className="font-medium text-neutral-800">Buscar preço</h2>
 
       <input
         value={termo}
         onChange={(e) => {
           setTermo(e.target.value)
           setProduto(null)
+          setBuscando(true)
         }}
         placeholder="arroz, sabão em pó, tomate…"
         aria-label="Buscar produto"
@@ -75,7 +79,12 @@ export function Consulta({ usuarioId }: { usuarioId: string }) {
         </ul>
       )}
 
-      {!produto && termo.trim().length >= 2 && achados.length === 0 && (
+      {/*
+        Só afirma que não achou depois de terminar de procurar. Enquanto o
+        temporizador de 250 ms corre, `achados` ainda é o resultado do termo
+        anterior — e a frase mandaria escanear um produto que existe.
+      */}
+      {!produto && !buscando && termo.trim().length >= 2 && achados.length === 0 && (
         <p className="rounded-lg bg-neutral-100 p-3 text-neutral-800">
           Nenhum produto com esse nome. Escaneie o código de barras dele para
           incluir.
