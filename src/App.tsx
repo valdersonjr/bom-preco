@@ -75,7 +75,7 @@ export default function App() {
 
       {sessao.situacao === 'pronto' && <Lista usuarioId={sessao.perfil.id} />}
 
-      {sessao.situacao === 'pronto' && <Consulta />}
+      {sessao.situacao === 'pronto' && <Consulta usuarioId={sessao.perfil.id} />}
 
       {sessao.situacao === 'pronto' && (
         <Escaneamento usuarioId={sessao.perfil.id} />

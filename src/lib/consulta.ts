@@ -132,3 +132,28 @@ export async function buscarProduto(termo: string) {
 
   return data ?? []
 }
+
+
+/**
+ * Confirma que um preço continua valendo (RF-24, RF-25, RD-03, RD-14).
+ *
+ * Confirmar o próprio registro é permitido: com poucos usuários, sem isso nada
+ * seria confirmado e a base inteira envelheceria até sair da comparação. O
+ * gatilho no banco é que decide se é autoconfirmação, e ela vale menos.
+ *
+ * Uma por pessoa, por registro, por dia — a segunda no mesmo dia esbarra na
+ * restrição de unicidade, e isso conta como sucesso: já estava confirmado.
+ */
+export async function confirmar(
+  registroId: string,
+  usuarioId: string,
+): Promise<{ ok: true; jaHavia: boolean } | { ok: false; motivo: string }> {
+  const { error } = await supabase
+    .from('confirmacao')
+    .insert({ registro_id: registroId, usuario_id: usuarioId })
+
+  if (error && error.code !== '23505') {
+    return { ok: false, motivo: error.message }
+  }
+  return { ok: true, jaHavia: Boolean(error) }
+}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
   buscarProduto,
+  confirmar,
   precosDoProduto,
   type PrecoNoMercado,
   type Posicao,
@@ -20,7 +21,7 @@ const RAIOS = [
   { rotulo: 'Até 5 km', km: 5 },
 ] as const
 
-export function Consulta() {
+export function Consulta({ usuarioId }: { usuarioId: string }) {
   const { mercados, posicao } = useMercados()
   const [termo, setTermo] = useState('')
   const [achados, setAchados] = useState<Produto[]>([])
@@ -89,6 +90,7 @@ export function Consulta() {
           posicao={posicao}
           raioKm={raioKm}
           aoTrocarRaio={setRaioKm}
+          usuarioId={usuarioId}
         />
       )}
     </section>
@@ -101,12 +103,14 @@ function Precos({
   posicao,
   raioKm,
   aoTrocarRaio,
+  usuarioId,
 }: {
   produto: Produto
   mercados: Mercado[]
   posicao: Posicao | null
   raioKm: number | null
   aoTrocarRaio: (km: number | null) => void
+  usuarioId: string
 }) {
   const [precos, setPrecos] = useState<PrecoNoMercado[] | null>(null)
   const [mostrarVelhos, setMostrarVelhos] = useState(false)
@@ -164,7 +168,13 @@ function Precos({
       {validos.length > 0 && (
         <ol className="flex flex-col gap-2">
           {validos.map((p, i) => (
-            <Linha key={p.registroId} preco={p} produto={produto} maisBarato={i === 0} />
+            <Linha
+              key={p.registroId}
+              preco={p}
+              produto={produto}
+              maisBarato={i === 0}
+              usuarioId={usuarioId}
+            />
           ))}
         </ol>
       )}
@@ -183,7 +193,13 @@ function Precos({
       {mostrarVelhos && (
         <ol className="flex flex-col gap-2 opacity-70">
           {velhos.map((p) => (
-            <Linha key={p.registroId} preco={p} produto={produto} maisBarato={false} />
+            <Linha
+              key={p.registroId}
+              preco={p}
+              produto={produto}
+              maisBarato={false}
+              usuarioId={usuarioId}
+            />
           ))}
         </ol>
       )}
@@ -195,12 +211,15 @@ function Linha({
   preco,
   produto,
   maisBarato,
+  usuarioId,
 }: {
   preco: PrecoNoMercado
   produto: Produto
   maisBarato: boolean
+  usuarioId: string
 }) {
   const [aberto, setAberto] = useState(false)
+  const [confirmado, setConfirmado] = useState(false)
   const porUnidade = precoPorUnidade(produto, preco.valor)
   const real = (n: number) => `R$ ${n.toFixed(2).replace('.', ',')}`
 
@@ -255,9 +274,20 @@ function Linha({
         )}
         <button
           type="button"
+          disabled={confirmado}
+          onClick={async () => {
+            const r = await confirmar(preco.registroId, usuarioId)
+            if (r.ok) setConfirmado(true)
+          }}
+          className="ml-auto min-h-11 rounded px-2 text-green-800 underline disabled:text-neutral-500 disabled:no-underline"
+        >
+          {confirmado ? 'Confirmado' : 'Confirmo esse preço'}
+        </button>
+        <button
+          type="button"
           onClick={() => setAberto((v) => !v)}
           aria-expanded={aberto}
-          className="ml-auto min-h-11 rounded px-2 text-green-800 underline"
+          className="min-h-11 rounded px-2 text-green-800 underline"
         >
           {aberto ? 'Fechar histórico' : 'Histórico'}
         </button>

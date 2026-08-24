@@ -51,7 +51,7 @@ export type Database = {
         Insert: {
           autoconfirmacao?: boolean
           confirmado_em?: string
-          dia: string
+          dia?: string
           id?: string
           registro_id: string
           usuario_id?: string | null
