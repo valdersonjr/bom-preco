@@ -68,7 +68,7 @@ export function Navegacao({
   return (
     <nav
       aria-label="Seções do app"
-      className="sticky bottom-0 border-t border-neutral-200 bg-white pb-[env(safe-area-inset-bottom)]"
+      className="sticky bottom-0 z-10 border-t border-borda bg-elevado pb-[env(safe-area-inset-bottom)]"
     >
       <ul className="mx-auto flex max-w-md">
         {ABAS.map(({ id, rotulo, icone }) => {
@@ -85,17 +85,21 @@ export function Navegacao({
                     ? `${rotulo}, ${marcados} aguardando sinal`
                     : undefined
                 }
-                className={`flex min-h-14 w-full flex-col items-center justify-center gap-0.5 text-xs ${
+                className={`flex min-h-14 w-full flex-col items-center justify-center gap-1 pt-1.5 pb-1 text-xs ${
                   selecionada
-                    ? 'font-medium text-green-800'
-                    : 'text-neutral-600'
+                    ? 'font-medium text-marca-forte'
+                    : 'text-tinta-suave'
                 }`}
               >
-                <span className="relative">
+                <span
+                  className={`relative flex h-7 w-14 items-center justify-center rounded-full transition-colors ${
+                    selecionada ? 'bg-marca-fraca' : ''
+                  }`}
+                >
                   {marcados > 0 && (
                     <span
                       aria-hidden="true"
-                      className="absolute -top-1 -right-2 min-w-4 rounded-full bg-amber-700 px-1 text-[10px] leading-4 font-medium text-white"
+                      className="absolute top-0 right-2 min-w-4 rounded-full bg-alerta px-1 text-[10px] leading-4 font-medium text-sobre-alerta"
                     >
                       {marcados}
                     </span>

@@ -9,8 +9,8 @@ import {
 import { buscarProduto } from './lib/consulta'
 import { useMercados } from './lib/mercado'
 import type { Produto } from './lib/produto'
-
-const real = (n: number) => `R$ ${n.toFixed(2).replace('.', ',')}`
+import { precoEmTexto } from './lib/formato'
+import { Preco } from './Preco'
 
 export function Lista({ usuarioId }: { usuarioId: string }) {
   const { mercados } = useMercados()
@@ -78,18 +78,18 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="font-medium text-neutral-800">Lista de compras</h2>
+      <h2 className="font-medium text-tinta">Lista de compras</h2>
 
       <input
         value={termo}
         onChange={(e) => setTermo(e.target.value)}
         placeholder="Adicionar item…"
         aria-label="Adicionar item à lista"
-        className="min-h-11 rounded-lg border border-neutral-300 px-3"
+        className="min-h-11 rounded-lg border border-borda-forte px-3"
       />
 
       {achados.length > 0 && (
-        <ul className="flex max-h-56 flex-col gap-1 overflow-y-auto rounded-lg border border-neutral-200 p-1">
+        <ul className="flex max-h-56 flex-col gap-1 overflow-y-auto rounded-xl border border-borda bg-elevado p-1">
           {achados.map((p) => (
             <li key={p.id}>
               <button
@@ -101,10 +101,10 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
                   setAchados([])
                   await recarregar(listaId)
                 }}
-                className="min-h-11 w-full rounded px-3 py-2 text-left hover:bg-neutral-100"
+                className="min-h-11 w-full rounded px-3 py-2 text-left hover:bg-sutil"
               >
-                <span className="text-neutral-900">{p.nome}</span>
-                <span className="block text-sm text-neutral-600">
+                <span className="text-tinta">{p.nome}</span>
+                <span className="block text-sm text-tinta-suave">
                   {p.marca ? `${p.marca} · ` : ''}
                   {p.quantidade} {p.unidade_medida}
                 </span>
@@ -130,7 +130,7 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
       {itens === null && <Esqueleto />}
 
       {itens?.length === 0 && (
-        <p className="rounded-lg bg-neutral-100 p-4 text-neutral-800">
+        <p className="rounded-xl bg-sutil p-4 text-tinta">
           Sua lista está vazia. Vá acrescentando o que precisa comprar, e o app
           diz onde cada coisa está mais barata.
         </p>
@@ -150,7 +150,7 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
 
       {semPreco.length > 0 && (
         <div className="flex flex-col gap-2">
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-tinta-suave">
             Sem preço conhecido — registre quando vir na prateleira:
           </p>
           <ul className="flex flex-col gap-2">
@@ -192,7 +192,7 @@ function Desfazer({
   return (
     <div
       role="status"
-      className="flex items-center justify-between gap-2 rounded-lg bg-neutral-800 p-3 text-white"
+      className="anima-subir flex items-center justify-between gap-2 rounded-xl bg-inverso p-3 text-sobre-inverso"
     >
       <span className="min-w-0 truncate text-sm">
         {removido.nome} saiu da lista.
@@ -200,7 +200,7 @@ function Desfazer({
       <button
         type="button"
         onClick={aoDesfazer}
-        className="min-h-11 shrink-0 rounded-lg px-3 font-medium text-white underline"
+        className="min-h-11 shrink-0 rounded-lg px-3 font-medium text-sobre-inverso underline"
       >
         Desfazer
       </button>
@@ -218,9 +218,9 @@ function Esqueleto() {
   return (
     <ul aria-hidden="true" className="flex animate-pulse flex-col gap-2">
       {[0, 1, 2].map((i) => (
-        <li key={i} className="h-16 rounded-lg border border-neutral-200 p-3">
-          <div className="h-4 w-2/3 rounded bg-neutral-200" />
-          <div className="mt-2 h-3 w-1/2 rounded bg-neutral-100" />
+        <li key={i} className="h-16 rounded-xl border border-borda bg-elevado p-3">
+          <div className="h-4 w-2/3 rounded bg-sutil-forte" />
+          <div className="mt-2 h-3 w-1/2 rounded bg-sutil" />
         </li>
       ))}
     </ul>
@@ -234,40 +234,59 @@ function ItemLinha({
   item: ItemDaLista
   aoMudar: (quantidade: number) => void
 }) {
-  return (
-    <li className="flex items-center gap-2 rounded-lg border border-neutral-200 p-3">
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-neutral-900">{item.produto.nome}</p>
-        {item.melhor ? (
-          <p className="text-sm text-neutral-600">
-            {real(item.melhor.valor)} no {item.melhor.mercado.nome}
-            {item.quantidade > 1 && (
-              <> · {real(item.melhor.valor * item.quantidade)} no total</>
-            )}
-          </p>
-        ) : (
-          <p className="text-sm text-neutral-500">nenhum preço registrado</p>
-        )}
-      </div>
+  const { melhor, produto, quantidade } = item
 
-      <div className="flex shrink-0 items-center gap-1">
-        <button
-          type="button"
-          onClick={() => aoMudar(item.quantidade - 1)}
-          aria-label={`Diminuir ${item.produto.nome}`}
-          className="min-h-11 w-11 rounded-lg border border-neutral-300 text-neutral-700"
-        >
-          −
-        </button>
-        <span className="w-8 text-center tabular-nums">{item.quantidade}</span>
-        <button
-          type="button"
-          onClick={() => aoMudar(item.quantidade + 1)}
-          aria-label={`Aumentar ${item.produto.nome}`}
-          className="min-h-11 w-11 rounded-lg border border-neutral-300 text-neutral-700"
-        >
-          +
-        </button>
+  return (
+    <li className="rounded-xl border border-borda bg-elevado p-4">
+      <p className="font-medium text-tinta">{produto.nome}</p>
+      <p className="mt-0.5 text-sm text-tinta-fraca">
+        {produto.marca ? `${produto.marca} · ` : ''}
+        {produto.quantidade} {produto.unidade_medida}
+      </p>
+
+      <div className="mt-3 flex items-end justify-between gap-3">
+        <div className="min-w-0">
+          {melhor ? (
+            <>
+              <Preco valor={melhor.valor} tamanho="medio" />
+              <p className="mt-0.5 truncate text-sm text-tinta-suave">
+                {melhor.mercado.nome}
+                {quantidade > 1 && (
+                  <>
+                    {' · '}
+                    {precoEmTexto(melhor.valor * quantidade)} no total
+                  </>
+                )}
+              </p>
+            </>
+          ) : (
+            /* O espaço do preço não colapsa quando não há preço: a lista
+               continua alinhada, e a ausência fica evidente por comparação. */
+            <p className="text-preco-menor font-normal text-tinta-fraca">
+              sem preço
+            </p>
+          )}
+        </div>
+
+        <div className="flex shrink-0 items-center gap-1">
+          <button
+            type="button"
+            onClick={() => aoMudar(quantidade - 1)}
+            aria-label={`Diminuir ${produto.nome}`}
+            className="min-h-11 w-11 rounded-lg border border-borda-forte text-lg text-tinta-suave"
+          >
+            −
+          </button>
+          <span className="w-8 text-center tabular-nums">{quantidade}</span>
+          <button
+            type="button"
+            onClick={() => aoMudar(quantidade + 1)}
+            aria-label={`Aumentar ${produto.nome}`}
+            className="min-h-11 w-11 rounded-lg border border-borda-forte text-lg text-tinta-suave"
+          >
+            +
+          </button>
+        </div>
       </div>
     </li>
   )
@@ -298,21 +317,21 @@ function PorMercado({ itens }: { itens: ItemDaLista[] }) {
   const ordenados = [...grupos.values()].sort((a, b) => b.quantos - a.quantos)
 
   return (
-    <div className="rounded-lg bg-neutral-50 p-3">
-      <p className="text-sm font-medium text-neutral-800">
+    <div className="rounded-xl bg-superficie p-3">
+      <p className="text-sm font-medium text-tinta">
         Onde comprar o que já tem preço
       </p>
-      <ul className="mt-1 flex flex-col gap-1 text-sm text-neutral-700">
+      <ul className="mt-1 flex flex-col gap-1 text-sm text-tinta-suave">
         {ordenados.map((g) => (
           <li key={g.nome} className="flex justify-between gap-2">
             <span>
               {g.nome} · {g.quantos} {g.quantos === 1 ? 'item' : 'itens'}
             </span>
-            <span className="tabular-nums">{real(g.total)}</span>
+            <span className="tabular-nums">{precoEmTexto(g.total)}</span>
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-xs text-neutral-500">
+      <p className="mt-2 text-xs text-tinta-fraca">
         Cada item mostrado no mercado mais barato. Isso pode espalhar a compra
         por vários lugares — comparar o total da cesta inteira num mercado só
         ainda não existe.

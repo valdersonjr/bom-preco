@@ -391,9 +391,78 @@ ela faz, e um app de quatro telas que precisa de manual tem outro problema.
 
 ---
 
+# Sexta rodada — o sistema visual
+
+**Data:** 24/08/2026 · **Base:** a interface do marco 4, depois da reestruturação em abas
+
+A quinta rodada arrumou a estrutura e deixou a aparência como estava. Um inventário dos
+utilitários revelou o que "como estava" significava: **trinta e quatro cores escolhidas uma
+a uma**, `rounded-lg` sessenta e duas vezes, nenhuma sombra, e `text-sm` em quarenta e uma
+ocorrências contra quatro `text-lg`.
+
+Traduzindo: tudo na tela tinha o mesmo peso. Num app cuja única pergunta é *quanto custa*,
+o preço nunca era a maior coisa da tela.
+
+| ID | Achado | Tipo |
+| -- | ------ | ---- |
+| D-01 | O preço aparecia em `text-sm`, menor que o nome do produto | Hierarquia |
+| D-02 | Cor escolhida por matiz em cada componente, sem papel definido | Consistência |
+| D-03 | `text-white` sobre cor cheia — quebra assim que a cor clareia no modo escuro | Acessibilidade |
+| D-04 | Tinta terciária a 3,64:1, abaixo do mínimo AA de 4,5:1 | Acessibilidade |
+| D-05 | Preço formatado em três arquivos, cada um com um tamanho | Duplicação |
+| D-06 | Quatro selos por linha de preço, nenhum com precedência sobre os outros | Hierarquia |
+| D-07 | Campo de preço — a ação principal do app — do tamanho de um campo de e-mail | Hierarquia |
+| D-08 | `theme_color` do manifesto apontava para um verde que não era mais o da marca | Consistência |
+
+Todos corrigidos.
+
+### D-02 · Cor por papel, não por matiz
+
+O componente deixou de escolher a cor e passou a declarar o papel — superfície, tinta,
+marca, alerta, perigo. Cento e oitenta e cinco utilitários trocados, e nenhum matiz cru
+restante no código.
+
+O ganho não é organização: é que **o modo escuro passou a existir sem tocar em componente
+nenhum**. As variáveis trocam de valor sob `prefers-color-scheme`, os utilitários apontam
+para elas.
+
+### D-03 · O defeito que só aparece depois
+
+Branco sobre verde escuro é 6,1:1. O mesmo branco sobre o verde clareado do modo escuro é
+1,6:1 — ilegível. O par de tokens `sobre-marca`, `sobre-alerta`, `sobre-perigo` e
+`sobre-inverso` existe para isso: cada fundo cheio carrega o tom de texto que lhe cabe em
+cada tema.
+
+Achado que a própria correção anterior criou, como o N-02 da quinta rodada. Vale registrar
+o padrão: **mudança estrutural gera defeito de segunda ordem**, e é ele que escapa.
+
+### D-04 · A auditoria encontrou o que o olho não encontraria
+
+Vinte e seis pares de cor conferidos por cálculo — oklch convertido para RGB linear,
+luminância relativa, razão WCAG. Dois reprovaram, ambos na tinta terciária, e o valor
+corrigido foi resolvido numericamente até cruzar 4,5:1, não escolhido no olho.
+
+Fica registrado um erro de método no caminho: a primeira versão do cálculo aplicou a curva
+gama duas vezes e devolveu razões três vezes maiores que as reais — **todas aprovando**. Uma
+auditoria que só aprova é a que merece menos confiança.
+
+## Fundamento das decisões
+
+**O preço tem corpo próprio.** É a única coisa da interface com tamanho declarado em token,
+porque é a resposta que o app existe para dar. Lido de relance, de pé, a um braço de
+distância. Tabular, para as casas decimais alinharem entre linhas.
+
+**Os centavos não encolhem.** É a tentação tipográfica óbvia e está errada aqui: a diferença
+entre R$ 4,99 e R$ 4,89 é exatamente o que se veio comparar.
+
+**Separação por fundo, não por sombra.** A página escureceu um tom e os cartões ficaram
+claros. Sombra some na luz de um corredor de supermercado; contraste de fundo, não.
+
+---
+
 # Situação geral
 
-Quarenta e oito achados em cinco rodadas, **todos resolvidos**. Visão na versão 1.9.
+Cinquenta e seis achados em seis rodadas, **todos resolvidos**. Visão na versão 1.9.
 
 Uma pendência de especificação segue registrada em `requisitos.md`, aguardando trabalho de
 campo: os números provisórios do tempo máximo de registro e do raio que conta como conferido

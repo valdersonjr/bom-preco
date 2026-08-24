@@ -22,23 +22,27 @@ export default function App() {
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 p-6">
+      <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-5 pt-5 pb-6">
         <header>
-          <h1 className="text-xl font-semibold text-green-800">Bom Preço</h1>
+          <h1 className="text-base font-semibold tracking-tight text-marca-forte">
+            Bom Preço
+          </h1>
         </header>
 
         {sessao.situacao === 'carregando' && (
-          <p className="text-neutral-500">Preparando…</p>
+          <p className="text-tinta-fraca">Preparando…</p>
         )}
 
         {sessao.situacao === 'erro' && (
-          <p className="rounded-lg bg-red-50 p-3 text-red-800">
+          <p className="rounded-xl bg-perigo-fraca p-3 text-perigo-tinta">
             Não foi possível iniciar a sessão. {sessao.mensagem}
           </p>
         )}
 
+        {/* A chave força remontagem a cada troca, e com ela a animação de
+            entrada. Sem isso o React reaproveita o nó e a troca fica seca. */}
         {sessao.situacao === 'pronto' && (
-          <>
+          <div key={aba} className="anima-surgir flex flex-1 flex-col">
             {aba === 'lista' && <Lista usuarioId={sessao.perfil.id} />}
             {aba === 'buscar' && <Consulta usuarioId={sessao.perfil.id} />}
             {aba === 'registrar' && (
@@ -51,7 +55,7 @@ export default function App() {
                 renomear={sessao.renomear}
               />
             )}
-          </>
+          </div>
         )}
 
         <ConviteDeInstalacao />

@@ -37,11 +37,11 @@ export function Historico({
     }
   }, [produto.id, mercadoId])
 
-  if (pontos === null) return <p className="text-sm text-neutral-500">Carregando…</p>
+  if (pontos === null) return <p className="text-sm text-tinta-fraca">Carregando…</p>
 
   if (pontos.length <= 1) {
     return (
-      <p className="text-sm text-neutral-600">
+      <p className="text-sm text-tinta-suave">
         Só há um preço registrado aqui. O histórico aparece quando o mesmo
         produto for cadastrado outras vezes neste mercado.
       </p>
@@ -55,7 +55,7 @@ export function Historico({
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm text-neutral-700">
+      <p className="text-sm text-tinta-suave">
         Histórico em {mercadoNome} · de {real(menor)} a {real(maior)}
       </p>
 
@@ -68,7 +68,7 @@ export function Historico({
 
           return (
             <li key={p.id} className="flex items-center gap-2 text-sm">
-              <span className="w-16 shrink-0 tabular-nums text-neutral-500">
+              <span className="w-16 shrink-0 tabular-nums text-tinta-fraca">
                 {data(p.observadoEm)}
               </span>
               <span className="flex h-6 flex-1 items-center">
@@ -76,16 +76,16 @@ export function Historico({
                   style={{ width: `${largura}%` }}
                   className={
                     p.tipo === 'promocional'
-                      ? 'h-2 rounded-full bg-amber-400'
-                      : 'h-2 rounded-full bg-green-600'
+                      ? 'h-2 rounded-full bg-alerta'
+                      : 'h-2 rounded-full bg-marca'
                   }
                 />
               </span>
-              <span className="shrink-0 tabular-nums text-neutral-900">
+              <span className="shrink-0 tabular-nums text-tinta">
                 {real(p.valor)}
               </span>
               {porUnidade !== null && (
-                <span className="w-24 shrink-0 text-right tabular-nums text-neutral-500">
+                <span className="w-24 shrink-0 text-right tabular-nums text-tinta-fraca">
                   {real(porUnidade)}/{unidadeDeComparacao(produto)}
                 </span>
               )}
@@ -94,7 +94,7 @@ export function Historico({
         })}
       </ol>
 
-      <p className="text-xs text-neutral-500">
+      <p className="text-xs text-tinta-fraca">
         Barra amarela é promoção. Um preço promocional baixo não significa que o
         produto ficou barato — significa que estava em oferta naquele dia.
       </p>

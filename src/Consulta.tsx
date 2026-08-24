@@ -6,6 +6,8 @@ import {
   type PrecoNoMercado,
   type Posicao,
 } from './lib/consulta'
+import { Preco } from './Preco'
+import { precoEmTexto } from './lib/formato'
 import { useMercados, type Mercado } from './lib/mercado'
 import {
   precoPorUnidade,
@@ -45,7 +47,7 @@ export function Consulta({ usuarioId }: { usuarioId: string }) {
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="font-medium text-neutral-800">Buscar preço</h2>
+      <h2 className="font-medium text-tinta">Buscar preço</h2>
 
       <input
         value={termo}
@@ -56,7 +58,7 @@ export function Consulta({ usuarioId }: { usuarioId: string }) {
         }}
         placeholder="arroz, sabão em pó, tomate…"
         aria-label="Buscar produto"
-        className="min-h-11 rounded-lg border border-neutral-300 px-3"
+        className="min-h-11 rounded-lg border border-borda-forte px-3"
       />
 
       {!produto && achados.length > 0 && (
@@ -66,10 +68,10 @@ export function Consulta({ usuarioId }: { usuarioId: string }) {
               <button
                 type="button"
                 onClick={() => setProduto(p)}
-                className="min-h-11 w-full rounded-lg px-3 py-2 text-left hover:bg-neutral-100"
+                className="min-h-11 w-full rounded-lg px-3 py-2 text-left hover:bg-sutil"
               >
-                <span className="text-neutral-900">{p.nome}</span>
-                <span className="block text-sm text-neutral-600">
+                <span className="text-tinta">{p.nome}</span>
+                <span className="block text-sm text-tinta-suave">
                   {p.marca ? `${p.marca} · ` : ''}
                   {p.quantidade} {p.unidade_medida}
                 </span>
@@ -85,7 +87,7 @@ export function Consulta({ usuarioId }: { usuarioId: string }) {
         anterior — e a frase mandaria escanear um produto que existe.
       */}
       {!produto && !buscando && termo.trim().length >= 2 && achados.length === 0 && (
-        <p className="rounded-lg bg-neutral-100 p-3 text-neutral-800">
+        <p className="rounded-xl bg-sutil p-3 text-tinta">
           Nenhum produto com esse nome. Escaneie o código de barras dele para
           incluir.
         </p>
@@ -134,7 +136,7 @@ function Precos({
     }
   }, [produto.id, mercados, posicao, raioKm])
 
-  if (precos === null) return <p className="text-neutral-500">Procurando…</p>
+  if (precos === null) return <p className="text-tinta-fraca">Procurando…</p>
 
   const validos = precos.filter((p) => !p.desatualizado)
   const velhos = precos.filter((p) => p.desatualizado)
@@ -142,8 +144,8 @@ function Precos({
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <p className="font-medium text-neutral-900">{produto.nome}</p>
-        <p className="text-sm text-neutral-600">
+        <p className="font-medium text-tinta">{produto.nome}</p>
+        <p className="text-sm text-tinta-suave">
           {produto.marca ? `${produto.marca} · ` : ''}
           {produto.quantidade} {produto.unidade_medida}
         </p>
@@ -158,8 +160,8 @@ function Precos({
             aria-pressed={raioKm === r.km}
             className={
               raioKm === r.km
-                ? 'min-h-11 rounded-lg bg-neutral-800 px-3 text-sm text-white'
-                : 'min-h-11 rounded-lg border border-neutral-300 px-3 text-sm text-neutral-700'
+                ? 'min-h-11 rounded-lg bg-inverso px-3 text-sm text-sobre-inverso'
+                : 'min-h-11 rounded-lg border border-borda-forte px-3 text-sm text-tinta-suave'
             }
           >
             {r.rotulo}
@@ -168,7 +170,7 @@ function Precos({
       </div>
 
       {validos.length === 0 && velhos.length === 0 && (
-        <p className="rounded-lg bg-neutral-100 p-4 text-neutral-800">
+        <p className="rounded-xl bg-sutil p-4 text-tinta">
           Ninguém cadastrou o preço deste produto ainda. Da próxima vez que você
           vir na prateleira, registre — é assim que a comparação nasce.
         </p>
@@ -192,7 +194,7 @@ function Precos({
         <button
           type="button"
           onClick={() => setMostrarVelhos(true)}
-          className="min-h-11 self-start rounded-lg px-3 text-sm text-neutral-600 underline"
+          className="min-h-11 self-start rounded-lg px-3 text-sm text-tinta-suave underline"
         >
           Ver {velhos.length} preço{velhos.length > 1 ? 's' : ''} com mais de 30
           dias
@@ -230,57 +232,69 @@ function Linha({
   const [aberto, setAberto] = useState(false)
   const [confirmado, setConfirmado] = useState(false)
   const porUnidade = precoPorUnidade(produto, preco.valor)
-  const real = (n: number) => `R$ ${n.toFixed(2).replace('.', ',')}`
+
+  // Procedência é metadado, não afirmação sobre o preço. Vira linha de texto
+  // discreta; só "mais barato" e "promoção" merecem selo, porque só esses dois
+  // dizem algo sobre o número ao lado.
+  const procedencia = [
+    preco.localConferido && 'conferido no local',
+    preco.confirmacoesTerceiros > 0 &&
+      `${preco.confirmacoesTerceiros} confirmação${preco.confirmacoesTerceiros > 1 ? 'ões' : ''}`,
+  ].filter(Boolean)
 
   return (
     <li
-      className={
+      className={`rounded-xl border bg-elevado p-4 ${
         maisBarato
-          ? 'rounded-lg border-2 border-green-600 bg-green-50 p-3'
-          : 'rounded-lg border border-neutral-200 p-3'
-      }
+          ? 'border-marca-borda border-l-4 border-l-marca bg-marca-fraca'
+          : 'border-borda'
+      }`}
     >
-      <div className="flex items-baseline justify-between gap-2">
-        <span className="font-medium text-neutral-900">{preco.mercado.nome}</span>
-        <span className="text-lg font-medium text-neutral-900">
-          {real(preco.valor)}
-        </span>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-medium text-tinta">
+            {preco.mercado.nome}
+          </p>
+          <p className="mt-0.5 text-sm text-tinta-suave">
+            {descreverIdade(preco.idadeEmDias)}
+            {preco.distanciaM !== null && (
+              <> · {(preco.distanciaM / 1000).toFixed(1)} km</>
+            )}
+          </p>
+        </div>
+
+        <div className="shrink-0 text-right">
+          <Preco valor={preco.valor} tom={maisBarato ? 'marca' : 'tinta'} />
+          {porUnidade !== null && (
+            <p className="mt-0.5 text-sm tabular-nums text-tinta-suave">
+              {precoEmTexto(porUnidade)} / {unidadeDeComparacao(produto)}
+            </p>
+          )}
+        </div>
       </div>
 
-      <div className="flex flex-wrap gap-x-3 text-sm text-neutral-600">
-        {porUnidade !== null && (
-          <span>
-            {real(porUnidade)} por {unidadeDeComparacao(produto)}
-          </span>
-        )}
-        <span>{descreverIdade(preco.idadeEmDias)}</span>
-        {preco.distanciaM !== null && (
-          <span>{(preco.distanciaM / 1000).toFixed(1)} km</span>
-        )}
-      </div>
+      {(maisBarato || preco.tipo === 'promocional') && (
+        <div className="mt-3 flex flex-wrap gap-1.5 text-xs font-medium">
+          {maisBarato && (
+            <span className="rounded-full bg-marca px-2.5 py-1 text-sobre-marca">
+              Mais barato
+            </span>
+          )}
+          {preco.tipo === 'promocional' && (
+            <span className="rounded-full bg-alerta-fraca px-2.5 py-1 text-alerta-tinta">
+              Promoção
+            </span>
+          )}
+        </div>
+      )}
 
-      <div className="mt-1 flex flex-wrap gap-2 text-xs">
-        {maisBarato && (
-          <span className="rounded bg-green-700 px-2 py-0.5 text-white">
-            Mais barato
-          </span>
-        )}
-        {preco.tipo === 'promocional' && (
-          <span className="rounded bg-amber-100 px-2 py-0.5 text-amber-900">
-            Promoção
-          </span>
-        )}
-        {preco.localConferido && (
-          <span className="rounded bg-neutral-100 px-2 py-0.5 text-neutral-700">
-            Conferido no local
-          </span>
-        )}
-        {preco.confirmacoesTerceiros > 0 && (
-          <span className="rounded bg-neutral-100 px-2 py-0.5 text-neutral-700">
-            {preco.confirmacoesTerceiros} confirmação
-            {preco.confirmacoesTerceiros > 1 ? 'ões' : ''}
-          </span>
-        )}
+      {procedencia.length > 0 && (
+        <p className="mt-2 text-xs text-tinta-fraca">
+          {procedencia.join(' · ')}
+        </p>
+      )}
+
+      <div className="mt-3 flex items-center justify-between gap-2 border-t border-borda pt-1">
         <button
           type="button"
           disabled={confirmado}
@@ -288,22 +302,22 @@ function Linha({
             const r = await confirmar(preco.registroId, usuarioId)
             if (r.ok) setConfirmado(true)
           }}
-          className="ml-auto min-h-11 rounded px-2 text-green-800 underline disabled:text-neutral-500 disabled:no-underline"
+          className="-ml-2 min-h-11 rounded-lg px-2 text-sm font-medium text-marca-forte disabled:font-normal disabled:text-tinta-fraca"
         >
-          {confirmado ? 'Confirmado' : 'Confirmo esse preço'}
+          {confirmado ? 'Confirmado ✓' : 'Confirmo esse preço'}
         </button>
         <button
           type="button"
           onClick={() => setAberto((v) => !v)}
           aria-expanded={aberto}
-          className="min-h-11 rounded px-2 text-green-800 underline"
+          className="-mr-2 min-h-11 rounded-lg px-2 text-sm text-tinta-suave"
         >
-          {aberto ? 'Fechar histórico' : 'Histórico'}
+          {aberto ? 'Fechar' : 'Histórico'}
         </button>
       </div>
 
       {aberto && (
-        <div className="mt-3 border-t border-neutral-200 pt-3">
+        <div className="anima-surgir mt-1 border-t border-borda pt-3">
           <Historico
             produto={produto}
             mercadoId={preco.mercado.id}

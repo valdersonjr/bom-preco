@@ -19,8 +19,8 @@ export default defineConfig({
         lang: 'pt-BR',
         start_url: '/',
         display: 'standalone',
-        background_color: '#ffffff',
-        theme_color: '#15803d',
+        background_color: '#f7f8fa',
+        theme_color: '#00713c',
         // Só PNG aqui. O iOS ignora SVG no ícone da tela inicial, e o Chrome
         // tropeça quando o SVG vem antes ao gerar o ícone do app instalado.
         // O SVG continua servindo como favicon, declarado no index.html.

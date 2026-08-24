@@ -50,21 +50,21 @@ export function EscolhaDoCatalogo({ aoEscolher }: Props) {
   return (
     <section className="flex flex-col gap-2">
       <label className="flex flex-col gap-1">
-        <span className="text-sm text-neutral-700">
+        <span className="text-sm text-tinta-suave">
           Item sem código de barras
         </span>
         <input
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           placeholder="tomate, alcatra, pão francês…"
-          className="min-h-11 rounded-lg border border-neutral-300 px-3"
+          className="min-h-11 rounded-lg border border-borda-forte px-3"
         />
       </label>
 
-      {carregando && <p className="text-neutral-500">Carregando…</p>}
+      {carregando && <p className="text-tinta-fraca">Carregando…</p>}
 
       {!carregando && itens.length === 0 && (
-        <p className="rounded-lg bg-neutral-100 p-3 text-neutral-800">
+        <p className="rounded-xl bg-sutil p-3 text-tinta">
           Não tenho esse item no catálogo. Me avise e eu acrescento — assim ele
           fica igual para todo mundo, em vez de cada um cadastrar um nome.
         </p>
@@ -76,10 +76,10 @@ export function EscolhaDoCatalogo({ aoEscolher }: Props) {
             <button
               type="button"
               onClick={() => aoEscolher(p)}
-              className="min-h-11 w-full rounded-lg px-3 py-2 text-left hover:bg-neutral-100"
+              className="min-h-11 w-full rounded-lg px-3 py-2 text-left hover:bg-sutil"
             >
-              <span className="text-neutral-900">{p.nome}</span>
-              <span className="text-sm text-neutral-500">
+              <span className="text-tinta">{p.nome}</span>
+              <span className="text-sm text-tinta-fraca">
                 {' '}
                 · por {p.unidade_medida === 'un' ? 'unidade' : p.unidade_medida}
               </span>

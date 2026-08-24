@@ -71,57 +71,57 @@ export function ProdutoNovo({ gtin, aoCriar }: Props) {
 
   return (
     <form
-      className="flex flex-col gap-3 rounded-lg border border-neutral-200 p-4"
+      className="flex flex-col gap-3 rounded-xl border border-borda bg-elevado p-4"
       onSubmit={(e) => {
         e.preventDefault()
         void salvar()
       }}
     >
-      <p className="text-neutral-700">
+      <p className="text-tinta-suave">
         Não conheço esse produto. Me conta o que é, e da próxima vez eu já sei.
       </p>
 
-      <p className="text-sm text-neutral-500">
+      <p className="text-sm text-tinta-fraca">
         Código de barras <strong className="font-mono">{gtin}</strong>
       </p>
 
       <label className="flex flex-col gap-1">
-        <span className="text-sm text-neutral-700">Nome, como está na embalagem</span>
+        <span className="text-sm text-tinta-suave">Nome, como está na embalagem</span>
         <input
           required
           autoFocus
           value={nome}
           onChange={(e) => setNome(e.target.value)}
-          className="min-h-11 rounded-lg border border-neutral-300 px-3"
+          className="min-h-11 rounded-lg border border-borda-forte px-3"
         />
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="text-sm text-neutral-700">Marca</span>
+        <span className="text-sm text-tinta-suave">Marca</span>
         <input
           value={marca}
           onChange={(e) => setMarca(e.target.value)}
-          className="min-h-11 rounded-lg border border-neutral-300 px-3"
+          className="min-h-11 rounded-lg border border-borda-forte px-3"
         />
       </label>
 
       <div className="flex gap-2">
         <label className="flex flex-1 flex-col gap-1">
-          <span className="text-sm text-neutral-700">Quantidade</span>
+          <span className="text-sm text-tinta-suave">Quantidade</span>
           <input
             required
             inputMode="decimal"
             value={quantidade}
             onChange={(e) => setQuantidade(e.target.value)}
-            className="min-h-11 rounded-lg border border-neutral-300 px-3"
+            className="min-h-11 rounded-lg border border-borda-forte px-3"
           />
         </label>
         <label className="flex flex-1 flex-col gap-1">
-          <span className="text-sm text-neutral-700">Unidade</span>
+          <span className="text-sm text-tinta-suave">Unidade</span>
           <select
             value={unidade}
             onChange={(e) => setUnidade(e.target.value)}
-            className="min-h-11 rounded-lg border border-neutral-300 px-3"
+            className="min-h-11 rounded-lg border border-borda-forte px-3"
           >
             {UNIDADES.map((u) => (
               <option key={u.valor} value={u.valor}>
@@ -132,12 +132,12 @@ export function ProdutoNovo({ gtin, aoCriar }: Props) {
         </label>
       </div>
 
-      {erro && <p className="text-red-800">{erro}</p>}
+      {erro && <p className="text-perigo-tinta">{erro}</p>}
 
       <button
         type="submit"
         disabled={salvando}
-        className="min-h-11 rounded-lg bg-green-700 px-4 text-white disabled:opacity-60"
+        className="min-h-11 rounded-lg bg-marca px-4 text-sobre-marca disabled:opacity-60"
       >
         {salvando ? 'Salvando…' : 'Salvar produto'}
       </button>

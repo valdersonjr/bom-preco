@@ -54,7 +54,7 @@ export function Escaneamento({
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="font-medium text-neutral-800">Registrar preço</h2>
+      <h2 className="font-medium text-tinta">Registrar preço</h2>
 
       <EscolhaDeMercado
         mercados={mercados}
@@ -71,32 +71,32 @@ export function Escaneamento({
         muted
         className={
           estado === 'lendo' && modo === 'codigo'
-            ? 'aspect-video w-full rounded-lg bg-black object-cover'
+            ? 'aspect-video w-full rounded-lg bg-inverso object-cover'
             : 'hidden'
         }
       />
 
       {estado === 'negado' && (
-        <p className="rounded-lg bg-amber-50 p-3 text-amber-900">
+        <p className="rounded-xl bg-alerta-fraca p-3 text-alerta-tinta">
           Sem acesso à câmera. Libere a permissão nas configurações do navegador,
           ou digite o código à mão.
         </p>
       )}
 
       {estado === 'indisponivel' && (
-        <p className="rounded-lg bg-amber-50 p-3 text-amber-900">
+        <p className="rounded-xl bg-alerta-fraca p-3 text-alerta-tinta">
           Este navegador não consegue ler código de barras.
         </p>
       )}
 
-      <div className="flex gap-2 border-b border-neutral-200">
+      <div className="flex gap-2 border-b border-borda">
         <button
           type="button"
           onClick={() => setModo('codigo')}
           className={
             modo === 'codigo'
-              ? 'min-h-11 border-b-2 border-green-700 px-3 font-medium text-green-800'
-              : 'min-h-11 px-3 text-neutral-600'
+              ? 'min-h-11 border-b-2 border-marca px-3 font-medium text-marca-forte'
+              : 'min-h-11 px-3 text-tinta-suave'
           }
         >
           Com código de barras
@@ -109,8 +109,8 @@ export function Escaneamento({
           }}
           className={
             modo === 'catalogo'
-              ? 'min-h-11 border-b-2 border-green-700 px-3 font-medium text-green-800'
-              : 'min-h-11 px-3 text-neutral-600'
+              ? 'min-h-11 border-b-2 border-marca px-3 font-medium text-marca-forte'
+              : 'min-h-11 px-3 text-tinta-suave'
           }
         >
           Hortifruti, açougue, padaria
@@ -128,7 +128,7 @@ export function Escaneamento({
           <button
             type="button"
             onClick={parar}
-            className="min-h-11 rounded-lg px-4 text-green-800 underline"
+            className="min-h-11 rounded-lg px-4 text-marca-forte underline"
           >
             Parar
           </button>
@@ -137,7 +137,7 @@ export function Escaneamento({
             type="button"
             onClick={() => void iniciar()}
             disabled={estado === 'iniciando'}
-            className="min-h-11 rounded-lg bg-green-700 px-4 text-white disabled:opacity-60"
+            className="min-h-11 rounded-lg bg-marca px-4 text-sobre-marca disabled:opacity-60"
           >
             {estado === 'iniciando' ? 'Abrindo câmera…' : 'Escanear'}
           </button>
@@ -165,14 +165,14 @@ export function Escaneamento({
       )}
 
       {salvos > 0 && naFila === 0 && (
-        <p className="text-green-800">
+        <p className="text-marca-forte">
           {salvos === 1 ? 'Preço salvo.' : `${salvos} preços salvos.`} Pode
           escanear o próximo.
         </p>
       )}
 
       {naFila > 0 && (
-        <p className="rounded-lg bg-amber-50 p-3 text-amber-900">
+        <p className="rounded-xl bg-alerta-fraca p-3 text-alerta-tinta">
           {naFila === 1
             ? 'Um preço aguardando sinal.'
             : `${naFila} preços aguardando sinal.`}{' '}
@@ -226,7 +226,7 @@ function Digitado({
       }}
     >
       <div className="flex flex-1 flex-col gap-1">
-        <label htmlFor="gtin" className="text-sm text-neutral-700">
+        <label htmlFor="gtin" className="text-sm text-tinta-suave">
           Ou digite o código
         </label>
         <input
@@ -236,13 +236,13 @@ function Digitado({
           inputMode="numeric"
           autoComplete="off"
           placeholder="7890300363614"
-          className="min-h-11 rounded-lg border border-neutral-300 px-3 font-mono"
+          className="min-h-11 rounded-lg border border-borda-forte px-3 font-mono"
         />
       </div>
       <button
         type="submit"
         disabled={!valido}
-        className="min-h-11 rounded-lg bg-green-700 px-4 text-white disabled:opacity-40"
+        className="min-h-11 rounded-lg bg-marca px-4 text-sobre-marca disabled:opacity-40"
       >
         Buscar
       </button>
@@ -254,19 +254,19 @@ function Achado({ resultado }: { resultado: Resultado }) {
   if (resultado.tipo === 'nenhum') return null
 
   if (resultado.tipo === 'buscando') {
-    return <p className="text-neutral-500">Procurando {resultado.gtin}…</p>
+    return <p className="text-tinta-fraca">Procurando {resultado.gtin}…</p>
   }
 
   if (resultado.tipo === 'achado') {
     const p = resultado.produto
     return (
-      <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-        <p className="font-medium text-green-900">{p.nome}</p>
-        <p className="text-sm text-green-800">
+      <div className="rounded-xl border border-marca-borda bg-marca-fraca p-4">
+        <p className="font-medium text-marca-forte">{p.nome}</p>
+        <p className="text-sm text-marca-forte">
           {p.marca ? `${p.marca} · ` : ''}
           {p.quantidade} {p.unidade_medida}
         </p>
-        <p className="mt-1 text-xs text-green-700">{p.gtin}</p>
+        <p className="mt-1 text-xs text-marca-forte">{p.gtin}</p>
       </div>
     )
   }
@@ -278,9 +278,9 @@ function Achado({ resultado }: { resultado: Resultado }) {
   }[resultado.tipo]
 
   return (
-    <div className="rounded-lg bg-neutral-100 p-4">
-      <p className="text-neutral-800">{mensagem}</p>
-      <p className="mt-1 text-xs text-neutral-600">{resultado.gtin}</p>
+    <div className="rounded-xl bg-sutil p-4">
+      <p className="text-tinta">{mensagem}</p>
+      <p className="mt-1 text-xs text-tinta-suave">{resultado.gtin}</p>
     </div>
   )
 }

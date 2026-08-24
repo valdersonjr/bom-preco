@@ -1,1 +1,195 @@
 @import "tailwindcss";
+
+/*
+  Sistema de cor por papel, não por matiz.
+  ----------------------------------------
+  Antes havia trinta e quatro utilitários de cor escolhidos um a um, e nenhuma
+  regra sobre qual usar onde. O componente decidia a cor; agora ele declara o
+  papel — superfície, tinta, marca, alerta — e o papel decide a cor.
+
+  É o que torna o modo escuro possível sem tocar em componente nenhum: as
+  variáveis trocam de valor, os utilitários apontam para elas.
+
+  Em oklch porque a claridade é perceptual: `L` igual significa peso visual
+  igual entre matizes diferentes, o que não vale em hex.
+*/
+@theme {
+  /* Fundo da página e das superfícies que se destacam dela. A separação entre
+     cartão e página é feita por contraste de fundo, não por sombra — sombra
+     some na luz de um corredor de supermercado. */
+  --color-superficie: oklch(0.98 0.002 250);
+  --color-elevado: oklch(1 0 0);
+  --color-sutil: oklch(0.955 0.003 250);
+  --color-sutil-forte: oklch(0.91 0.004 250);
+  --color-inverso: oklch(0.24 0.008 250);
+  --color-sobre-inverso: oklch(0.98 0.002 250);
+
+  /* Três níveis de tinta. Mais que três vira decisão sem critério. */
+  --color-tinta: oklch(0.24 0.008 250);
+  --color-tinta-suave: oklch(0.48 0.008 250);
+  --color-tinta-fraca: oklch(0.565 0.006 250);
+
+  --color-borda: oklch(0.915 0.004 250);
+  --color-borda-forte: oklch(0.85 0.005 250);
+
+  /* Verde: barato, disponível, confirmado. `marca` carrega texto branco a
+     4,8:1; `marca-forte` é a versão para texto sobre fundo claro, a 5,9:1. */
+  --color-marca: oklch(0.48 0.125 155);
+  --color-marca-forte: oklch(0.42 0.12 155);
+  --color-marca-fraca: oklch(0.965 0.025 155);
+  --color-marca-borda: oklch(0.87 0.06 155);
+  /* Texto que fica *em cima* de cor cheia. Precisa de token próprio porque no
+     modo escuro as cores cheias clareiam, e branco sobre verde claro dá 1,6:1 —
+     o defeito que só aparece depois de o modo escuro existir. */
+  --color-sobre-marca: oklch(1 0 0);
+
+  /* Âmbar: esperando, promoção, atenção sem erro. */
+  --color-alerta: oklch(0.48 0.12 68);
+  --color-alerta-fraca: oklch(0.965 0.03 80);
+  --color-alerta-borda: oklch(0.87 0.07 80);
+  --color-alerta-tinta: oklch(0.42 0.1 65);
+  --color-sobre-alerta: oklch(1 0 0);
+
+  /* Vermelho: só o que não tem volta. */
+  --color-perigo: oklch(0.5 0.18 27);
+  --color-perigo-fraca: oklch(0.965 0.025 25);
+  --color-perigo-borda: oklch(0.87 0.06 25);
+  --color-perigo-tinta: oklch(0.44 0.16 27);
+  --color-sobre-perigo: oklch(1 0 0);
+
+  /*
+    O preço é a interface.
+    ---------------------
+    Este app existe para responder "quanto custa e onde". O número é a
+    resposta; o resto é contexto. Ele é lido de relance, de pé, a um braço de
+    distância, com o carrinho na outra mão — e por isso é a única coisa da
+    tela que tem tamanho próprio.
+
+    Tabular para as casas decimais alinharem na coluna, e negativo no
+    espaçamento porque número grande com espaçamento padrão parece frouxo.
+  */
+  --text-preco: 1.75rem;
+  --text-preco--line-height: 1.1;
+  --text-preco--letter-spacing: -0.02em;
+  --text-preco--font-weight: 600;
+
+  --text-preco-menor: 1.25rem;
+  --text-preco-menor--line-height: 1.2;
+  --text-preco-menor--letter-spacing: -0.01em;
+  --text-preco-menor--font-weight: 600;
+}
+
+/*
+  Modo escuro pela preferência do sistema, sem alternador na interface.
+
+  Só os papéis mudam de valor — nenhum componente sabe que isto existe. A
+  marca clareia porque verde escuro sobre fundo escuro some; as tintas
+  invertem a ordem sem inverter a hierarquia.
+*/
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-superficie: oklch(0.17 0.006 250);
+    --color-elevado: oklch(0.215 0.007 250);
+    --color-sutil: oklch(0.26 0.008 250);
+    --color-sutil-forte: oklch(0.32 0.008 250);
+    --color-inverso: oklch(0.93 0.003 250);
+    --color-sobre-inverso: oklch(0.18 0.006 250);
+
+    --color-tinta: oklch(0.96 0.002 250);
+    --color-tinta-suave: oklch(0.74 0.007 250);
+    --color-tinta-fraca: oklch(0.610 0.007 250);
+
+    --color-borda: oklch(0.3 0.008 250);
+    --color-borda-forte: oklch(0.38 0.009 250);
+
+    --color-marca: oklch(0.72 0.15 155);
+    --color-marca-forte: oklch(0.8 0.15 155);
+    --color-marca-fraca: oklch(0.27 0.05 155);
+    --color-marca-borda: oklch(0.4 0.08 155);
+    --color-sobre-marca: oklch(0.17 0.04 155);
+
+    --color-alerta: oklch(0.75 0.14 75);
+    --color-alerta-fraca: oklch(0.28 0.05 70);
+    --color-alerta-borda: oklch(0.42 0.09 75);
+    --color-alerta-tinta: oklch(0.85 0.1 80);
+    --color-sobre-alerta: oklch(0.18 0.04 70);
+
+    --color-perigo: oklch(0.62 0.18 27);
+    --color-perigo-fraca: oklch(0.27 0.06 25);
+    --color-perigo-borda: oklch(0.4 0.1 25);
+    --color-perigo-tinta: oklch(0.82 0.1 25);
+    --color-sobre-perigo: oklch(0.16 0.04 25);
+  }
+}
+
+@layer base {
+  /* Faz o navegador pintar barra de rolagem, seletor de data e campo de texto
+     no tom certo. Sem isto, um input nativo aparece branco no modo escuro. */
+  :root {
+    color-scheme: light dark;
+  }
+
+  body {
+    background-color: var(--color-superficie);
+    color: var(--color-tinta);
+    /* Evita o cinza de toque do iOS em elemento que não é botão. */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /*
+    Foco visível em tudo que recebe foco, e só quando veio do teclado.
+
+    O anel usa a marca com um halo da superfície por trás, para continuar
+    visível tanto sobre cartão claro quanto sobre o verde de um botão cheio.
+  */
+  :focus-visible {
+    outline: 2px solid var(--color-marca);
+    outline-offset: 2px;
+    border-radius: 0.35rem;
+  }
+
+  /* Preço nunca dança quando o dígito muda. */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/*
+  Movimento: entrada curta, nunca em laço.
+
+  Só duas animações no app inteiro — a barra de desfazer, que precisa ser
+  notada, e o conteúdo que substitui um esqueleto. Qualquer coisa além disso
+  atrasa alguém que está com pressa na fila do caixa.
+*/
+@layer utilities {
+  @keyframes subir {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+
+  @keyframes surgir {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .anima-subir {
+    animation: subir 180ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .anima-surgir {
+    animation: surgir 140ms ease-out;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

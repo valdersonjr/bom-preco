@@ -27,17 +27,17 @@ export function EscolhaDeMercado({
   const [trocando, setTrocando] = useState(false)
 
   if (carregando) {
-    return <p className="text-neutral-500">Vendo onde você está…</p>
+    return <p className="text-tinta-fraca">Vendo onde você está…</p>
   }
 
   if (escolhido && !trocando) {
     return (
-      <div className="flex items-start justify-between gap-3 rounded-lg border border-neutral-200 p-3">
+      <div className="flex items-start justify-between gap-3 rounded-xl border border-borda bg-elevado p-3">
         <div>
-          <p className="font-medium text-neutral-900">{escolhido.nome}</p>
-          <p className="text-sm text-neutral-600">{escolhido.endereco}</p>
+          <p className="font-medium text-tinta">{escolhido.nome}</p>
+          <p className="text-sm text-tinta-suave">{escolhido.endereco}</p>
           {conferido && (
-            <p className="mt-1 text-sm text-green-800">
+            <p className="mt-1 text-sm text-marca-forte">
               Você está aqui — o preço vai marcado como conferido no local.
             </p>
           )}
@@ -45,7 +45,7 @@ export function EscolhaDeMercado({
         <button
           type="button"
           onClick={() => setTrocando(true)}
-          className="min-h-11 shrink-0 rounded-lg px-3 text-green-800 underline"
+          className="min-h-11 shrink-0 rounded-lg px-3 text-marca-forte underline"
         >
           Trocar
         </button>
@@ -55,7 +55,7 @@ export function EscolhaDeMercado({
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-neutral-700">
+      <p className="text-tinta-suave">
         {temPosicao
           ? 'Em qual mercado você está?'
           : 'Sem localização. Escolha o mercado na lista.'}
@@ -69,18 +69,18 @@ export function EscolhaDeMercado({
                 aoEscolher(m)
                 setTrocando(false)
               }}
-              className="min-h-11 w-full rounded-lg px-3 py-2 text-left hover:bg-neutral-100"
+              className="min-h-11 w-full rounded-lg px-3 py-2 text-left hover:bg-sutil"
             >
-              <span className="text-neutral-900">{m.nome}</span>
+              <span className="text-tinta">{m.nome}</span>
               {m.rede && (
-                <span className="text-sm text-neutral-500"> · {m.rede}</span>
+                <span className="text-sm text-tinta-fraca"> · {m.rede}</span>
               )}
-              <span className="block text-sm text-neutral-600">{m.endereco}</span>
+              <span className="block text-sm text-tinta-suave">{m.endereco}</span>
             </button>
           </li>
         ))}
       </ul>
-      <p className="text-xs text-neutral-500">
+      <p className="text-xs text-tinta-fraca">
         Não achou o mercado? Ele precisa ser cadastrado pelo mantenedor — é o que
         evita a mesma loja virar duas.
       </p>
