@@ -194,7 +194,7 @@ triagem do brainstorm.
 | RD-01 | Preço pertence a um mercado (loja), nunca a uma rede |
 | RD-02 | Registro de preço é imutável; correção se faz com registro novo |
 | RD-03 | Confirmação do próprio registro é permitida, mas vale menos que a de outro usuário e é exibida como tal |
-| RD-04 | Vários registros do mesmo usuário para o mesmo produto e mercado no mesmo dia são permitidos; vale o mais recente, e os superados não entram no histórico exibido |
+| RD-04 | Vários registros do mesmo usuário para o mesmo produto e mercado no mesmo dia são permitidos; vale o mais recente, e os superados não entram no histórico exibido. "Mais recente" é pelo instante observado e, em caso de empate, pela ordem de chegada |
 | RD-05 | Preço por unidade só compara dentro da mesma dimensão: massa com massa, volume com volume, contagem com contagem |
 | RD-06 | Massa é normalizada para kg, volume para litro, antes de qualquer comparação |
 | RD-07 | Preço promocional não substitui o preço de tabela: são registros distintos e coexistem |

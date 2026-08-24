@@ -11,6 +11,7 @@ import {
   unidadeDeComparacao,
   type Produto,
 } from './lib/produto'
+import { Historico } from './Historico'
 
 /** Padrão: cidade inteira. Ajustável pela pessoa (RF-36). */
 const RAIOS = [
@@ -199,6 +200,7 @@ function Linha({
   produto: Produto
   maisBarato: boolean
 }) {
+  const [aberto, setAberto] = useState(false)
   const porUnidade = precoPorUnidade(produto, preco.valor)
   const real = (n: number) => `R$ ${n.toFixed(2).replace('.', ',')}`
 
@@ -251,7 +253,25 @@ function Linha({
             {preco.confirmacoesTerceiros > 1 ? 'ões' : ''}
           </span>
         )}
+        <button
+          type="button"
+          onClick={() => setAberto((v) => !v)}
+          aria-expanded={aberto}
+          className="ml-auto min-h-11 rounded px-2 text-green-800 underline"
+        >
+          {aberto ? 'Fechar histórico' : 'Histórico'}
+        </button>
       </div>
+
+      {aberto && (
+        <div className="mt-3 border-t border-neutral-200 pt-3">
+          <Historico
+            produto={produto}
+            mercadoId={preco.mercado.id}
+            mercadoNome={preco.mercado.nome}
+          />
+        </div>
+      )}
     </li>
   )
 }

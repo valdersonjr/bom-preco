@@ -29,7 +29,7 @@ domínio deixaram de ser texto e viraram estrutura:
 | ----- | -------------- |
 | RD-01 · preço pertence à loja | `registro_preco.mercado_id` aponta para `mercado`, nunca para `rede` |
 | RD-02 · registro imutável | Ausência de política de `update` e `delete`. Não é convenção: o banco recusa |
-| RD-04 · vale o mais recente do dia | Visão `registro_vigente`, com `distinct on` |
+| RD-04 · vale o mais recente do dia | Visão `registro_vigente`, com `distinct on`. Desempata por `observado_em` e depois por `criado_em`: quando os dois instantes observados coincidem — digitar errado e corrigir em seguida — só a ordem de chegada distingue a correção do erro |
 | RD-05 e RD-06 · comparação normalizada | Colunas geradas `dimensao` e `quantidade_base`. Impossível gravar produto sem a normalização |
 | RD-03 · autoconfirmação marcada | *Trigger* na inserção, para o sinal sobreviver à anonimização da autoria |
 | RD-14 · uma confirmação por dia | Restrição única sobre registro, pessoa e dia. O dia é coluna, e não expressão no índice, porque conversão de fuso não é imutável |
