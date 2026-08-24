@@ -144,6 +144,11 @@ export function Escaneamento({
         )}
       </div>
 
+      <Digitado
+        aoConfirmar={(gtin) => void aoLer(gtin)}
+        oculto={modo !== 'codigo'}
+      />
+
       {resultado.tipo === 'achado' && mercado && (
         <RegistroDePreco
           produto={resultado.produto}
@@ -184,6 +189,64 @@ export function Escaneamento({
         resultado.tipo !== 'achado' && <Achado resultado={resultado} />
       )}
     </section>
+  )
+}
+
+/**
+ * Digitar o código à mão.
+ *
+ * A mensagem de câmera negada já prometia isto, e o campo não existia. Também é
+ * a saída quando a etiqueta está amassada, o código não lê no escuro do
+ * corredor, ou o aparelho não tem `BarcodeDetector` — os mesmos casos em que a
+ * câmera é sinal e não porteiro.
+ */
+function Digitado({
+  aoConfirmar,
+  oculto,
+}: {
+  aoConfirmar: (gtin: string) => void
+  oculto: boolean
+}) {
+  const [texto, setTexto] = useState('')
+  const digitos = texto.replace(/\D/g, '')
+  // GTIN-8, GTIN-12 (UPC), GTIN-13 (EAN) e GTIN-14. O dígito verificador não é
+  // conferido aqui: quem digita errado recebe "não encontrei esse produto", que
+  // é a mesma resposta e não precisa de outra explicação.
+  const valido = [8, 12, 13, 14].includes(digitos.length)
+
+  return (
+    <form
+      className={oculto ? 'hidden' : 'flex items-end gap-2'}
+      onSubmit={(e) => {
+        e.preventDefault()
+        if (valido) {
+          aoConfirmar(digitos)
+          setTexto('')
+        }
+      }}
+    >
+      <div className="flex flex-1 flex-col gap-1">
+        <label htmlFor="gtin" className="text-sm text-neutral-700">
+          Ou digite o código
+        </label>
+        <input
+          id="gtin"
+          value={texto}
+          onChange={(e) => setTexto(e.target.value)}
+          inputMode="numeric"
+          autoComplete="off"
+          placeholder="7890300363614"
+          className="min-h-11 rounded-lg border border-neutral-300 px-3 font-mono"
+        />
+      </div>
+      <button
+        type="submit"
+        disabled={!valido}
+        className="min-h-11 rounded-lg bg-green-700 px-4 text-white disabled:opacity-40"
+      >
+        Buscar
+      </button>
+    </form>
   )
 }
 
