@@ -57,3 +57,34 @@ export function useVinculo() {
 
   return { situacao, vincularEmail }
 }
+
+/**
+ * Exclui a conta (RF-40, RD-11).
+ *
+ * Chama a função de servidor, que é onde vive a chave capaz de apagar do
+ * serviço de identidade. A função descobre quem está pedindo pelo próprio
+ * token — não há como pedir a exclusão de conta alheia.
+ *
+ * Os preços cadastrados permanecem, sem dono.
+ */
+export async function excluirConta(): Promise<{ ok: boolean; motivo?: string }> {
+  const { data } = await supabase.auth.getSession()
+  const token = data.session?.access_token
+  if (!token) return { ok: false, motivo: 'Sem sessão ativa.' }
+
+  const resposta = await fetch(
+    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/excluir-conta`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+      },
+    },
+  )
+
+  if (!resposta.ok) return { ok: false, motivo: await resposta.text() }
+
+  await supabase.auth.signOut()
+  return { ok: true }
+}

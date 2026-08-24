@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { deveConvidarAVincular, useVinculo } from './lib/vinculo'
+import { deveConvidarAVincular, excluirConta, useVinculo } from './lib/vinculo'
 
 export function Conta({ anonimo }: { anonimo: boolean }) {
   const { situacao, vincularEmail } = useVinculo()
@@ -8,10 +8,13 @@ export function Conta({ anonimo }: { anonimo: boolean }) {
 
   if (!anonimo) {
     return (
-      <p className="text-sm text-neutral-600">
-        Sua conta está protegida: entrando com a mesma identidade em outro
-        aparelho, você recupera tudo.
-      </p>
+      <section className="flex flex-col gap-2">
+        <p className="text-sm text-neutral-600">
+          Sua conta está protegida: entrando com a mesma identidade em outro
+          aparelho, você recupera tudo.
+        </p>
+        <Excluir />
+      </section>
     )
   }
 
@@ -81,6 +84,63 @@ export function Conta({ anonimo }: { anonimo: boolean }) {
           )}
         </form>
       )}
+
+      <Excluir />
     </section>
+  )
+}
+
+/**
+ * Excluir conta é irreversível, então pede confirmação — mas a confirmação
+ * também explica o que sobrevive. Quem apaga a conta costuma temer perder algo;
+ * aqui o medo é o oposto, de que os preços cadastrados sumam do app dos outros.
+ */
+function Excluir() {
+  const [confirmando, setConfirmando] = useState(false)
+  const [erro, setErro] = useState<string | null>(null)
+
+  if (!confirmando) {
+    return (
+      <button
+        type="button"
+        onClick={() => setConfirmando(true)}
+        className="min-h-11 self-start rounded-lg px-3 text-sm text-neutral-600 underline"
+      >
+        Excluir minha conta
+      </button>
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-2 rounded-lg border border-red-200 bg-red-50 p-3">
+      <p className="text-red-900">
+        Isso apaga sua conta, seu apelido e suas listas, e não tem volta.
+      </p>
+      <p className="text-sm text-red-900">
+        Os preços que você cadastrou continuam no app, sem seu nome. Eles ajudam
+        quem ficou, e ninguém consegue ligá-los a você depois disso.
+      </p>
+      {erro && <p className="text-sm text-red-900">{erro}</p>}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={async () => {
+            const r = await excluirConta()
+            if (r.ok) location.reload()
+            else setErro(r.motivo ?? 'Não consegui excluir.')
+          }}
+          className="min-h-11 rounded-lg bg-red-700 px-4 text-white"
+        >
+          Excluir mesmo assim
+        </button>
+        <button
+          type="button"
+          onClick={() => setConfirmando(false)}
+          className="min-h-11 rounded-lg px-4 text-neutral-700 underline"
+        >
+          Cancelar
+        </button>
+      </div>
+    </div>
   )
 }
