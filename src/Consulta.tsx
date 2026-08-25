@@ -15,6 +15,7 @@ import {
   type Produto,
 } from './lib/produto'
 import { Historico } from './Historico'
+import { ComoChegar } from './Mercado'
 import { useLeitorDeCodigo } from './lib/leitor'
 
 /** Padrão: cidade inteira. Ajustável pela pessoa (RF-36). */
@@ -380,7 +381,12 @@ function Linha({
           <p className="truncate font-medium text-tinta">
             {preco.mercado.nome}
           </p>
-          <p className="mt-0.5 text-sm text-tinta-suave">
+          {preco.mercado.endereco && (
+            <p className="mt-0.5 truncate text-sm text-tinta-suave">
+              {preco.mercado.endereco}
+            </p>
+          )}
+          <p className="mt-0.5 text-sm text-tinta-fraca">
             {descreverIdade(preco.idadeEmDias)}
             {preco.distanciaM !== null && (
               <> · {(preco.distanciaM / 1000).toFixed(1)} km</>
@@ -396,6 +402,10 @@ function Linha({
             </p>
           )}
         </div>
+      </div>
+
+      <div className="mt-1">
+        <ComoChegar mercado={preco.mercado} discreto />
       </div>
 
       {(maisBarato || preco.tipo === 'promocional') && (

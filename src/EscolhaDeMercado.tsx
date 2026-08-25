@@ -16,6 +16,14 @@ type Props = {
  * Não decide nada: quem sugere é o `useMercados` no componente acima, e a
  * escolha da pessoa mora lá também. Aqui só se mostra e se avisa do clique.
  */
+/** "ebasico" precisa achar "Ébásico". Ninguém digita acento com pressa. */
+function semAcento(t: string): string {
+  return t
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase()
+}
+
 export function EscolhaDeMercado({
   mercados,
   escolhido,
@@ -25,6 +33,7 @@ export function EscolhaDeMercado({
   aoEscolher,
 }: Props) {
   const [trocando, setTrocando] = useState(false)
+  const [filtro, setFiltro] = useState('')
 
   if (carregando) {
     return <p className="text-tinta-fraca">Vendo onde você está…</p>
@@ -53,6 +62,20 @@ export function EscolhaDeMercado({
     )
   }
 
+  /*
+    Filtro por nome, rede e endereço.
+
+    São vinte e seis mercados numa lista rolante, e o GPS só sugere os que têm
+    coordenada — hoje nove. Quem está num dos outros dezessete rola a lista
+    inteira, toda vez. O campo existe para essas pessoas.
+  */
+  const alvo = semAcento(filtro.trim())
+  const visiveis = alvo
+    ? mercados.filter((m) =>
+        semAcento(`${m.nome} ${m.rede ?? ''} ${m.endereco ?? ''}`).includes(alvo),
+      )
+    : mercados
+
   return (
     <div className="flex flex-col gap-2">
       <p className="text-tinta-suave">
@@ -60,8 +83,23 @@ export function EscolhaDeMercado({
           ? 'Em qual mercado você está?'
           : 'Sem localização. Escolha o mercado na lista.'}
       </p>
+
+      <input
+        value={filtro}
+        onChange={(e) => setFiltro(e.target.value)}
+        placeholder="Filtrar por nome ou rua…"
+        aria-label="Filtrar mercados"
+        className="min-h-11 rounded-xl border border-borda-forte bg-elevado px-3"
+      />
+
+      {visiveis.length === 0 && (
+        <p className="rounded-xl bg-sutil p-3 text-sm text-tinta-suave">
+          Nenhum mercado com esse nome ou nessa rua.
+        </p>
+      )}
+
       <ul className="flex max-h-72 flex-col gap-1 overflow-y-auto">
-        {mercados.map((m) => (
+        {visiveis.map((m) => (
           <li key={m.id}>
             <button
               type="button"

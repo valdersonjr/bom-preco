@@ -7,10 +7,12 @@ import {
   type ItemDaLista,
 } from './lib/lista'
 import { buscarProduto } from './lib/consulta'
-import { useMercados } from './lib/mercado'
+import { useMercados, type Mercado } from './lib/mercado'
 import type { Produto } from './lib/produto'
 import { precoEmTexto } from './lib/formato'
 import { Preco } from './Preco'
+import { ComoChegar } from './Mercado'
+import { MapaDeMercados } from './MapaDeMercados'
 
 export function Lista({ usuarioId }: { usuarioId: string }) {
   const { mercados } = useMercados()
@@ -293,19 +295,29 @@ function ItemLinha({
 }
 
 /**
- * Agrupa por mercado o que já tem preço.
+ * Agrupa por mercado o que já tem preço — o roteiro da compra.
  *
- * Não é o total da cesta — esse é o RF-22, que ficou fora do MVP porque exige
- * cobertura que a base nova não tem. Aqui é só o roteiro: se você for a este
- * mercado, leva estes itens por este valor.
+ * Não é o total da cesta: esse é o RF-22, que ficou fora do MVP porque exige
+ * cobertura que a base nova não tem. Aqui é só "se você for a este mercado,
+ * leva estes itens por este valor".
+ *
+ * É a única tela do app em que vários mercados aparecem juntos, e por isso a
+ * única em que o mapa mostra algo que a lista não mostra: que dois deles ficam
+ * na mesma avenida. Vem fechado, porque o mapa custa rede e 42 KB — quem só
+ * quer saber quanto vai gastar não paga por isso.
  */
 function PorMercado({ itens }: { itens: ItemDaLista[] }) {
-  const grupos = new Map<string, { nome: string; total: number; quantos: number }>()
+  const [mapaAberto, setMapaAberto] = useState(false)
+
+  const grupos = new Map<
+    string,
+    { mercado: Mercado; total: number; quantos: number }
+  >()
 
   for (const i of itens) {
     if (!i.melhor) continue
     const atual = grupos.get(i.melhor.mercado.id) ?? {
-      nome: i.melhor.mercado.nome,
+      mercado: i.melhor.mercado,
       total: 0,
       quantos: 0,
     }
@@ -315,24 +327,49 @@ function PorMercado({ itens }: { itens: ItemDaLista[] }) {
   }
 
   const ordenados = [...grupos.values()].sort((a, b) => b.quantos - a.quantos)
+  const mercados = ordenados.map((g) => g.mercado)
 
   return (
-    <div className="rounded-xl bg-superficie p-3">
-      <p className="text-sm font-medium text-tinta">
-        Onde comprar o que já tem preço
-      </p>
-      <ul className="mt-1 flex flex-col gap-1 text-sm text-tinta-suave">
+    <div className="flex flex-col gap-3 rounded-xl border border-borda bg-elevado p-4">
+      <p className="font-medium text-tinta">Onde comprar</p>
+
+      <ul className="flex flex-col gap-3">
         {ordenados.map((g) => (
-          <li key={g.nome} className="flex justify-between gap-2">
-            <span>
-              {g.nome} · {g.quantos} {g.quantos === 1 ? 'item' : 'itens'}
-            </span>
-            <span className="tabular-nums">{precoEmTexto(g.total)}</span>
+          <li
+            key={g.mercado.id}
+            className="flex flex-col gap-0.5 border-t border-borda pt-3 first:border-0 first:pt-0"
+          >
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="min-w-0 truncate font-medium text-tinta">
+                {g.mercado.nome}
+              </span>
+              <span className="shrink-0 tabular-nums text-tinta">
+                {precoEmTexto(g.total)}
+              </span>
+            </div>
+            <p className="text-sm text-tinta-suave">
+              {g.quantos} {g.quantos === 1 ? 'item' : 'itens'}
+              {g.mercado.endereco && <> · {g.mercado.endereco}</>}
+            </p>
+            <ComoChegar mercado={g.mercado} discreto />
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-xs text-tinta-fraca">
-        Cada item mostrado no mercado mais barato. Isso pode espalhar a compra
+
+      {mapaAberto ? (
+        <MapaDeMercados mercados={mercados} />
+      ) : (
+        <button
+          type="button"
+          onClick={() => setMapaAberto(true)}
+          className="min-h-11 self-start rounded-lg text-sm font-medium text-marca-forte"
+        >
+          Ver no mapa
+        </button>
+      )}
+
+      <p className="text-xs text-tinta-fraca">
+        Cada item aparece no mercado mais barato. Isso pode espalhar a compra
         por vários lugares — comparar o total da cesta inteira num mercado só
         ainda não existe.
       </p>

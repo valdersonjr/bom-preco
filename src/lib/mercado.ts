@@ -10,6 +10,31 @@ export type Mercado = {
   rede: string | null
 }
 
+/** Tudo neste app é numa cidade só. O destino precisa dizer qual. */
+const CIDADE = 'Goianésia - GO'
+
+/**
+ * Endereço da rota para o app de mapas do aparelho.
+ *
+ * Com coordenada, manda o ponto: é exato e não depende de o mapa reconhecer o
+ * nome da loja. Sem coordenada — o caso de 17 dos 26 mercados hoje — manda o
+ * texto, e o mapa resolve. É por isso que a rota funciona para todos e o mapa
+ * embutido só para nove: navegação aceita endereço, alfinete precisa de ponto.
+ */
+export function urlDeRota(mercado: Mercado): string {
+  const destino =
+    mercado.latitude !== null && mercado.longitude !== null
+      ? `${mercado.latitude},${mercado.longitude}`
+      : [mercado.nome, mercado.endereco, CIDADE].filter(Boolean).join(', ')
+
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destino)}`
+}
+
+/** Só quem tem ponto pode virar alfinete. */
+export function comCoordenada(mercados: Mercado[]): Mercado[] {
+  return mercados.filter((m) => m.latitude !== null && m.longitude !== null)
+}
+
 /** Raio provisório do RF-41, a confirmar com medição em campo. */
 export const RAIO_CONFERIDO_M = 200
 

@@ -61,6 +61,7 @@ referenciam o `RF-xx` de origem.
 | RF-05 | O sistema deve impedir que o usuário crie produto que não possua código de barras — esses vêm apenas do catálogo curado | ✅ | `Dom` RD-08 |
 | RF-06 | O sistema deve sugerir o mercado mais próximo a partir da localização do usuário | ✅ | `Elic` |
 | RF-07 | O sistema deve permitir corrigir o mercado sugerido, escolhendo outro da lista | ✅ | `Der` |
+| RF-46 | O sistema deve permitir filtrar a lista de mercados por nome, rede ou endereço, ignorando acentuação | ✅ | `Der` |
 | RF-08 | O sistema deve registrar o preço observado de um produto em um mercado | ✅ | `Elic` |
 | RF-09 | O sistema deve permitir anexar foto da etiqueta ao registro | ❌ | `Elic` |
 | RF-10 | O sistema deve extrair o valor do preço a partir da foto da etiqueta | ❌ | `Elic` |
@@ -83,6 +84,9 @@ referenciam o `RF-xx` de origem.
 | RF-18 | O sistema deve sinalizar redução de quantidade da embalagem sem redução proporcional de preço | ❌ | `Elic` |
 | RF-19 | O sistema deve recomendar produto alternativo mais barato equivalente | ❌ | `Elic` |
 | RF-36 | O sistema deve permitir ao usuário ajustar o raio de busca de mercados | ✅ | `Der` |
+| RF-43 | O sistema deve permitir abrir a rota até um mercado no aplicativo de mapas do aparelho, usando a coordenada quando existir e o endereço quando não | ✅ | `Elic` |
+| RF-44 | O sistema deve exibir em mapa os mercados que possuem coordenada, informando quantos ficaram de fora | ✅ | `Elic` |
+| RF-45 | O sistema deve permitir identificar o produto da consulta pela leitura do código de barras, além da busca por nome | ✅ | `Elic` |
 
 ### Lista de compras · UC-04
 
@@ -120,7 +124,7 @@ referenciam o `RF-xx` de origem.
 | RF-30 | O sistema deve importar carga inicial de preços de base pública | ❌ | `Elic` |
 | RF-31 | O sistema deve atribuir pontos e distintivos a contribuidores | ❌ | `Elic` |
 
-**Resumo:** 42 requisitos funcionais, 26 no MVP.
+**Resumo:** 46 requisitos funcionais, 30 no MVP.
 
 ---
 
