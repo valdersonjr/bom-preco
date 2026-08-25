@@ -44,7 +44,12 @@ export default function App() {
         {sessao.situacao === 'pronto' && (
           <div key={aba} className="anima-surgir flex flex-1 flex-col">
             {aba === 'lista' && <Lista usuarioId={sessao.perfil.id} />}
-            {aba === 'buscar' && <Consulta usuarioId={sessao.perfil.id} />}
+            {aba === 'buscar' && (
+              <Consulta
+                usuarioId={sessao.perfil.id}
+                aoQuererRegistrar={() => setAba('registrar')}
+              />
+            )}
             {aba === 'registrar' && (
               <Escaneamento usuarioId={sessao.perfil.id} envio={envio} />
             )}

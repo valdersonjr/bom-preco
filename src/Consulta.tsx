@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   buscarProduto,
   confirmar,
@@ -15,6 +15,7 @@ import {
   type Produto,
 } from './lib/produto'
 import { Historico } from './Historico'
+import { useLeitorDeCodigo } from './lib/leitor'
 
 /** Padrão: cidade inteira. Ajustável pela pessoa (RF-36). */
 const RAIOS = [
@@ -23,13 +24,52 @@ const RAIOS = [
   { rotulo: 'Até 5 km', km: 5 },
 ] as const
 
-export function Consulta({ usuarioId }: { usuarioId: string }) {
+export function Consulta({
+  usuarioId,
+  aoQuererRegistrar,
+}: {
+  usuarioId: string
+  /** Escaneou algo que não está no catálogo: leva para a aba de registro. */
+  aoQuererRegistrar: () => void
+}) {
   const { mercados, posicao } = useMercados()
   const [termo, setTermo] = useState('')
   const [achados, setAchados] = useState<Produto[]>([])
   const [produto, setProduto] = useState<Produto | null>(null)
   const [raioKm, setRaioKm] = useState<number | null>(null)
   const [buscando, setBuscando] = useState(false)
+  const [foraDoCatalogo, setForaDoCatalogo] = useState<string | null>(null)
+
+  /*
+    Escanear para consultar, não só para cadastrar.
+    ----------------------------------------------
+    No corredor a pessoa está com o produto na mão. Digitar "arroz integral
+    fritz & frida" para descobrir se está mais barato em outro lugar é pedir o
+    trabalho que o código de barras existe para evitar.
+
+    `buscarProduto` já aceita GTIN — só faltava a câmera alimentá-la.
+  */
+  const aoLerCodigo = useCallback(async (gtin: string) => {
+    setTermo('')
+    setAchados([])
+    const achado = await buscarProduto(gtin)
+    // Código de barras identifica um produto só. Pedir mais um toque para
+    // escolher numa lista de um item seria trabalho sem resposta nova.
+    if (achado.length > 0) {
+      setProduto(achado[0])
+      setForaDoCatalogo(null)
+    } else {
+      setProduto(null)
+      setForaDoCatalogo(gtin)
+    }
+  }, [])
+
+  // Desestruturado, e não guardado como objeto: `leitor.estado` no meio do
+  // render faz o lint acusar acesso a ref durante a renderização, porque o
+  // objeto carrega o ref do vídeo junto.
+  const { video, estado, iniciar, parar } = useLeitorDeCodigo((gtin) =>
+    void aoLerCodigo(gtin),
+  )
 
   useEffect(() => {
     let ativo = true
@@ -49,17 +89,102 @@ export function Consulta({ usuarioId }: { usuarioId: string }) {
     <section className="flex flex-col gap-3">
       <h2 className="font-medium text-tinta">Buscar preço</h2>
 
-      <input
-        value={termo}
-        onChange={(e) => {
-          setTermo(e.target.value)
-          setProduto(null)
-          setBuscando(true)
-        }}
-        placeholder="arroz, sabão em pó, tomate…"
-        aria-label="Buscar produto"
-        className="min-h-11 rounded-lg border border-borda-forte px-3"
+      <div className="flex gap-2">
+        <input
+          value={termo}
+          onChange={(e) => {
+            setTermo(e.target.value)
+            setProduto(null)
+            setForaDoCatalogo(null)
+            setBuscando(true)
+          }}
+          placeholder="arroz, sabão em pó, tomate…"
+          aria-label="Buscar produto pelo nome"
+          className="min-h-12 flex-1 rounded-xl border border-borda-forte bg-elevado px-3"
+        />
+        <button
+          type="button"
+          onClick={() =>
+            estado === 'lendo' ? parar() : void iniciar()
+          }
+          aria-label={
+            estado === 'lendo'
+              ? 'Parar a câmera'
+              : 'Buscar escaneando o código de barras'
+          }
+          className={`flex min-h-12 w-12 shrink-0 items-center justify-center rounded-xl border ${
+            estado === 'lendo'
+              ? 'border-marca bg-marca text-sobre-marca'
+              : 'border-borda-forte bg-elevado text-tinta-suave'
+          }`}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            className="size-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" />
+            <path d="M7 8v8M10.5 8v8M14 8v8M17 8v8" />
+          </svg>
+        </button>
+      </div>
+
+      <video
+        ref={video}
+        playsInline
+        muted
+        className={
+          estado === 'lendo'
+            ? 'aspect-video w-full rounded-xl bg-black object-cover'
+            : 'hidden'
+        }
       />
+
+      {estado === 'lendo' && (
+        <p className="text-sm text-tinta-suave">
+          Aponte para o código de barras do produto.
+        </p>
+      )}
+
+      {estado === 'negado' && (
+        <p className="rounded-xl bg-alerta-fraca p-3 text-alerta-tinta">
+          Sem acesso à câmera. Libere a permissão nas configurações do navegador,
+          ou busque pelo nome.
+        </p>
+      )}
+
+      {estado === 'indisponivel' && (
+        <p className="rounded-xl bg-alerta-fraca p-3 text-alerta-tinta">
+          Este navegador não consegue ler código de barras. Busque pelo nome.
+        </p>
+      )}
+
+      {foraDoCatalogo && (
+        <div className="flex flex-col items-start gap-2 rounded-xl bg-sutil p-4">
+          <p className="text-tinta">
+            Esse código ainda não está no app.{' '}
+            <span className="font-mono text-sm text-tinta-suave">
+              {foraDoCatalogo}
+            </span>
+          </p>
+          <p className="text-sm text-tinta-suave">
+            Ninguém cadastrou preço para ele em Goianésia. Se você está com o
+            produto na mão, é agora que a comparação nasce.
+          </p>
+          <button
+            type="button"
+            onClick={aoQuererRegistrar}
+            className="min-h-11 rounded-lg bg-marca px-4 font-medium text-sobre-marca"
+          >
+            Cadastrar o preço
+          </button>
+        </div>
+      )}
 
       {!produto && achados.length > 0 && (
         <ul className="flex max-h-64 flex-col gap-1 overflow-y-auto">
