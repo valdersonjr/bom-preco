@@ -8,7 +8,7 @@ import {
 } from './lib/consulta'
 import { Preco } from './Preco'
 import { precoEmTexto } from './lib/formato'
-import { useMercados, type Mercado } from './lib/mercado'
+import { naCidade, useMercados, type Mercado } from './lib/mercado'
 import {
   precoPorUnidade,
   unidadeDeComparacao,
@@ -33,7 +33,8 @@ export function Consulta({
   /** Escaneou algo que não está no catálogo: leva para a aba de registro. */
   aoQuererRegistrar: () => void
 }) {
-  const { mercados, posicao } = useMercados()
+  const { mercados, posicao, cidade } = useMercados()
+  const daCidade = naCidade(mercados, cidade)
   const [termo, setTermo] = useState('')
   const [achados, setAchados] = useState<Produto[]>([])
   const [produto, setProduto] = useState<Produto | null>(null)
@@ -223,7 +224,7 @@ export function Consulta({
         <Precos
           key={produto.id}
           produto={produto}
-          mercados={mercados}
+          mercados={daCidade}
           posicao={posicao}
           raioKm={raioKm}
           aoTrocarRaio={setRaioKm}

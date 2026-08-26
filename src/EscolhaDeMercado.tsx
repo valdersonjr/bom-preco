@@ -6,6 +6,8 @@ type Props = {
   escolhido: Mercado | null
   conferido: boolean
   temPosicao: boolean
+  /** Cidade de quem está usando; a lista começa por ela. */
+  cidade: string | null
   carregando: boolean
   aoEscolher: (mercado: Mercado) => void
 }
@@ -29,6 +31,7 @@ export function EscolhaDeMercado({
   escolhido,
   conferido,
   temPosicao,
+  cidade,
   carregando,
   aoEscolher,
 }: Props) {
@@ -44,7 +47,12 @@ export function EscolhaDeMercado({
       <div className="flex items-start justify-between gap-3 rounded-xl border border-borda bg-elevado p-3">
         <div>
           <p className="font-medium text-tinta">{escolhido.nome}</p>
-          <p className="text-sm text-tinta-suave">{escolhido.endereco}</p>
+          <p className="text-sm text-tinta-suave">
+            {escolhido.endereco}
+            {escolhido.cidade !== cidade && (
+              <span className="text-tinta-fraca"> · {escolhido.cidade}</span>
+            )}
+          </p>
           {conferido && (
             <p className="mt-1 text-sm text-marca-forte">
               Você está aqui — o preço vai marcado como conferido no local.
@@ -70,11 +78,20 @@ export function EscolhaDeMercado({
     inteira, toda vez. O campo existe para essas pessoas.
   */
   const alvo = semAcento(filtro.trim())
-  const visiveis = alvo
+  const encontrados = alvo
     ? mercados.filter((m) =>
-        semAcento(`${m.nome} ${m.rede ?? ''} ${m.endereco ?? ''}`).includes(alvo),
+        semAcento(`${m.nome} ${m.rede ?? ''} ${m.endereco ?? ''} ${m.cidade}`).includes(alvo),
       )
     : mercados
+
+  // A cidade de quem está aqui vem primeiro, e as outras continuam alcançáveis.
+  // Ordenar em vez de filtrar: quem viajou não fica sem o mercado onde está.
+  const visiveis = cidade
+    ? [
+        ...encontrados.filter((m) => m.cidade === cidade),
+        ...encontrados.filter((m) => m.cidade !== cidade),
+      ]
+    : encontrados
 
   return (
     <div className="flex flex-col gap-2">
@@ -113,7 +130,12 @@ export function EscolhaDeMercado({
               {m.rede && (
                 <span className="text-sm text-tinta-fraca"> · {m.rede}</span>
               )}
-              <span className="block text-sm text-tinta-suave">{m.endereco}</span>
+              <span className="block text-sm text-tinta-suave">
+                {m.endereco}
+                {m.cidade !== cidade && (
+                  <span className="text-tinta-fraca"> · {m.cidade}</span>
+                )}
+              </span>
             </button>
           </li>
         ))}

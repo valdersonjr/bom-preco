@@ -8,6 +8,22 @@ export type Mercado = {
   latitude: number | null
   longitude: number | null
   rede: string | null
+  cidade: string
+}
+
+/**
+ * Mercados da cidade onde a pessoa está.
+ *
+ * "A cidade toda" — o raio padrão do RF-12 — significa a cidade dela, não o
+ * conjunto de tudo que existe no banco. Enquanto havia uma cidade só, os dois
+ * eram a mesma coisa; com duas, comparar preço entre lojas a duzentos
+ * quilômetros deixaria de ser comparação.
+ *
+ * Sem cidade conhecida, devolve tudo: é melhor mostrar demais do que esconder
+ * o preço que a pessoa procura.
+ */
+export function naCidade(mercados: Mercado[], cidade: string | null): Mercado[] {
+  return cidade ? mercados.filter((m) => m.cidade === cidade) : mercados
 }
 
 /** Tudo neste app é numa cidade só. O destino precisa dizer qual. */
@@ -81,6 +97,8 @@ export type EstadoMercados = {
   /** Ordenados por distância quando há posição; por nome quando não há. */
   sugerido: Mercado | null
   posicao: Posicao | null
+  /** Cidade do mercado mais próximo. Nula sem localização. */
+  cidade: string | null
 }
 
 export function useMercados(): EstadoMercados {
@@ -89,6 +107,7 @@ export function useMercados(): EstadoMercados {
     mercados: [],
     sugerido: null,
     posicao: null,
+    cidade: null,
   })
 
   useEffect(() => {
@@ -98,7 +117,7 @@ export function useMercados(): EstadoMercados {
       const [{ data }, posicao] = await Promise.all([
         supabase
           .from('mercado')
-          .select('id, nome, endereco, latitude, longitude, rede(nome)')
+          .select('id, nome, endereco, latitude, longitude, cidade, rede(nome)')
           .order('nome'),
         obterPosicao(),
       ])
@@ -111,6 +130,7 @@ export function useMercados(): EstadoMercados {
         latitude: m.latitude,
         longitude: m.longitude,
         rede: m.rede?.nome ?? null,
+        cidade: m.cidade,
       }))
 
       let sugerido: Mercado | null = null
@@ -127,7 +147,13 @@ export function useMercados(): EstadoMercados {
             .sort((a, b) => a.d - b.d)[0]?.m ?? null
       }
 
-      setEstado({ carregando: false, mercados, sugerido, posicao })
+      setEstado({
+        carregando: false,
+        mercados,
+        sugerido,
+        posicao,
+        cidade: sugerido?.cidade ?? null,
+      })
     }
 
     void carregar()

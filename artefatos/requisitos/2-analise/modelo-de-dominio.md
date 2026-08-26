@@ -46,7 +46,8 @@ erDiagram
         uuid rede_id "nulo se independente"
         text nome
         text endereco
-        geography localizacao "ponto lat/long"
+        text cidade
+        geography localizacao "ponto lat/long, nulo até ser levantado"
     }
     PRODUTO {
         uuid id

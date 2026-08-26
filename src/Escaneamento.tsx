@@ -29,7 +29,7 @@ export function Escaneamento({
   envio: ReturnType<typeof useEnvio>
 }) {
   const [resultado, setResultado] = useState<Resultado>({ tipo: 'nenhum' })
-  const { carregando, mercados, sugerido, posicao } = useMercados()
+  const { carregando, mercados, sugerido, posicao, cidade } = useMercados()
   const [escolhaManual, setEscolhaManual] = useState<Mercado | null>(null)
   const [modo, setModo] = useState<'codigo' | 'catalogo'>('codigo')
   const [salvos, setSalvos] = useState(0)
@@ -61,6 +61,7 @@ export function Escaneamento({
         escolhido={mercado}
         conferido={conferido}
         temPosicao={posicao !== null}
+        cidade={cidade}
         carregando={carregando}
         aoEscolher={setEscolhaManual}
       />

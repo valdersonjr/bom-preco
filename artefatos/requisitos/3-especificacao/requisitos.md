@@ -75,7 +75,7 @@ referenciam o `RF-xx` de origem.
 
 | ID | Requisito | MVP | Origem |
 | -- | --------- | :-: | ------ |
-| RF-12 | O sistema deve exibir os preços de um produto nos mercados dentro do raio escolhido pelo usuário, tendo a cidade inteira como padrão | ✅ | `Elic` |
+| RF-12 | O sistema deve exibir os preços de um produto nos mercados dentro do raio escolhido pelo usuário, tendo como padrão a cidade onde ele está — determinada pelo mercado mais próximo | ✅ | `Elic` |
 | RF-13 | O sistema deve exibir a idade de cada preço apresentado | ✅ | `Dom` |
 | RF-14 | O sistema deve exibir o preço por unidade normalizado | ✅ | `Elic` · RD-05, RD-06 |
 | RF-15 | O sistema deve exibir o histórico de preços de um produto em um mercado | ✅ | `Elic` |

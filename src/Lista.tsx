@@ -7,7 +7,7 @@ import {
   type ItemDaLista,
 } from './lib/lista'
 import { buscarProduto } from './lib/consulta'
-import { useMercados, type Mercado } from './lib/mercado'
+import { naCidade, useMercados, type Mercado } from './lib/mercado'
 import type { Produto } from './lib/produto'
 import { precoEmTexto } from './lib/formato'
 import { Preco } from './Preco'
@@ -15,7 +15,7 @@ import { ComoChegar } from './Mercado'
 import { MapaDeMercados } from './MapaDeMercados'
 
 export function Lista({ usuarioId }: { usuarioId: string }) {
-  const { mercados } = useMercados()
+  const { mercados, cidade } = useMercados()
   const [listaId, setListaId] = useState<string | null>(null)
   const [itens, setItens] = useState<ItemDaLista[] | null>(null)
   const [termo, setTermo] = useState('')
@@ -26,8 +26,8 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
   const dispensar = useCallback(() => setRemovido(null), [])
 
   const recarregar = useCallback(
-    async (id: string) => setItens(await carregarLista(id, mercados)),
-    [mercados],
+    async (id: string) => setItens(await carregarLista(id, naCidade(mercados, cidade))),
+    [mercados, cidade],
   )
 
   useEffect(() => {

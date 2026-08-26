@@ -17,6 +17,8 @@ export type PrecoNoMercado = {
   autoconfirmacoes: number
   /** Metros até a pessoa, quando há posição e o mercado tem coordenada. */
   distanciaM: number | null
+  /** Quando o preço foi visto na prateleira. Decide qual vigora no mercado. */
+  observadoEm: Date
 }
 
 export type Posicao = { lat: number; lon: number }
@@ -41,7 +43,7 @@ export async function precosDoProduto(
   const { data } = await supabase
     .from('preco_publico')
     .select(
-      'id, mercado_id, valor, tipo, local_conferido, visto_em, confirmacoes_terceiros, autoconfirmacoes',
+      'id, mercado_id, valor, tipo, local_conferido, visto_em, observado_em, confirmacoes_terceiros, autoconfirmacoes',
     )
     .eq('produto_id', produtoId)
 
@@ -52,6 +54,7 @@ export async function precosDoProduto(
     if (!mercado) return []
 
     const vistoEm = new Date(linha.visto_em!)
+    const observadoEm = new Date(linha.observado_em!)
     const distancia =
       posicao && mercado.latitude !== null && mercado.longitude !== null
         ? distanciaM(posicao.lat, posicao.lon, mercado.latitude, mercado.longitude)
@@ -71,14 +74,36 @@ export async function precosDoProduto(
         confirmacoesTerceiros: Number(linha.confirmacoes_terceiros ?? 0),
         autoconfirmacoes: Number(linha.autoconfirmacoes ?? 0),
         distanciaM: distancia,
+        observadoEm,
       },
     ]
   })
 
+  /*
+    Um preço por mercado na comparação.
+
+    `preco_publico` devolve o vigente de cada pessoa em cada dia — é a RD-04
+    aplicada, e é o que alimenta o histórico. Mas a comparação é *entre*
+    mercados: oito observações da mesma loja viravam oito linhas disputando
+    entre si, o que só não aparecia porque a base estava vazia.
+
+    Vence a observação mais recente, não o `visto_em` mais recente. Confirmar um
+    preço antigo renova a idade dele (RD-14) e é para isso que serve, mas não o
+    torna o preço atual da loja — quem viu depois viu depois.
+  */
+  const vigentePorMercado = new Map<string, (typeof precos)[number]>()
+  for (const p of precos) {
+    const atual = vigentePorMercado.get(p.mercado.id)
+    if (!atual || p.observadoEm > atual.observadoEm) {
+      vigentePorMercado.set(p.mercado.id, p)
+    }
+  }
+  const unicos = [...vigentePorMercado.values()]
+
   const dentroDoRaio =
     raioKm === null
-      ? precos
-      : precos.filter((p) => p.distanciaM === null || p.distanciaM <= raioKm * 1000)
+      ? unicos
+      : unicos.filter((p) => p.distanciaM === null || p.distanciaM <= raioKm * 1000)
 
   // Mais barato primeiro. Empate desempata pelo mais recente, que é o que
   // alguém indo comprar hoje prefere.
