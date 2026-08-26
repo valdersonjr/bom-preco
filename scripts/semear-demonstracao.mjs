@@ -161,6 +161,21 @@ function aceitavel(p) {
   return !/(c[ãa]es|c[ãa]o|gato|pet|ra[çc][ãa]o|filhote|adulto\b)/.test(n)
 }
 
+/**
+ * Preço plausível a partir do tamanho da embalagem.
+ *
+ * Para os doze mil produtos fora da cesta não há preço de referência, e chutar
+ * um número fixo daria prateleira inteira ao mesmo valor. O tamanho é o único
+ * sinal disponível: pacote grande custa mais que pacote pequeno, e isso basta
+ * para a comparação entre mercados parecer comparação.
+ */
+function precoPorTamanho(p) {
+  const tamanho = Number(p.quantidade_base) || 0.4
+  if (p.dimensao === 'volume') return 3 + Math.min(tamanho, 6) * entre(4, 14)
+  if (p.dimensao === 'massa') return 4 + Math.min(tamanho, 6) * entre(7, 26)
+  return entre(4, 30)
+}
+
 /** Preço por quilo do que se vende a granel, por faixa de gênero. */
 function precoDeHortifruti(nome) {
   const n = nome.toLowerCase()
@@ -263,9 +278,63 @@ async function main() {
     }
   }
 
+  /*
+    Camada rasa: todo o resto do catálogo.
+
+    A cesta acima cobre duzentos e poucos produtos em quase todos os mercados,
+    que é o que dá comparação boa de olhar. Mas o catálogo tem doze mil, e quem
+    buscar qualquer outro caía num "ninguém cadastrou ainda" que não é o estado
+    que se quer demonstrar.
+
+    Aqui cada produto restante recebe preço em três a sete mercados, com uma ou
+    duas observações. Cobertura larga e rasa: a busca sempre acha alguma coisa,
+    sem inflar a base a ponto de a consulta pesar.
+  */
+  const naCesta = new Set(cesta.map((p) => p.id))
+  const restantes = []
+  for (let de = 0; ; de += 1000) {
+    const { data } = await sb
+      .from('produto')
+      .select('id, quantidade_base, dimensao')
+      .range(de, de + 999)
+    if (!data || data.length === 0) break
+    for (const p of data) if (!naCesta.has(p.id)) restantes.push(p)
+    if (data.length < 1000) break
+  }
+  console.log(`produtos fora da cesta: ${restantes.length}`)
+
+  for (const produto of restantes) {
+    const base = precoPorTamanho(produto)
+    const quantos = inteiro(3, 7)
+    const sorteados = [...mercados].sort(() => sorte() - 0.5).slice(0, quantos)
+
+    for (const m of sorteados) {
+      const p = perfil.get(m.id)
+      for (let k = 0; k < inteiro(1, 2); k++) {
+        const atras = inteiro(0, 60)
+        const promocional = sorte() < 0.1
+        const valor =
+          base * p.fator * entre(0.95, 1.05) * (promocional ? entre(0.7, 0.88) : 1)
+        registros.push({
+          id: randomUUID(),
+          produto_id: produto.id,
+          mercado_id: m.id,
+          usuario_id: null,
+          valor: Math.max(0.5, +valor.toFixed(2)),
+          tipo: promocional ? 'promocional' : 'tabela',
+          local_conferido: sorte() < 0.35,
+          observado_em: new Date(
+            agora - atras * DIA - inteiro(0, 9) * 3_600_000,
+          ).toISOString(),
+          _recente: false,
+        })
+      }
+    }
+  }
+
   console.log(`registros a inserir: ${registros.length}`)
 
-  const LOTE = 500
+  const LOTE = 1000
   for (let i = 0; i < registros.length; i += LOTE) {
     const fatia = registros.slice(i, i + LOTE).map(({ _recente, ...r }) => r)
     const { error } = await sb.from('registro_preco').insert(fatia)
