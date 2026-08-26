@@ -19,6 +19,7 @@ import { distanciaEmTexto, precoEmTexto } from './lib/formato'
 import { Preco } from './Preco'
 import { ComoChegar } from './Mercado'
 import { MapaDeMercados } from './MapaDeMercados'
+import { descricaoDoProduto, nomeDeProduto } from './lib/texto'
 
 export function Lista({ usuarioId }: { usuarioId: string }) {
   const { mercados, cidade, posicao } = useMercados()
@@ -111,10 +112,9 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
                 }}
                 className="min-h-11 w-full rounded px-3 py-2 text-left hover:bg-sutil"
               >
-                <span className="text-tinta">{p.nome}</span>
+                <span className="text-tinta">{nomeDeProduto(p.nome)}</span>
                 <span className="block text-sm text-tinta-suave">
-                  {p.marca ? `${p.marca} · ` : ''}
-                  {p.quantidade} {p.unidade_medida}
+                  {descricaoDoProduto(p)}
                 </span>
               </button>
             </li>
@@ -205,7 +205,7 @@ function Desfazer({
       className="anima-subir flex items-center justify-between gap-2 rounded-xl bg-inverso p-3 text-sobre-inverso"
     >
       <span className="min-w-0 truncate text-sm">
-        {removido.nome} saiu da lista.
+        {nomeDeProduto(removido.nome)} saiu da lista.
       </span>
       <button
         type="button"
@@ -248,10 +248,9 @@ function ItemLinha({
 
   return (
     <li className="rounded-xl border border-borda bg-elevado p-4">
-      <p className="font-medium text-tinta">{produto.nome}</p>
+      <p className="font-medium text-tinta">{nomeDeProduto(produto.nome)}</p>
       <p className="mt-0.5 text-sm text-tinta-fraca">
-        {produto.marca ? `${produto.marca} · ` : ''}
-        {produto.quantidade} {produto.unidade_medida}
+        {descricaoDoProduto(produto)}
       </p>
 
       <div className="mt-3 flex items-end justify-between gap-3">
@@ -282,7 +281,7 @@ function ItemLinha({
           <button
             type="button"
             onClick={() => aoMudar(quantidade - 1)}
-            aria-label={`Diminuir ${produto.nome}`}
+            aria-label={`Diminuir ${nomeDeProduto(produto.nome)}`}
             className="min-h-11 w-11 rounded-lg border border-borda-forte text-lg text-tinta-suave"
           >
             −
@@ -291,7 +290,7 @@ function ItemLinha({
           <button
             type="button"
             onClick={() => aoMudar(quantidade + 1)}
-            aria-label={`Aumentar ${produto.nome}`}
+            aria-label={`Aumentar ${nomeDeProduto(produto.nome)}`}
             className="min-h-11 w-11 rounded-lg border border-borda-forte text-lg text-tinta-suave"
           >
             +

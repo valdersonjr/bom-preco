@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './lib/supabase'
 import type { Produto } from './lib/produto'
+import { nomeDeProduto } from './lib/texto'
 
 type Props = {
   aoEscolher: (produto: Produto) => void
@@ -57,7 +58,7 @@ export function EscolhaDoCatalogo({ aoEscolher }: Props) {
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           placeholder="tomate, alcatra, pão francês…"
-          className="min-h-11 rounded-lg border border-borda-forte px-3"
+          className="min-h-12 rounded-xl border border-borda-forte bg-elevado px-3"
         />
       </label>
 
@@ -78,7 +79,7 @@ export function EscolhaDoCatalogo({ aoEscolher }: Props) {
               onClick={() => aoEscolher(p)}
               className="min-h-11 w-full rounded-lg px-3 py-2 text-left hover:bg-sutil"
             >
-              <span className="text-tinta">{p.nome}</span>
+              <span className="text-tinta">{nomeDeProduto(p.nome)}</span>
               <span className="text-sm text-tinta-fraca">
                 {' '}
                 · por {p.unidade_medida === 'un' ? 'unidade' : p.unidade_medida}

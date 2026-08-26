@@ -16,6 +16,7 @@ import {
 } from './lib/produto'
 import { Historico } from './Historico'
 import { ComoChegar } from './Mercado'
+import { descricaoDoProduto, nomeDeProduto } from './lib/texto'
 import { useLeitorDeCodigo } from './lib/leitor'
 
 /** Padrão: cidade inteira. Ajustável pela pessoa (RF-36). */
@@ -197,10 +198,9 @@ export function Consulta({
                 onClick={() => setProduto(p)}
                 className="min-h-11 w-full rounded-lg px-3 py-2 text-left hover:bg-sutil"
               >
-                <span className="text-tinta">{p.nome}</span>
+                <span className="text-tinta">{nomeDeProduto(p.nome)}</span>
                 <span className="block text-sm text-tinta-suave">
-                  {p.marca ? `${p.marca} · ` : ''}
-                  {p.quantidade} {p.unidade_medida}
+                  {descricaoDoProduto(p)}
                 </span>
               </button>
             </li>
@@ -271,11 +271,8 @@ function Precos({
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <p className="font-medium text-tinta">{produto.nome}</p>
-        <p className="text-sm text-tinta-suave">
-          {produto.marca ? `${produto.marca} · ` : ''}
-          {produto.quantidade} {produto.unidade_medida}
-        </p>
+        <p className="font-medium text-tinta">{nomeDeProduto(produto.nome)}</p>
+        <p className="text-sm text-tinta-suave">{descricaoDoProduto(produto)}</p>
       </div>
 
       <div className="flex gap-1">

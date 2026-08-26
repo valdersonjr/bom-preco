@@ -45,14 +45,18 @@ export function EscolhaDeMercado({
   }
 
   if (escolhido && !trocando) {
+    const distancia = distanciaAte(escolhido, posicao)
     return (
-      <div className="flex items-start justify-between gap-3 rounded-xl border border-borda bg-elevado p-3">
-        <div>
-          <p className="font-medium text-tinta">
-            {escolhido.nome}
-            {distanciaAte(escolhido, posicao) !== null && (
-              <span className="ml-2 text-sm font-normal tabular-nums text-tinta-suave">
-                {distanciaEmTexto(distanciaAte(escolhido, posicao)!)}
+      <div className="flex items-start justify-between gap-3 rounded-xl border border-borda bg-elevado p-4">
+        <div className="min-w-0">
+          <p className="text-xs font-medium tracking-wide text-tinta-fraca uppercase">
+            Registrando em
+          </p>
+          <p className="mt-1 flex items-baseline gap-2 font-medium text-tinta">
+            <span className="min-w-0 truncate">{escolhido.nome}</span>
+            {distancia !== null && (
+              <span className="shrink-0 text-sm font-normal tabular-nums text-tinta-suave">
+                {distanciaEmTexto(distancia)}
               </span>
             )}
           </p>
@@ -63,15 +67,27 @@ export function EscolhaDeMercado({
             )}
           </p>
           {conferido && (
-            <p className="mt-1 text-sm text-marca-forte">
-              Você está aqui — o preço vai marcado como conferido no local.
+            <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-marca-fraca px-2.5 py-1 text-xs font-medium text-marca-forte">
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                className="size-3.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+              Você está aqui
             </p>
           )}
         </div>
         <button
           type="button"
           onClick={() => setTrocando(true)}
-          className="min-h-11 shrink-0 rounded-lg px-3 text-marca-forte underline"
+          className="-mr-2 -mt-2 min-h-11 shrink-0 rounded-lg px-2 text-sm font-medium text-marca-forte"
         >
           Trocar
         </button>
@@ -80,36 +96,39 @@ export function EscolhaDeMercado({
   }
 
   /*
-    Filtro por nome, rede e endereço.
+    Filtro por nome, rede, endereço e cidade.
 
-    São vinte e seis mercados numa lista rolante, e o GPS só sugere os que têm
-    coordenada — hoje nove. Quem está num dos outros dezessete rola a lista
-    inteira, toda vez. O campo existe para essas pessoas.
+    São dezenas de mercados numa lista rolante, e o GPS só sugere os que têm
+    coordenada. Quem está num dos outros rola a lista inteira, toda vez. O campo
+    existe para essas pessoas.
   */
   const alvo = semAcento(filtro.trim())
   const encontrados = alvo
     ? mercados.filter((m) =>
-        semAcento(`${m.nome} ${m.rede ?? ''} ${m.endereco ?? ''} ${m.cidade}`).includes(alvo),
+        semAcento(
+          `${m.nome} ${m.rede ?? ''} ${m.endereco ?? ''} ${m.cidade}`,
+        ).includes(alvo),
       )
     : mercados
 
-  // A cidade de quem está aqui vem primeiro, e as outras continuam alcançáveis.
-  // Ordenar em vez de filtrar: quem viajou não fica sem o mercado onde está.
   /*
     Perto primeiro, dentro da cidade de quem está aqui.
 
-    Mercado sem coordenada vai para o fim de cada grupo, em ordem de nome — são
-    dezessete dos vinte e seis em Goianésia, e sumir com eles seria pior do que
-    não saber a distância deles. O que falta é o levantamento de campo, não a
-    loja.
+    Mercado sem coordenada vai para o fim de cada grupo, em ordem de nome. São
+    a maioria em Goianésia, e sumir com eles seria pior do que não saber a
+    distância deles: o que falta é o levantamento de campo, não a loja.
   */
   const comDistancia = encontrados.map((m) => ({
     m,
     distancia: distanciaAte(m, posicao),
   }))
 
-  const ordenar = (a: (typeof comDistancia)[number], b: (typeof comDistancia)[number]) => {
-    if (a.distancia !== null && b.distancia !== null) return a.distancia - b.distancia
+  const ordenar = (
+    a: (typeof comDistancia)[number],
+    b: (typeof comDistancia)[number],
+  ) => {
+    if (a.distancia !== null && b.distancia !== null)
+      return a.distancia - b.distancia
     if (a.distancia !== null) return -1
     if (b.distancia !== null) return 1
     return a.m.nome.localeCompare(b.m.nome, 'pt-BR')

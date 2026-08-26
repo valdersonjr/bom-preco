@@ -13,6 +13,8 @@ const UNIDADES = [
 type Props = {
   gtin: string
   aoCriar: (produto: Produto) => void
+  /** Voltou atrás: escaneou errado, ou não quer preencher agora. */
+  aoDesistir: () => void
 }
 
 /**
@@ -23,7 +25,7 @@ type Props = {
  * que vem de catálogo curado. O GTIN garante a identidade: duas pessoas
  * preenchendo o mesmo código chegam ao mesmo produto, e não a dois.
  */
-export function ProdutoNovo({ gtin, aoCriar }: Props) {
+export function ProdutoNovo({ gtin, aoCriar, aoDesistir }: Props) {
   const [nome, setNome] = useState('')
   const [marca, setMarca] = useState('')
   const [quantidade, setQuantidade] = useState('')
@@ -71,19 +73,28 @@ export function ProdutoNovo({ gtin, aoCriar }: Props) {
 
   return (
     <form
-      className="flex flex-col gap-3 rounded-xl border border-borda bg-elevado p-4"
+      className="flex flex-col gap-4 rounded-xl border border-borda bg-elevado p-4"
       onSubmit={(e) => {
         e.preventDefault()
         void salvar()
       }}
     >
-      <p className="text-tinta-suave">
-        Não conheço esse produto. Me conta o que é, e da próxima vez eu já sei.
-      </p>
-
-      <p className="text-sm text-tinta-fraca">
-        Código de barras <strong className="font-mono">{gtin}</strong>
-      </p>
+      <header className="flex items-start justify-between gap-3 border-b border-borda pb-4">
+        <div className="min-w-0">
+          <p className="text-tinta">
+            Não conheço esse produto. Me conta o que é, e da próxima vez eu já
+            sei.
+          </p>
+          <p className="mt-1 font-mono text-xs text-tinta-fraca">{gtin}</p>
+        </div>
+        <button
+          type="button"
+          onClick={aoDesistir}
+          className="-mr-2 -mt-2 min-h-11 shrink-0 rounded-lg px-2 text-sm font-medium text-marca-forte"
+        >
+          Voltar
+        </button>
+      </header>
 
       <label className="flex flex-col gap-1">
         <span className="text-sm text-tinta-suave">Nome, como está na embalagem</span>
@@ -137,7 +148,7 @@ export function ProdutoNovo({ gtin, aoCriar }: Props) {
       <button
         type="submit"
         disabled={salvando}
-        className="min-h-11 rounded-lg bg-marca px-4 text-sobre-marca disabled:opacity-60"
+        className="min-h-12 rounded-xl bg-marca px-4 font-medium text-sobre-marca disabled:opacity-60"
       >
         {salvando ? 'Salvando…' : 'Salvar produto'}
       </button>

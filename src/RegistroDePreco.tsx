@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { lerValor, montarRegistro, type Tipo } from './lib/registro'
 import type { Mercado } from './lib/mercado'
 import { precoEmTexto } from './lib/formato'
+import { descricaoDoProduto, nomeDeProduto } from './lib/texto'
 import {
   precoPorUnidade,
   unidadeDeComparacao,
@@ -16,7 +17,7 @@ type Props = {
   /** Enfileira e tenta enviar. Nunca falha por falta de rede — ver `useEnvio`. */
   registrar: (registro: ReturnType<typeof montarRegistro>) => Promise<void>
   aoSalvar: () => void
-  /** Escaneou o produto errado, ou mudou de ideia: sai sem registrar nada. */
+  /** Produto errado, ou mudou de ideia: volta a escolher, sem registrar nada. */
   aoDesistir: () => void
 }
 
@@ -71,13 +72,32 @@ export function RegistroDePreco({
         void salvar()
       }}
     >
-      <div>
-        <p className="font-medium text-tinta">{produto.nome}</p>
-        <p className="text-sm text-tinta-suave">
-          {produto.marca ? `${produto.marca} · ` : ''}
-          {produto.quantidade} {produto.unidade_medida} · em {mercado.nome}
-        </p>
-      </div>
+      {/*
+        O produto encaixa aqui, no alto do formulário, e a saída fica ao lado
+        dele. Antes o cartão de "achei isto" renderizava abaixo do campo de
+        preço, e a correção do produto errado era um link no rodapé: os dois
+        longe de onde a dúvida acontece, que é ao ler o nome.
+      */}
+      <header className="flex items-start justify-between gap-3 border-b border-borda pb-4">
+        <div className="min-w-0">
+          <p className="font-medium text-tinta">{nomeDeProduto(produto.nome)}</p>
+          <p className="mt-0.5 text-sm text-tinta-suave">
+            {descricaoDoProduto(produto)}
+          </p>
+          {produto.gtin && (
+            <p className="mt-1 font-mono text-xs text-tinta-fraca">
+              {produto.gtin}
+            </p>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={aoDesistir}
+          className="-mr-2 -mt-2 min-h-11 shrink-0 rounded-lg px-2 text-sm font-medium text-marca-forte"
+        >
+          Trocar
+        </button>
+      </header>
 
       {/*
         O campo de preço é a ação principal do app inteiro, e estava do tamanho
@@ -133,12 +153,11 @@ export function RegistroDePreco({
             </button>
           ))}
         </div>
-        {tipo === 'promocional' && (
-          <span className="text-sm text-tinta-fraca">
-            Marcado como promoção, para não ser confundido com o preço de
-            prateleira quando a oferta acabar.
-          </span>
-        )}
+        <span className="min-h-10 text-sm text-tinta-fraca">
+          {tipo === 'promocional'
+            ? 'Fica marcado como promoção, para não ser confundido com o preço de prateleira quando a oferta acabar.'
+            : 'Preço normal de prateleira.'}
+        </span>
       </fieldset>
 
       {erro && <p className="text-perigo-tinta">{erro}</p>}
@@ -151,13 +170,6 @@ export function RegistroDePreco({
         {salvando ? 'Salvando…' : 'Salvar preço'}
       </button>
 
-      <button
-        type="button"
-        onClick={aoDesistir}
-        className="-mt-2 min-h-11 rounded-lg px-4 text-sm text-tinta-suave"
-      >
-        Não é esse produto
-      </button>
     </form>
   )
 }
