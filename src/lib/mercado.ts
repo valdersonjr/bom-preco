@@ -51,6 +51,17 @@ export function comCoordenada(mercados: Mercado[]): Mercado[] {
   return mercados.filter((m) => m.latitude !== null && m.longitude !== null)
 }
 
+/** Metros até a pessoa, ou nulo quando falta a posição dela ou o ponto da loja. */
+export function distanciaAte(
+  mercado: Mercado,
+  posicao: Posicao | null,
+): number | null {
+  if (!posicao || mercado.latitude === null || mercado.longitude === null) {
+    return null
+  }
+  return distanciaM(posicao.lat, posicao.lon, mercado.latitude, mercado.longitude)
+}
+
 /** Raio provisório do RF-41, a confirmar com medição em campo. */
 export const RAIO_CONFERIDO_M = 200
 
@@ -77,7 +88,7 @@ export function distanciaM(
   return 2 * R * Math.asin(Math.sqrt(h))
 }
 
-type Posicao = { lat: number; lon: number }
+export type Posicao = { lat: number; lon: number }
 
 /** Localização é conveniência: recusar ou falhar não impede nada. */
 function obterPosicao(): Promise<Posicao | null> {

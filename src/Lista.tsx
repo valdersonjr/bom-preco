@@ -7,15 +7,21 @@ import {
   type ItemDaLista,
 } from './lib/lista'
 import { buscarProduto } from './lib/consulta'
-import { naCidade, useMercados, type Mercado } from './lib/mercado'
+import {
+  distanciaAte,
+  naCidade,
+  useMercados,
+  type Mercado,
+  type Posicao,
+} from './lib/mercado'
 import type { Produto } from './lib/produto'
-import { precoEmTexto } from './lib/formato'
+import { distanciaEmTexto, precoEmTexto } from './lib/formato'
 import { Preco } from './Preco'
 import { ComoChegar } from './Mercado'
 import { MapaDeMercados } from './MapaDeMercados'
 
 export function Lista({ usuarioId }: { usuarioId: string }) {
-  const { mercados, cidade } = useMercados()
+  const { mercados, cidade, posicao } = useMercados()
   const [listaId, setListaId] = useState<string | null>(null)
   const [itens, setItens] = useState<ItemDaLista[] | null>(null)
   const [termo, setTermo] = useState('')
@@ -167,7 +173,9 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
         </div>
       )}
 
-      {comPreco.length > 0 && <PorMercado itens={comPreco} />}
+      {comPreco.length > 0 && (
+        <PorMercado itens={comPreco} posicao={posicao} />
+      )}
     </section>
   )
 }
@@ -306,7 +314,13 @@ function ItemLinha({
  * na mesma avenida. Vem fechado, porque o mapa custa rede e 42 KB — quem só
  * quer saber quanto vai gastar não paga por isso.
  */
-function PorMercado({ itens }: { itens: ItemDaLista[] }) {
+function PorMercado({
+  itens,
+  posicao,
+}: {
+  itens: ItemDaLista[]
+  posicao: Posicao | null
+}) {
   const [mapaAberto, setMapaAberto] = useState(false)
 
   const grupos = new Map<
@@ -349,6 +363,9 @@ function PorMercado({ itens }: { itens: ItemDaLista[] }) {
             </div>
             <p className="text-sm text-tinta-suave">
               {g.quantos} {g.quantos === 1 ? 'item' : 'itens'}
+              {distanciaAte(g.mercado, posicao) !== null && (
+                <> · {distanciaEmTexto(distanciaAte(g.mercado, posicao)!)}</>
+              )}
               {g.mercado.endereco && <> · {g.mercado.endereco}</>}
             </p>
             <ComoChegar mercado={g.mercado} discreto />

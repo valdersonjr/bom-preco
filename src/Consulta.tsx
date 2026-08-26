@@ -7,7 +7,7 @@ import {
   type Posicao,
 } from './lib/consulta'
 import { Preco } from './Preco'
-import { precoEmTexto } from './lib/formato'
+import { distanciaEmTexto, precoEmTexto } from './lib/formato'
 import { naCidade, useMercados, type Mercado } from './lib/mercado'
 import {
   precoPorUnidade,
@@ -390,7 +390,7 @@ function Linha({
           <p className="mt-0.5 text-sm text-tinta-fraca">
             {descreverIdade(preco.idadeEmDias)}
             {preco.distanciaM !== null && (
-              <> · {(preco.distanciaM / 1000).toFixed(1)} km</>
+              <> · {distanciaEmTexto(preco.distanciaM)}</>
             )}
           </p>
         </div>

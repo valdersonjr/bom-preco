@@ -60,7 +60,7 @@ export function Escaneamento({
         mercados={mercados}
         escolhido={mercado}
         conferido={conferido}
-        temPosicao={posicao !== null}
+        posicao={posicao}
         cidade={cidade}
         carregando={carregando}
         aoEscolher={setEscolhaManual}

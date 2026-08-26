@@ -1,11 +1,13 @@
 import { useState } from 'react'
-import type { Mercado } from './lib/mercado'
+import { distanciaAte, type Mercado, type Posicao } from './lib/mercado'
+import { distanciaEmTexto } from './lib/formato'
 
 type Props = {
   mercados: Mercado[]
   escolhido: Mercado | null
   conferido: boolean
-  temPosicao: boolean
+  /** Posição de quem está usando. Nula quando o GPS falhou ou foi recusado. */
+  posicao: Posicao | null
   /** Cidade de quem está usando; a lista começa por ela. */
   cidade: string | null
   carregando: boolean
@@ -30,7 +32,7 @@ export function EscolhaDeMercado({
   mercados,
   escolhido,
   conferido,
-  temPosicao,
+  posicao,
   cidade,
   carregando,
   aoEscolher,
@@ -46,7 +48,14 @@ export function EscolhaDeMercado({
     return (
       <div className="flex items-start justify-between gap-3 rounded-xl border border-borda bg-elevado p-3">
         <div>
-          <p className="font-medium text-tinta">{escolhido.nome}</p>
+          <p className="font-medium text-tinta">
+            {escolhido.nome}
+            {distanciaAte(escolhido, posicao) !== null && (
+              <span className="ml-2 text-sm font-normal tabular-nums text-tinta-suave">
+                {distanciaEmTexto(distanciaAte(escolhido, posicao)!)}
+              </span>
+            )}
+          </p>
           <p className="text-sm text-tinta-suave">
             {escolhido.endereco}
             {escolhido.cidade !== cidade && (
@@ -86,17 +95,37 @@ export function EscolhaDeMercado({
 
   // A cidade de quem está aqui vem primeiro, e as outras continuam alcançáveis.
   // Ordenar em vez de filtrar: quem viajou não fica sem o mercado onde está.
+  /*
+    Perto primeiro, dentro da cidade de quem está aqui.
+
+    Mercado sem coordenada vai para o fim de cada grupo, em ordem de nome — são
+    dezessete dos vinte e seis em Goianésia, e sumir com eles seria pior do que
+    não saber a distância deles. O que falta é o levantamento de campo, não a
+    loja.
+  */
+  const comDistancia = encontrados.map((m) => ({
+    m,
+    distancia: distanciaAte(m, posicao),
+  }))
+
+  const ordenar = (a: (typeof comDistancia)[number], b: (typeof comDistancia)[number]) => {
+    if (a.distancia !== null && b.distancia !== null) return a.distancia - b.distancia
+    if (a.distancia !== null) return -1
+    if (b.distancia !== null) return 1
+    return a.m.nome.localeCompare(b.m.nome, 'pt-BR')
+  }
+
   const visiveis = cidade
     ? [
-        ...encontrados.filter((m) => m.cidade === cidade),
-        ...encontrados.filter((m) => m.cidade !== cidade),
+        ...comDistancia.filter((x) => x.m.cidade === cidade).sort(ordenar),
+        ...comDistancia.filter((x) => x.m.cidade !== cidade).sort(ordenar),
       ]
-    : encontrados
+    : [...comDistancia].sort(ordenar)
 
   return (
     <div className="flex flex-col gap-2">
       <p className="text-tinta-suave">
-        {temPosicao
+        {posicao
           ? 'Em qual mercado você está?'
           : 'Sem localização. Escolha o mercado na lista.'}
       </p>
@@ -116,7 +145,7 @@ export function EscolhaDeMercado({
       )}
 
       <ul className="flex max-h-72 flex-col gap-1 overflow-y-auto">
-        {visiveis.map((m) => (
+        {visiveis.map(({ m, distancia }) => (
           <li key={m.id}>
             <button
               type="button"
@@ -124,18 +153,25 @@ export function EscolhaDeMercado({
                 aoEscolher(m)
                 setTrocando(false)
               }}
-              className="min-h-11 w-full rounded-lg px-3 py-2 text-left hover:bg-sutil"
+              className="flex min-h-11 w-full items-start justify-between gap-3 rounded-lg px-3 py-2 text-left hover:bg-sutil"
             >
-              <span className="text-tinta">{m.nome}</span>
-              {m.rede && (
-                <span className="text-sm text-tinta-fraca"> · {m.rede}</span>
-              )}
-              <span className="block text-sm text-tinta-suave">
-                {m.endereco}
-                {m.cidade !== cidade && (
-                  <span className="text-tinta-fraca"> · {m.cidade}</span>
+              <span className="min-w-0 flex-1">
+                <span className="text-tinta">{m.nome}</span>
+                {m.rede && (
+                  <span className="text-sm text-tinta-fraca"> · {m.rede}</span>
                 )}
+                <span className="block text-sm text-tinta-suave">
+                  {m.endereco}
+                  {m.cidade !== cidade && (
+                    <span className="text-tinta-fraca"> · {m.cidade}</span>
+                  )}
+                </span>
               </span>
+              {distancia !== null && (
+                <span className="shrink-0 pt-0.5 text-sm tabular-nums text-tinta-suave">
+                  {distanciaEmTexto(distancia)}
+                </span>
+              )}
             </button>
           </li>
         ))}
