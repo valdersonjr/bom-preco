@@ -199,23 +199,54 @@ export function Consulta({
         </div>
       )}
 
+      {/*
+        Resultados como cartão, e não como texto empilhado.
+
+        Trinta linhas parecidas, sem moldura e sem seta, não pareciam escolhas:
+        pareciam uma lista para ler. O que distingue "Arroz Tio João 1 kg" de
+        "Arroz Tio João 5 kg" é a segunda linha, então ela precisa ser legível,
+        não um rodapé apagado.
+      */}
       {!produto && achados.length > 0 && (
-        <ul className="flex max-h-64 flex-col gap-1 overflow-y-auto">
-          {achados.map((p) => (
-            <li key={p.id}>
-              <button
-                type="button"
-                onClick={() => setProduto(p)}
-                className="min-h-11 w-full rounded-lg px-3 py-2 text-left hover:bg-sutil"
-              >
-                <span className="text-tinta">{nomeDeProduto(p.nome)}</span>
-                <span className="block text-sm text-tinta-suave">
-                  {descricaoDoProduto(p)}
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className="flex flex-col gap-2">
+          <p className="text-sm text-tinta-suave">
+            {achados.length === 30
+              ? 'Mostrando os 30 primeiros. Refine a busca se não achar.'
+              : `${achados.length} ${achados.length === 1 ? 'produto' : 'produtos'}`}
+          </p>
+          <ul className="flex max-h-80 flex-col divide-y divide-borda overflow-y-auto rounded-xl border border-borda bg-elevado">
+            {achados.map((p) => (
+              <li key={p.id}>
+                <button
+                  type="button"
+                  onClick={() => setProduto(p)}
+                  className="flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left hover:bg-sutil"
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-tinta">
+                      {nomeDeProduto(p.nome)}
+                    </span>
+                    <span className="block truncate text-sm text-tinta-suave">
+                      {descricaoDoProduto(p)}
+                    </span>
+                  </span>
+                  <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    className="size-4 shrink-0 text-tinta-fraca"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {/*
@@ -241,6 +272,7 @@ export function Consulta({
           usuarioId={usuarioId}
           registrar={envio.registrar}
           todosOsMercados={mercados}
+          aoVoltar={() => setProduto(null)}
         />
       )}
     </section>
@@ -256,6 +288,7 @@ function Precos({
   usuarioId,
   registrar,
   todosOsMercados,
+  aoVoltar,
 }: {
   produto: Produto
   mercados: Mercado[]
@@ -266,6 +299,7 @@ function Precos({
   registrar: ReturnType<typeof useEnvio>['registrar']
   /** Lista completa, não a do raio: a marca de conferido compara com todas. */
   todosOsMercados: Mercado[]
+  aoVoltar: () => void
 }) {
   const [precos, setPrecos] = useState<PrecoNoMercado[] | null>(null)
   const [mostrarVelhos, setMostrarVelhos] = useState(false)
@@ -282,95 +316,174 @@ function Precos({
     }
   }, [produto.id, mercados, posicao, raioKm, versao])
 
-  if (precos === null) return <p className="text-tinta-fraca">Procurando…</p>
+  if (precos === null) return <EsqueletoDePrecos />
 
   const validos = precos.filter((p) => !p.desatualizado)
   const velhos = precos.filter((p) => p.desatualizado)
+  const menor = validos[0]?.valor ?? null
 
   return (
-    <div className="flex flex-col gap-3">
-      <div>
-        <p className="font-medium text-tinta">{nomeDeProduto(produto.nome)}</p>
-        <p className="text-sm text-tinta-suave">{descricaoDoProduto(produto)}</p>
-      </div>
+    <div className="flex flex-col gap-4">
+      {/*
+        Cabeçalho de produto, com a volta para os resultados.
 
-      <div className="flex gap-1">
-        {RAIOS.map((r) => (
-          <button
-            key={r.rotulo}
-            type="button"
-            onClick={() => aoTrocarRaio(r.km)}
-            aria-pressed={raioKm === r.km}
-            className={
-              raioKm === r.km
-                ? 'min-h-11 rounded-lg bg-inverso px-3 text-sm text-sobre-inverso'
-                : 'min-h-11 rounded-lg border border-borda-forte px-3 text-sm text-tinta-suave'
-            }
-          >
-            {r.rotulo}
-          </button>
-        ))}
-      </div>
-
-      {validos.length === 0 && velhos.length === 0 && (
-        <p className="rounded-xl bg-sutil p-4 text-tinta">
-          Ninguém cadastrou o preço deste produto ainda. Da próxima vez que você
-          vir na prateleira, registre — é assim que a comparação nasce.
-        </p>
-      )}
-
-      {validos.length > 0 && (
-        <ol className="flex flex-col gap-2">
-          {validos.map((p, i) => (
-            <Linha
-              key={p.registroId}
-              preco={p}
-              produto={produto}
-              maisBarato={i === 0}
-              usuarioId={usuarioId}
-              registrar={registrar}
-              conferido={conferidoNoLocal(p.mercado, posicao, todosOsMercados)}
-              aoCorrigir={() => setVersao((v) => v + 1)}
-            />
-          ))}
-        </ol>
-      )}
-
-      {velhos.length > 0 && !mostrarVelhos && (
+        Escolher um produto era um caminho sem retorno: a lista de resultados
+        sumia e só voltava reeditando o texto da busca. Nada na tela dizia que
+        se tinha entrado em outra vista, nem como sair dela.
+      */}
+      <div className="flex items-start gap-2">
         <button
           type="button"
-          onClick={() => setMostrarVelhos(true)}
-          className="min-h-11 self-start rounded-lg px-3 text-sm text-tinta-suave underline"
+          onClick={aoVoltar}
+          aria-label="Voltar aos resultados da busca"
+          className="-ml-2 flex size-11 shrink-0 items-center justify-center rounded-lg text-tinta-suave"
         >
-          Ver {velhos.length} preço{velhos.length > 1 ? 's' : ''} com mais de 30
-          dias
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            className="size-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
         </button>
-      )}
+        <div className="min-w-0 pt-1.5">
+          <h3 className="text-lg leading-tight font-semibold text-tinta">
+            {nomeDeProduto(produto.nome)}
+          </h3>
+          <p className="mt-0.5 text-sm text-tinta-suave">
+            {descricaoDoProduto(produto)}
+          </p>
+        </div>
+      </div>
 
-      {mostrarVelhos && (
-        <ol className="flex flex-col gap-2 opacity-70">
-          {velhos.map((p) => (
-            <Linha
-              key={p.registroId}
-              preco={p}
-              produto={produto}
-              maisBarato={false}
-              usuarioId={usuarioId}
-              registrar={registrar}
-              conferido={conferidoNoLocal(p.mercado, posicao, todosOsMercados)}
-              aoCorrigir={() => setVersao((v) => v + 1)}
-            />
-          ))}
-        </ol>
+      {validos.length === 0 && velhos.length === 0 ? (
+        <div className="flex flex-col items-start gap-3 rounded-xl bg-sutil p-4">
+          <p className="text-tinta">
+            Ninguém cadastrou o preço deste produto por aqui ainda.
+          </p>
+          <p className="text-sm text-tinta-suave">
+            Da próxima vez que você vir na prateleira, registre. É assim que a
+            comparação nasce.
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-col gap-2">
+            <p className="text-sm text-tinta-suave">
+              {validos.length > 0
+                ? `${validos.length} ${validos.length === 1 ? 'mercado' : 'mercados'} com preço recente`
+                : 'Nenhum preço dos últimos 30 dias'}
+            </p>
+            <div className="flex gap-1.5">
+              {RAIOS.map((r) => (
+                <button
+                  key={r.rotulo}
+                  type="button"
+                  onClick={() => aoTrocarRaio(r.km)}
+                  aria-pressed={raioKm === r.km}
+                  className={
+                    raioKm === r.km
+                      ? 'min-h-9 rounded-full bg-inverso px-3 text-sm text-sobre-inverso'
+                      : 'min-h-9 rounded-full border border-borda-forte px-3 text-sm text-tinta-suave'
+                  }
+                >
+                  {r.rotulo}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {validos.length > 0 && (
+            <ol className="flex flex-col gap-2">
+              {validos.map((p, i) => (
+                <Linha
+                  key={p.registroId}
+                  preco={p}
+                  produto={produto}
+                  maisBarato={i === 0}
+                  aMaisQueOMenor={
+                    menor !== null && i > 0 ? p.valor - menor : null
+                  }
+                  usuarioId={usuarioId}
+                  registrar={registrar}
+                  conferido={conferidoNoLocal(p.mercado, posicao, todosOsMercados)}
+                  aoCorrigir={() => setVersao((v) => v + 1)}
+                />
+              ))}
+            </ol>
+          )}
+
+          {velhos.length > 0 && !mostrarVelhos && (
+            <button
+              type="button"
+              onClick={() => setMostrarVelhos(true)}
+              className="min-h-11 self-start rounded-lg text-sm font-medium text-marca-forte"
+            >
+              Ver {velhos.length} preço{velhos.length > 1 ? 's' : ''} com mais de
+              30 dias
+            </button>
+          )}
+
+          {mostrarVelhos && (
+            <div className="anima-surgir flex flex-col gap-2">
+              <p className="text-sm text-tinta-fraca">
+                Vistos há mais de 30 dias. Podem ter mudado.
+              </p>
+              <ol className="flex flex-col gap-2 opacity-70">
+                {velhos.map((p) => (
+                  <Linha
+                    key={p.registroId}
+                    preco={p}
+                    produto={produto}
+                    maisBarato={false}
+                    aMaisQueOMenor={null}
+                    usuarioId={usuarioId}
+                    registrar={registrar}
+                    conferido={conferidoNoLocal(p.mercado, posicao, todosOsMercados)}
+                    aoCorrigir={() => setVersao((v) => v + 1)}
+                  />
+                ))}
+              </ol>
+            </div>
+          )}
+        </>
       )}
     </div>
   )
 }
 
+/** Enquanto os preços chegam, o formato deles já ocupa o lugar. */
+function EsqueletoDePrecos() {
+  return (
+    <ul aria-hidden="true" className="flex animate-pulse flex-col gap-2">
+      {[0, 1, 2].map((i) => (
+        <li key={i} className="h-28 rounded-xl border border-borda bg-elevado p-4">
+          <div className="h-4 w-1/3 rounded bg-sutil-forte" />
+          <div className="mt-2 h-3 w-1/2 rounded bg-sutil" />
+          <div className="mt-4 h-3 w-2/3 rounded bg-sutil" />
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+/**
+ * Um mercado e o preço dele.
+ *
+ * A diferença para o mais barato aparece em cada linha que não é a primeira.
+ * Sem ela a tela é uma coluna de números que a pessoa subtrai de cabeça, no
+ * corredor, com pressa. Com ela a comparação já vem feita.
+ */
 function Linha({
   preco,
   produto,
   maisBarato,
+  aMaisQueOMenor,
   usuarioId,
   registrar,
   conferido,
@@ -379,6 +492,8 @@ function Linha({
   preco: PrecoNoMercado
   produto: Produto
   maisBarato: boolean
+  /** Quanto este custa a mais que o mais barato. Nulo no próprio mais barato. */
+  aMaisQueOMenor: number | null
   usuarioId: string
   registrar: ReturnType<typeof useEnvio>['registrar']
   conferido: boolean
@@ -426,11 +541,19 @@ function Linha({
 
         <div className="shrink-0 text-right">
           <Preco valor={preco.valor} tom={maisBarato ? 'marca' : 'tinta'} />
-          {porUnidade !== null && (
-            <p className="mt-0.5 text-sm tabular-nums text-tinta-suave">
-              {precoEmTexto(porUnidade)} / {unidadeDeComparacao(produto)}
-            </p>
-          )}
+          <p className="mt-0.5 text-sm tabular-nums text-tinta-suave">
+            {aMaisQueOMenor !== null && aMaisQueOMenor > 0 && (
+              <span className="font-medium text-alerta-tinta">
+                +{precoEmTexto(aMaisQueOMenor)}
+              </span>
+            )}
+            {aMaisQueOMenor !== null && aMaisQueOMenor > 0 && porUnidade !== null && ' · '}
+            {porUnidade !== null && (
+              <>
+                {precoEmTexto(porUnidade)}/{unidadeDeComparacao(produto)}
+              </>
+            )}
+          </p>
         </div>
       </div>
 
@@ -439,7 +562,7 @@ function Linha({
       </div>
 
       {(maisBarato || preco.tipo === 'promocional') && (
-        <div className="mt-3 flex flex-wrap gap-1.5 text-xs font-medium">
+        <div className="mt-2 flex flex-wrap gap-1.5 text-xs font-medium">
           {maisBarato && (
             <span className="rounded-full bg-marca px-2.5 py-1 text-sobre-marca">
               Mais barato
@@ -454,9 +577,7 @@ function Linha({
       )}
 
       {procedencia.length > 0 && (
-        <p className="mt-2 text-xs text-tinta-fraca">
-          {procedencia.join(' · ')}
-        </p>
+        <p className="mt-2 text-xs text-tinta-fraca">{procedencia.join(' · ')}</p>
       )}
 
       {/*
