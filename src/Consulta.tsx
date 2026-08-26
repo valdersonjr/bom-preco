@@ -8,7 +8,12 @@ import {
 } from './lib/consulta'
 import { Preco } from './Preco'
 import { distanciaEmTexto, precoEmTexto } from './lib/formato'
-import { naCidade, useMercados, type Mercado } from './lib/mercado'
+import {
+  conferidoNoLocal,
+  naCidade,
+  useMercados,
+  type Mercado,
+} from './lib/mercado'
 import {
   precoPorUnidade,
   unidadeDeComparacao,
@@ -18,6 +23,8 @@ import { Historico } from './Historico'
 import { ComoChegar } from './Mercado'
 import { descricaoDoProduto, nomeDeProduto } from './lib/texto'
 import { useLeitorDeCodigo } from './lib/leitor'
+import type { useEnvio } from './lib/envio'
+import { montarRegistro, lerValor, type Tipo } from './lib/registro'
 
 /** Padrão: cidade inteira. Ajustável pela pessoa (RF-36). */
 const RAIOS = [
@@ -28,9 +35,12 @@ const RAIOS = [
 
 export function Consulta({
   usuarioId,
+  envio,
   aoQuererRegistrar,
 }: {
   usuarioId: string
+  /** Corrigir preço daqui passa pela mesma fila do cadastro (RNF-06). */
+  envio: ReturnType<typeof useEnvio>
   /** Escaneou algo que não está no catálogo: leva para a aba de registro. */
   aoQuererRegistrar: () => void
 }) {
@@ -229,6 +239,8 @@ export function Consulta({
           raioKm={raioKm}
           aoTrocarRaio={setRaioKm}
           usuarioId={usuarioId}
+          registrar={envio.registrar}
+          todosOsMercados={mercados}
         />
       )}
     </section>
@@ -242,6 +254,8 @@ function Precos({
   raioKm,
   aoTrocarRaio,
   usuarioId,
+  registrar,
+  todosOsMercados,
 }: {
   produto: Produto
   mercados: Mercado[]
@@ -249,9 +263,14 @@ function Precos({
   raioKm: number | null
   aoTrocarRaio: (km: number | null) => void
   usuarioId: string
+  registrar: ReturnType<typeof useEnvio>['registrar']
+  /** Lista completa, não a do raio: a marca de conferido compara com todas. */
+  todosOsMercados: Mercado[]
 }) {
   const [precos, setPrecos] = useState<PrecoNoMercado[] | null>(null)
   const [mostrarVelhos, setMostrarVelhos] = useState(false)
+  // Corrigir um preço muda a lista inteira, inclusive quem é o mais barato.
+  const [versao, setVersao] = useState(0)
 
   useEffect(() => {
     let ativo = true
@@ -261,7 +280,7 @@ function Precos({
     return () => {
       ativo = false
     }
-  }, [produto.id, mercados, posicao, raioKm])
+  }, [produto.id, mercados, posicao, raioKm, versao])
 
   if (precos === null) return <p className="text-tinta-fraca">Procurando…</p>
 
@@ -309,6 +328,9 @@ function Precos({
               produto={produto}
               maisBarato={i === 0}
               usuarioId={usuarioId}
+              registrar={registrar}
+              conferido={conferidoNoLocal(p.mercado, posicao, todosOsMercados)}
+              aoCorrigir={() => setVersao((v) => v + 1)}
             />
           ))}
         </ol>
@@ -334,6 +356,9 @@ function Precos({
               produto={produto}
               maisBarato={false}
               usuarioId={usuarioId}
+              registrar={registrar}
+              conferido={conferidoNoLocal(p.mercado, posicao, todosOsMercados)}
+              aoCorrigir={() => setVersao((v) => v + 1)}
             />
           ))}
         </ol>
@@ -347,14 +372,21 @@ function Linha({
   produto,
   maisBarato,
   usuarioId,
+  registrar,
+  conferido,
+  aoCorrigir,
 }: {
   preco: PrecoNoMercado
   produto: Produto
   maisBarato: boolean
   usuarioId: string
+  registrar: ReturnType<typeof useEnvio>['registrar']
+  conferido: boolean
+  aoCorrigir: () => void
 }) {
   const [aberto, setAberto] = useState(false)
   const [confirmado, setConfirmado] = useState(false)
+  const [corrigindo, setCorrigindo] = useState(false)
   const porUnidade = precoPorUnidade(produto, preco.valor)
 
   // Procedência é metadado, não afirmação sobre o preço. Vira linha de texto
@@ -427,27 +459,60 @@ function Linha({
         </p>
       )}
 
-      <div className="mt-3 flex items-center justify-between gap-2 border-t border-borda pt-1">
-        <button
-          type="button"
-          disabled={confirmado}
-          onClick={async () => {
-            const r = await confirmar(preco.registroId, usuarioId)
-            if (r.ok) setConfirmado(true)
+      {/*
+        Confirmar e corrigir são a mesma pergunta com duas respostas.
+
+        Quem está de frente para a gôndola só tem dois casos: o preço confere,
+        ou está diferente. Antes só o primeiro tinha botão, e quem via o preço
+        errado precisava trocar de aba, achar o mercado de novo e o produto de
+        novo. O caminho mais valioso do app era o mais longo.
+
+        Corrigir não altera nada: cria registro novo, porque preço é imutável
+        (RD-02) e o mais recente do dia é o que vale (RD-04).
+      */}
+      {corrigindo ? (
+        <Correcao
+          preco={preco}
+          produto={produto}
+          usuarioId={usuarioId}
+          conferido={conferido}
+          registrar={registrar}
+          aoTerminar={() => {
+            setCorrigindo(false)
+            aoCorrigir()
           }}
-          className="-ml-2 min-h-11 rounded-lg px-2 text-sm font-medium text-marca-forte disabled:font-normal disabled:text-tinta-fraca"
-        >
-          {confirmado ? 'Confirmado ✓' : 'Confirmo esse preço'}
-        </button>
-        <button
-          type="button"
-          onClick={() => setAberto((v) => !v)}
-          aria-expanded={aberto}
-          className="-mr-2 min-h-11 rounded-lg px-2 text-sm text-tinta-suave"
-        >
-          {aberto ? 'Fechar' : 'Histórico'}
-        </button>
-      </div>
+          aoCancelar={() => setCorrigindo(false)}
+        />
+      ) : (
+        <div className="mt-3 flex items-center justify-between gap-1 border-t border-borda pt-1">
+          <button
+            type="button"
+            disabled={confirmado}
+            onClick={async () => {
+              const r = await confirmar(preco.registroId, usuarioId)
+              if (r.ok) setConfirmado(true)
+            }}
+            className="-ml-2 min-h-11 rounded-lg px-2 text-sm font-medium text-marca-forte disabled:font-normal disabled:text-tinta-fraca"
+          >
+            {confirmado ? 'Confirmado ✓' : 'Confere'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setCorrigindo(true)}
+            className="min-h-11 rounded-lg px-2 text-sm font-medium text-marca-forte"
+          >
+            Está diferente
+          </button>
+          <button
+            type="button"
+            onClick={() => setAberto((v) => !v)}
+            aria-expanded={aberto}
+            className="-mr-2 min-h-11 rounded-lg px-2 text-sm text-tinta-suave"
+          >
+            {aberto ? 'Fechar' : 'Histórico'}
+          </button>
+        </div>
+      )}
 
       {aberto && (
         <div className="anima-surgir mt-1 border-t border-borda pt-3">
@@ -459,6 +524,116 @@ function Linha({
         </div>
       )}
     </li>
+  )
+}
+
+/**
+ * Corrigir o preço sem sair da consulta.
+ *
+ * Só o valor e o tipo: produto e mercado já são os da linha, e a hora é agora,
+ * porque quem corrige está vendo a etiqueta neste instante. A marca de
+ * conferido no local sai do GPS, igual ao cadastro normal.
+ */
+function Correcao({
+  preco,
+  produto,
+  usuarioId,
+  conferido,
+  registrar,
+  aoTerminar,
+  aoCancelar,
+}: {
+  preco: PrecoNoMercado
+  produto: Produto
+  usuarioId: string
+  conferido: boolean
+  registrar: ReturnType<typeof useEnvio>['registrar']
+  aoTerminar: () => void
+  aoCancelar: () => void
+}) {
+  const [texto, setTexto] = useState('')
+  const [tipo, setTipo] = useState<Tipo>('tabela')
+  const [salvando, setSalvando] = useState(false)
+  const valor = lerValor(texto)
+
+  return (
+    <form
+      className="anima-surgir mt-3 flex flex-col gap-3 border-t border-borda pt-3"
+      onSubmit={async (e) => {
+        e.preventDefault()
+        if (valor === null) return
+        setSalvando(true)
+        await registrar(
+          montarRegistro({
+            produto,
+            mercado: preco.mercado,
+            usuarioId,
+            valor,
+            tipo,
+            conferido,
+          }),
+        )
+        aoTerminar()
+      }}
+    >
+      <label className="flex flex-col gap-1.5">
+        <span className="text-sm font-medium text-tinta-suave">
+          Quanto está agora no {preco.mercado.nome}?
+        </span>
+        <div className="flex items-center gap-2 rounded-xl border-2 border-borda-forte bg-superficie px-3 focus-within:border-marca">
+          <span className="text-tinta-fraca">R$</span>
+          <input
+            autoFocus
+            required
+            inputMode="decimal"
+            value={texto}
+            onChange={(e) => setTexto(e.target.value)}
+            placeholder={preco.valor.toFixed(2).replace('.', ',')}
+            className="text-preco-menor min-h-12 w-full bg-transparent tabular-nums outline-none placeholder:font-normal placeholder:text-tinta-fraca"
+          />
+        </div>
+      </label>
+
+      <div className="flex gap-2">
+        {(
+          [
+            ['tabela', 'Normal'],
+            ['promocional', 'Promoção'],
+          ] as const
+        ).map(([valorTipo, rotulo]) => (
+          <button
+            key={valorTipo}
+            type="button"
+            onClick={() => setTipo(valorTipo)}
+            aria-pressed={tipo === valorTipo}
+            className={
+              tipo === valorTipo
+                ? 'min-h-11 flex-1 rounded-lg bg-marca px-3 text-sm text-sobre-marca'
+                : 'min-h-11 flex-1 rounded-lg border border-borda-forte px-3 text-sm text-tinta-suave'
+            }
+          >
+            {rotulo}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          disabled={salvando || valor === null}
+          className="min-h-11 flex-1 rounded-lg bg-marca px-4 font-medium text-sobre-marca disabled:opacity-40"
+        >
+          {salvando ? 'Salvando…' : 'Salvar correção'}
+        </button>
+        <button
+          type="button"
+          onClick={aoCancelar}
+          className="min-h-11 rounded-lg px-4 text-sm text-tinta-suave"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
   )
 }
 

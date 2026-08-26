@@ -47,6 +47,7 @@ export default function App() {
             {aba === 'buscar' && (
               <Consulta
                 usuarioId={sessao.perfil.id}
+                envio={envio}
                 aoQuererRegistrar={() => setAba('registrar')}
               />
             )}

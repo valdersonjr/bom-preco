@@ -103,6 +103,7 @@ referenciam o `RF-xx` de origem.
 | -- | --------- | :-: | ------ |
 | RF-24 | O sistema deve permitir que um usuário confirme um preço existente sem recadastrá-lo | ✅ | `Elic` |
 | RF-25 | O sistema deve distinguir a confirmação feita pelo autor do registro da feita por outro usuário | ✅ | `Dom` RD-03 |
+| RF-47 | O sistema deve permitir, na própria consulta, corrigir um preço que não confere, gravando registro novo sem alterar o anterior | ✅ | `Dom` RD-02, RD-04 |
 | RF-26 | O sistema deve calcular um indicador de confiabilidade por preço | ❌ | `Elic` |
 | RF-27 | O sistema deve manter reputação do usuário a partir do histórico de cadastros | ❌ | `Elic` |
 | RF-28 | O sistema deve sinalizar preço muito fora da média histórica | ❌ | `Elic` |
@@ -124,7 +125,7 @@ referenciam o `RF-xx` de origem.
 | RF-30 | O sistema deve importar carga inicial de preços de base pública | ❌ | `Elic` |
 | RF-31 | O sistema deve atribuir pontos e distintivos a contribuidores | ❌ | `Elic` |
 
-**Resumo:** 46 requisitos funcionais, 30 no MVP.
+**Resumo:** 47 requisitos funcionais, 31 no MVP.
 
 ---
 
