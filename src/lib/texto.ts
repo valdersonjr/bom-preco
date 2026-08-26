@@ -11,6 +11,19 @@
  * cópia divergente da fonte. Conserta na exibição, que é onde incomoda.
  */
 
+/**
+ * Texto dobrado para comparação: sem acento, em caixa baixa.
+ *
+ * O mesmo que a coluna `nome_busca` faz no banco. Aqui serve para ordenar o que
+ * já veio de lá, e para filtrar listas que estão inteiras na memória.
+ */
+export function semAcento(t: string): string {
+  return t
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase()
+}
+
 /** Ligações que só recebem maiúscula quando abrem o nome. */
 const LIGACOES = new Set([
   'a', 'ao', 'aos', 'as', 'à', 'às', 'com', 'da', 'das', 'de', 'do', 'dos',

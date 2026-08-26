@@ -87,6 +87,7 @@ referenciam o `RF-xx` de origem.
 | RF-43 | O sistema deve permitir abrir a rota até um mercado no aplicativo de mapas do aparelho, usando a coordenada quando existir e o endereço quando não | ✅ | `Elic` |
 | RF-44 | O sistema deve exibir em mapa os mercados que possuem coordenada, informando quantos ficaram de fora | ✅ | `Elic` |
 | RF-45 | O sistema deve permitir identificar o produto da consulta pela leitura do código de barras, além da busca por nome | ✅ | `Elic` |
+| RF-48 | O sistema deve buscar produto ignorando acentuação e exigindo todas as palavras do termo em qualquer ordem, apresentando os resultados por relevância textual e não por ordem alfabética | ✅ | `Der` |
 
 ### Lista de compras · UC-04
 
@@ -125,7 +126,7 @@ referenciam o `RF-xx` de origem.
 | RF-30 | O sistema deve importar carga inicial de preços de base pública | ❌ | `Elic` |
 | RF-31 | O sistema deve atribuir pontos e distintivos a contribuidores | ❌ | `Elic` |
 
-**Resumo:** 47 requisitos funcionais, 31 no MVP.
+**Resumo:** 48 requisitos funcionais, 32 no MVP.
 
 ---
 

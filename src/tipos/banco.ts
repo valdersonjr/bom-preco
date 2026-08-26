@@ -236,6 +236,7 @@ export type Database = {
           id: string
           marca: string | null
           nome: string
+          nome_busca: string | null
           origem: string
           quantidade: number
           quantidade_base: number | null
@@ -248,6 +249,7 @@ export type Database = {
           id?: string
           marca?: string | null
           nome: string
+          nome_busca?: string | null
           origem: string
           quantidade: number
           quantidade_base?: number | null
@@ -260,6 +262,7 @@ export type Database = {
           id?: string
           marca?: string | null
           nome?: string
+          nome_busca?: string | null
           origem?: string
           quantidade?: number
           quantidade_base?: number | null
@@ -416,6 +419,7 @@ export type Database = {
     }
     Functions: {
       e_mantenedor: { Args: never; Returns: boolean }
+      sem_acento: { Args: { t: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never

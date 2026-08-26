@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
 import { distanciaM, type Mercado } from './mercado'
+import { semAcento } from './texto'
 
 /** RF-16: preço com mais de 30 dias sai da comparação por padrão. */
 export const DIAS_ATE_DESATUALIZAR = 30
@@ -140,22 +141,125 @@ const COLUNAS_PRODUTO =
  * quem tem a embalagem na mão mas não quer abrir a câmera, ou de quem está
  * consultando de casa com a foto do produto.
  */
+/**
+ * Quão bem o nome responde ao termo. Menor é melhor.
+ *
+ * Buscar "arroz" trazia, em ordem alfabética, quatro linhas de ração e macarrão
+ * antes do primeiro pacote de arroz. Alfabeto não é relevância: ordena nomes,
+ * não respostas.
+ */
+function nivelDeRelevancia(nome: string, palavras: string[]): number {
+  const n = semAcento(nome)
+  if (n.startsWith(palavras[0])) return 0
+  // Palavra inteira: "Macarrão de Arroz" vence "Dog Chow E Arroz Integral".
+  if (palavras.every((p) => new RegExp(`\\b${escapar(p)}`).test(n))) return 1
+  return 2
+}
+
+function escapar(t: string): string {
+  return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/** Quantos candidatos buscar antes de ordenar. Mostra-se um terço disso. */
+const MOSTRADOS = 30
+
+/**
+ * Busca produto por nome ou código de barras.
+ *
+ * Filtra por `nome_busca`, a coluna dobrada sem acento, para "feijao" e
+ * "feijão" alcançarem a mesma prateleira.
+ *
+ * **Duas consultas em paralelo, não uma.** "leite" casa com centenas de
+ * produtos; pedir um `limit` sem `order` devolveria um punhado qualquer deles,
+ * e o item certo poderia nem entrar no poço a ser ordenado. A primeira consulta
+ * pede quem *começa* com o termo, que é o nível de relevância mais alto e cabe
+ * no índice; a segunda completa com quem apenas contém.
+ *
+ * A ordem final sai aqui: relevância textual primeiro, e ter preço recente
+ * **desempatando dentro do mesmo nível**, nunca acima dele. Quem digitou
+ * "arroz integral" quer arroz integral, mesmo que só o branco tenha preço; mas
+ * entre dois arroz integrais igualmente relevantes, o que tem preço responde à
+ * pergunta da tela e o outro não.
+ *
+ * Desempate final pelo nome mais curto. Não é arbitrário: no catálogo aberto o
+ * nome curto costuma ser o produto genérico e o longo, o item específico e raro.
+ */
 export async function buscarProduto(termo: string) {
   const t = termo.trim()
   if (t.length < 2) return []
 
-  const pareceCodigo = /^\d{8,14}$/.test(t)
+  if (/^\d{8,14}$/.test(t)) {
+    const { data } = await supabase
+      .from('produto')
+      .select(COLUNAS_PRODUTO)
+      .eq('gtin', t)
+      .limit(MOSTRADOS)
+    return data ?? []
+  }
 
-  const { data } = pareceCodigo
-    ? await supabase.from('produto').select(COLUNAS_PRODUTO).eq('gtin', t).limit(30)
-    : await supabase
-        .from('produto')
-        .select(COLUNAS_PRODUTO)
-        .ilike('nome', `%${t}%`)
-        .order('nome')
-        .limit(30)
+  /*
+    Todas as palavras, em qualquer ordem, em vez da frase inteira como trecho.
 
-  return data ?? []
+    "sabao em po" não achava nada, porque exigia essa sequência exata dentro do
+    nome. Ninguém escreve o nome do produto na ordem em que se pensa nele: o
+    rótulo diz "Omo Lavagem Perfeita Sabão em Pó", e a pessoa digita "omo po"
+    ou "sabao omo". Cada `ilike` encadeado vira um E na consulta.
+  */
+  const palavras = semAcento(t).split(/\s+/).filter(Boolean)
+
+  const comTodasAsPalavras = (inicio: boolean) => {
+    let q = supabase.from('produto').select(COLUNAS_PRODUTO)
+    q = q.ilike('nome_busca', inicio ? `${palavras[0]}%` : `%${palavras[0]}%`)
+    for (const p of palavras.slice(1)) q = q.ilike('nome_busca', `%${p}%`)
+    return q.order('nome')
+  }
+
+  const [comeca, contem] = await Promise.all([
+    comTodasAsPalavras(true).limit(MOSTRADOS),
+    comTodasAsPalavras(false).limit(60),
+  ])
+
+  type Linha = NonNullable<typeof comeca.data>[number]
+  const porId = new Map<string, Linha>()
+  for (const p of [...(comeca.data ?? []), ...(contem.data ?? [])]) {
+    if (!porId.has(p.id)) porId.set(p.id, p)
+  }
+
+  const candidatos = [...porId.values()]
+  if (candidatos.length === 0) return []
+
+  const comPreco = await quaisTemPrecoRecente(candidatos.map((p) => p.id))
+
+  return candidatos
+    .map((p) => ({
+      p,
+      nivel: nivelDeRelevancia(p.nome, palavras),
+      temPreco: comPreco.has(p.id),
+    }))
+    .sort(
+      (a, b) =>
+        a.nivel - b.nivel ||
+        Number(b.temPreco) - Number(a.temPreco) ||
+        a.p.nome.length - b.p.nome.length ||
+        a.p.nome.localeCompare(b.p.nome, 'pt-BR'),
+    )
+    .slice(0, MOSTRADOS)
+    .map((x) => x.p)
+}
+
+/** Quais destes produtos têm preço dentro da janela de validade (RF-16). */
+async function quaisTemPrecoRecente(ids: string[]): Promise<Set<string>> {
+  const corte = new Date(
+    Date.now() - DIAS_ATE_DESATUALIZAR * 86_400_000,
+  ).toISOString()
+
+  const { data } = await supabase
+    .from('preco_publico')
+    .select('produto_id')
+    .in('produto_id', ids)
+    .gte('visto_em', corte)
+
+  return new Set((data ?? []).map((r) => r.produto_id).filter((x): x is string => !!x))
 }
 
 

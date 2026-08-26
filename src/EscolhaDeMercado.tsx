@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { distanciaAte, type Mercado, type Posicao } from './lib/mercado'
 import { distanciaEmTexto } from './lib/formato'
+import { semAcento } from './lib/texto'
 
 type Props = {
   mercados: Mercado[]
@@ -20,14 +21,6 @@ type Props = {
  * Não decide nada: quem sugere é o `useMercados` no componente acima, e a
  * escolha da pessoa mora lá também. Aqui só se mostra e se avisa do clique.
  */
-/** "ebasico" precisa achar "Ébásico". Ninguém digita acento com pressa. */
-function semAcento(t: string): string {
-  return t
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .toLowerCase()
-}
-
 export function EscolhaDeMercado({
   mercados,
   escolhido,

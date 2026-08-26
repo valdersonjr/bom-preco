@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './lib/supabase'
 import type { Produto } from './lib/produto'
-import { nomeDeProduto } from './lib/texto'
+import { nomeDeProduto, semAcento } from './lib/texto'
 
 type Props = {
   aoEscolher: (produto: Produto) => void
@@ -34,7 +34,7 @@ export function EscolhaDoCatalogo({ aoEscolher }: Props) {
         .limit(40)
 
       const { data } = termo
-        ? await consulta.ilike('nome', `%${termo}%`)
+        ? await consulta.ilike('nome_busca', `%${semAcento(termo)}%`)
         : await consulta
 
       if (!ativo) return
