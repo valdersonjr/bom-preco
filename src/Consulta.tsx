@@ -20,7 +20,7 @@ import {
   type Produto,
 } from './lib/produto'
 import { Historico } from './Historico'
-import { EnderecoComRota } from './Mercado'
+import { Acao, AcaoDeLocalizacao } from './Mercado'
 import { descricaoDoProduto, nomeDeProduto } from './lib/texto'
 import { useLeitorDeCodigo } from './lib/leitor'
 import type { useEnvio } from './lib/envio'
@@ -526,7 +526,11 @@ function Linha({
           <p className="truncate font-medium text-tinta">
             {preco.mercado.nome}
           </p>
-          <EnderecoComRota mercado={preco.mercado} />
+          {preco.mercado.endereco && (
+            <p className="mt-0.5 truncate text-sm text-tinta-suave">
+              {preco.mercado.endereco}
+            </p>
+          )}
           <p className="mt-0.5 text-sm text-tinta-fraca">
             {descreverIdade(preco.idadeEmDias)}
             {preco.distanciaM !== null && (
@@ -619,6 +623,15 @@ function Linha({
 
         Corrigir não altera nada: cria registro novo, porque preço é imutável
         (RD-02) e o mais recente do dia é o que vale (RD-04).
+
+        As três ações vêm em colunas, ícone sobre rótulo, no formato do cartão
+        de local do Google Maps. O que faz esse formato funcionar é que os
+        alvos ficam do mesmo tamanho e à mesma distância do polegar. Ele
+        substitui o endereço-que-era-link, que dependia de a pessoa adivinhar
+        que texto verde se toca.
+
+        "Está diferente" não cabe numa coluna estreita, então vira "Corrigir",
+        que diz o que faz. A frase mais gentil sobrevive dentro do formulário.
       */}
       {corrigindo ? (
         <Correcao
@@ -634,43 +647,26 @@ function Linha({
           aoCancelar={() => setCorrigindo(false)}
         />
       ) : (
-        <div className="mt-3 flex gap-2 border-t border-borda pt-3">
-          <button
-            type="button"
-            disabled={confirmado}
-            onClick={async () => {
-              const r = await confirmar(preco.registroId, usuarioId)
-              if (r.ok) setConfirmado(true)
+        <div className="mt-3 flex items-stretch border-t border-borda pt-1">
+          <Acao
+            rotulo={confirmado ? 'Confirmado' : 'Confere'}
+            destaque={!confirmado}
+            desabilitado={confirmado}
+            onClick={() => {
+              void confirmar(preco.registroId, usuarioId).then((r) => {
+                if (r.ok) setConfirmado(true)
+              })
             }}
-            className="flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-lg border border-marca-borda text-sm font-medium text-marca-forte disabled:border-borda disabled:font-normal disabled:text-tinta-fraca"
           >
-            {confirmado ? (
-              'Confirmado'
-            ) : (
-              <>
-                <svg
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  className="size-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M20 6 9 17l-5-5" />
-                </svg>
-                Confere
-              </>
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => setCorrigindo(true)}
-            className="min-h-11 flex-1 rounded-lg border border-borda-forte text-sm font-medium text-tinta-suave"
-          >
-            Está diferente
-          </button>
+            <path d="M20 6 9 17l-5-5" />
+          </Acao>
+
+          <Acao rotulo="Corrigir" onClick={() => setCorrigindo(true)}>
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+          </Acao>
+
+          <AcaoDeLocalizacao mercado={preco.mercado} />
         </div>
       )}
 

@@ -48,38 +48,78 @@ export function EnderecoDoMercado({ mercado }: { mercado: Mercado }) {
 }
 
 /**
- * O endereço, e ele mesmo leva até lá.
+ * Uma coluna da fileira de ações: ícone em cima, rótulo embaixo.
  *
- * Dentro do cartão de preço um botão separado de rota competia por atenção com
- * "confere" e "está diferente", que são de outra natureza: aqueles pedem um
- * julgamento sobre o preço, este só mostra onde fica. Virando o próprio
- * endereço, a ação encosta no dado a que pertence e some da fileira.
+ * Todas do mesmo tamanho de propósito. A hierarquia entre elas é de cor, não
+ * de área: alvo menor para a ação secundária só faz errar quem está com pressa.
  */
-export function EnderecoComRota({ mercado }: { mercado: Mercado }) {
-  if (!mercado.endereco) return null
+export function Acao({
+  rotulo,
+  onClick,
+  children,
+  destaque = false,
+  desabilitado = false,
+}: {
+  rotulo: string
+  onClick: () => void
+  children: React.ReactNode
+  destaque?: boolean
+  desabilitado?: boolean
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={desabilitado}
+      className={`flex min-h-14 flex-1 flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium ${
+        desabilitado
+          ? 'text-tinta-fraca'
+          : destaque
+            ? 'text-marca-forte'
+            : 'text-tinta-suave'
+      }`}
+    >
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        className="size-5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {children}
+      </svg>
+      {rotulo}
+    </button>
+  )
+}
 
+/** A mesma coluna, mas levando para fora do app: é link, não botão. */
+export function AcaoDeLocalizacao({ mercado }: { mercado: Mercado }) {
   return (
     <a
       href={urlDeRota(mercado)}
       target="_blank"
       rel="noreferrer"
       aria-label={`Localização de ${mercado.nome}, abre no app de mapas`}
-      className="mt-0.5 flex items-center gap-1 text-sm text-marca-forte"
+      className="flex min-h-14 flex-1 flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-tinta-suave"
     >
       <svg
         viewBox="0 0 24 24"
         aria-hidden="true"
-        className="size-3.5 shrink-0"
+        className="size-5"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.8"
+        strokeWidth="1.9"
         strokeLinecap="round"
         strokeLinejoin="round"
       >
         <path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z" />
         <circle cx="12" cy="10" r="2.5" />
       </svg>
-      <span className="truncate">{mercado.endereco}</span>
+      Localização
     </a>
   )
 }
