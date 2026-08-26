@@ -45,6 +45,7 @@ export function Escaneamento({
   const [escolhaManual, setEscolhaManual] = useState<Mercado | null>(null)
   const [modo, setModo] = useState<'codigo' | 'catalogo'>('codigo')
   const [salvos, setSalvos] = useState(0)
+  const [veioDaCamera, setVeioDaCamera] = useState(false)
   const { naFila, enviando, registrar } = envio
 
   // Derivado, não guardado: a sugestão chega depois da localização, e guardá-la
@@ -62,7 +63,10 @@ export function Escaneamento({
     )
   }, [])
 
-  const { video, estado, iniciar, parar } = useLeitorDeCodigo(aoLer)
+  const { video, estado, iniciar, parar } = useLeitorDeCodigo((gtin) => {
+    setVeioDaCamera(true)
+    void aoLer(gtin)
+  })
 
   const recomecar = () => setResultado({ tipo: 'nenhum' })
   const escolhendo =
@@ -109,11 +113,17 @@ export function Escaneamento({
               estado={estado}
               iniciar={iniciar}
               parar={parar}
-              aoDigitar={(gtin) => void aoLer(gtin)}
+              aoDigitar={(gtin) => {
+                setVeioDaCamera(false)
+                void aoLer(gtin)
+              }}
             />
           ) : (
             <EscolhaDoCatalogo
-              aoEscolher={(produto) => setResultado({ tipo: 'achado', produto })}
+              aoEscolher={(produto) => {
+                setVeioDaCamera(false)
+                setResultado({ tipo: 'achado', produto })
+              }}
             />
           )}
 
@@ -139,6 +149,15 @@ export function Escaneamento({
           aoSalvar={() => {
             setSalvos((n) => n + 1)
             recomecar()
+            /*
+              Quem escaneou vai escanear de novo.
+
+              Uma compra são dez, quinze itens, e voltar ao botão "Escanear"
+              entre cada um é um toque por produto gasto em nada. Reabre só
+              quando a câmera foi o caminho de entrada: quem digitou o código
+              ou veio do catálogo não pediu câmera nenhuma.
+            */
+            if (veioDaCamera) void iniciar()
           }}
           aoDesistir={recomecar}
         />

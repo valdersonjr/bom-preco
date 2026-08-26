@@ -103,7 +103,7 @@ export function ProdutoNovo({ gtin, aoCriar, aoDesistir }: Props) {
           autoFocus
           value={nome}
           onChange={(e) => setNome(e.target.value)}
-          className="min-h-11 rounded-lg border border-borda-forte px-3"
+          className="min-h-12 rounded-xl border border-borda-forte bg-elevado px-3"
         />
       </label>
 
@@ -112,7 +112,7 @@ export function ProdutoNovo({ gtin, aoCriar, aoDesistir }: Props) {
         <input
           value={marca}
           onChange={(e) => setMarca(e.target.value)}
-          className="min-h-11 rounded-lg border border-borda-forte px-3"
+          className="min-h-12 rounded-xl border border-borda-forte bg-elevado px-3"
         />
       </label>
 
@@ -124,7 +124,7 @@ export function ProdutoNovo({ gtin, aoCriar, aoDesistir }: Props) {
             inputMode="decimal"
             value={quantidade}
             onChange={(e) => setQuantidade(e.target.value)}
-            className="min-h-11 rounded-lg border border-borda-forte px-3"
+            className="min-h-12 rounded-xl border border-borda-forte bg-elevado px-3"
           />
         </label>
         <label className="flex flex-1 flex-col gap-1">
@@ -132,7 +132,7 @@ export function ProdutoNovo({ gtin, aoCriar, aoDesistir }: Props) {
           <select
             value={unidade}
             onChange={(e) => setUnidade(e.target.value)}
-            className="min-h-11 rounded-lg border border-borda-forte px-3"
+            className="min-h-12 rounded-xl border border-borda-forte bg-elevado px-3"
           >
             {UNIDADES.map((u) => (
               <option key={u.valor} value={u.valor}>

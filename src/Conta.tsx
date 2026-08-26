@@ -69,7 +69,7 @@ function Apelido({
         value={rascunho}
         onChange={(e) => setRascunho(e.target.value)}
         aria-label="Apelido"
-        className="min-h-11 flex-1 rounded-lg border border-borda-forte px-3"
+        className="min-h-12 flex-1 rounded-xl border border-borda-forte bg-elevado px-3"
       />
       <button
         type="submit"
@@ -144,7 +144,7 @@ function Vinculo({ anonimo }: { anonimo: boolean }) {
           autoFocus
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="min-h-11 flex-1 rounded-lg border border-borda-forte px-3"
+          className="min-h-12 flex-1 rounded-xl border border-borda-forte bg-elevado px-3"
         />
         <button
           type="submit"

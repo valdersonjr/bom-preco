@@ -9,6 +9,8 @@ export type ItemDaLista = {
   itemId: string
   produto: Produto
   quantidade: number
+  /** Já está no carrinho. Guarda o instante, para desmarcar sem inventar estado. */
+  pego: boolean
   /** Nulo quando ninguém cadastrou preço válido para este produto. */
   melhor: { mercado: Mercado; valor: number; idadeEmDias: number } | null
 }
@@ -73,6 +75,14 @@ export async function acrescentar(
     .insert({ lista_id: listaId, produto_id: produtoId, quantidade })
 }
 
+/** Marca ou desmarca o item como já pego (RF-49). */
+export async function marcarPego(itemId: string, pego: boolean) {
+  await supabase
+    .from('item_lista')
+    .update({ pego_em: pego ? new Date().toISOString() : null })
+    .eq('id', itemId)
+}
+
 export async function mudarQuantidade(itemId: string, quantidade: number) {
   if (quantidade <= 0) {
     await supabase.from('item_lista').delete().eq('id', itemId)
@@ -94,8 +104,10 @@ export async function carregarLista(
 ): Promise<ItemDaLista[]> {
   const { data: itens } = await supabase
     .from('item_lista')
-    .select(`id, quantidade, produto:produto_id (${COLUNAS_PRODUTO})`)
+    .select(`id, quantidade, pego_em, produto:produto_id (${COLUNAS_PRODUTO})`)
     .eq('lista_id', listaId)
+    // Ordem de inserção: é a ordem em que a pessoa pensou a compra.
+    .order('criado_em')
 
   if (!itens || itens.length === 0) return []
 
@@ -136,6 +148,7 @@ export async function carregarLista(
             itemId: i.id,
             produto: i.produto,
             quantidade: Number(i.quantidade),
+            pego: i.pego_em !== null,
             melhor: melhorPorProduto.get(i.produto.id) ?? null,
           },
         ]

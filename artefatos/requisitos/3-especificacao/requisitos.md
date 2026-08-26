@@ -97,6 +97,7 @@ referenciam o `RF-xx` de origem.
 | RF-21 | O sistema deve indicar, para cada item da lista, o mercado com o menor preço válido | ✅ | `Elic` |
 | RF-22 | O sistema deve comparar o custo total da lista entre os mercados | ❌ | `Elic` |
 | RF-23 | O sistema deve sugerir a divisão da lista entre dois ou três mercados | ❌ | `Elic` |
+| RF-49 | O sistema deve permitir marcar um item da lista como já posto no carrinho, e desmarcar | ✅ | `Der` |
 
 ### Confiança no dado · UC-05
 
@@ -126,7 +127,7 @@ referenciam o `RF-xx` de origem.
 | RF-30 | O sistema deve importar carga inicial de preços de base pública | ❌ | `Elic` |
 | RF-31 | O sistema deve atribuir pontos e distintivos a contribuidores | ❌ | `Elic` |
 
-**Resumo:** 48 requisitos funcionais, 32 no MVP.
+**Resumo:** 49 requisitos funcionais, 33 no MVP.
 
 ---
 

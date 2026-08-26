@@ -97,20 +97,26 @@ export type Database = {
       }
       item_lista: {
         Row: {
+          criado_em: string
           id: string
           lista_id: string
+          pego_em: string | null
           produto_id: string
           quantidade: number
         }
         Insert: {
+          criado_em?: string
           id?: string
           lista_id: string
+          pego_em?: string | null
           produto_id: string
           quantidade?: number
         }
         Update: {
+          criado_em?: string
           id?: string
           lista_id?: string
+          pego_em?: string | null
           produto_id?: string
           quantidade?: number
         }

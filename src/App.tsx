@@ -7,6 +7,7 @@ import { Consulta } from './Consulta'
 import { Lista } from './Lista'
 import { Navegacao, type Aba } from './Navegacao'
 import { useEnvio } from './lib/envio'
+import { useConexao } from './lib/conexao'
 
 /**
  * A aba ativa monta só a sua seção; as outras desmontam.
@@ -19,14 +20,25 @@ export default function App() {
   const sessao = useSessao()
   const [aba, setAba] = useState<Aba>('lista')
   const envio = useEnvio()
+  const online = useConexao()
 
   return (
     <div className="flex min-h-dvh flex-col">
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-5 pt-5 pb-6">
-        <header>
+        <header className="flex items-center justify-between gap-2">
           <h1 className="text-base font-semibold tracking-tight text-marca-forte">
             Bom Preço
           </h1>
+          {/*
+            Sem sinal, uma busca vazia parece um produto que ninguém cadastrou.
+            O aviso separa "não existe" de "não consegui perguntar". Avisa, não
+            bloqueia: o cadastro continua entrando na fila.
+          */}
+          {!online && (
+            <span className="anima-surgir rounded-full bg-alerta-fraca px-2.5 py-1 text-xs font-medium text-alerta-tinta">
+              Sem conexão
+            </span>
+          )}
         </header>
 
         {sessao.situacao === 'carregando' && (
@@ -43,7 +55,9 @@ export default function App() {
             entrada. Sem isso o React reaproveita o nó e a troca fica seca. */}
         {sessao.situacao === 'pronto' && (
           <div key={aba} className="anima-surgir flex flex-1 flex-col">
-            {aba === 'lista' && <Lista usuarioId={sessao.perfil.id} />}
+            {aba === 'lista' && (
+              <Lista usuarioId={sessao.perfil.id} aoIrPara={setAba} />
+            )}
             {aba === 'buscar' && (
               <Consulta
                 usuarioId={sessao.perfil.id}

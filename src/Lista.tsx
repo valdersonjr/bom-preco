@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   acrescentar,
   carregarLista,
+  marcarPego,
   mudarQuantidade,
   obterOuCriarLista,
   type ItemDaLista,
@@ -21,13 +22,20 @@ import { ComoChegar } from './Mercado'
 import { MapaDeMercados } from './MapaDeMercados'
 import { descricaoDoProduto, nomeDeProduto } from './lib/texto'
 
-export function Lista({ usuarioId }: { usuarioId: string }) {
+export function Lista({
+  usuarioId,
+  aoIrPara,
+}: {
+  usuarioId: string
+  aoIrPara: (aba: 'buscar' | 'registrar') => void
+}) {
   const { mercados, cidade, posicao } = useMercados()
   const [listaId, setListaId] = useState<string | null>(null)
   const [itens, setItens] = useState<ItemDaLista[] | null>(null)
   const [termo, setTermo] = useState('')
   const [achados, setAchados] = useState<Produto[]>([])
   const [removido, setRemovido] = useState<Removido | null>(null)
+  const [carrinhoAberto, setCarrinhoAberto] = useState(false)
 
   /** Estável de propósito: identidade nova reiniciaria o relógio do desfazer. */
   const dispensar = useCallback(() => setRemovido(null), [])
@@ -82,8 +90,22 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
     )
   }
 
-  const comPreco = (itens ?? []).filter((i) => i.melhor)
-  const semPreco = (itens ?? []).filter((i) => !i.melhor)
+  async function marcar(item: ItemDaLista, pego: boolean) {
+    await marcarPego(item.itemId, pego)
+    if (listaId) await recarregar(listaId)
+  }
+
+  /*
+    Três grupos, e o que já foi pego desce para o fim.
+
+    Dentro do mercado a lista encolhe conforme você anda, e o que sobra na
+    frente é só o que falta. Manter o item pego no lugar, riscado, obriga a
+    pular por cima dele em cada corredor.
+  */
+  const todos = itens ?? []
+  const noCarrinho = todos.filter((i) => i.pego)
+  const aComprar = todos.filter((i) => !i.pego && i.melhor)
+  const semPreco = todos.filter((i) => !i.pego && !i.melhor)
 
   return (
     <section className="flex flex-col gap-3">
@@ -94,7 +116,7 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
         onChange={(e) => setTermo(e.target.value)}
         placeholder="Adicionar item…"
         aria-label="Adicionar item à lista"
-        className="min-h-11 rounded-lg border border-borda-forte px-3"
+        className="min-h-12 rounded-xl border border-borda-forte bg-elevado px-3"
       />
 
       {achados.length > 0 && (
@@ -137,20 +159,16 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
 
       {itens === null && <Esqueleto />}
 
-      {itens?.length === 0 && (
-        <p className="rounded-xl bg-sutil p-4 text-tinta">
-          Sua lista está vazia. Vá acrescentando o que precisa comprar, e o app
-          diz onde cada coisa está mais barata.
-        </p>
-      )}
+      {itens?.length === 0 && <PrimeiraVez aoIrPara={aoIrPara} />}
 
-      {comPreco.length > 0 && (
+      {aComprar.length > 0 && (
         <ul className="flex flex-col gap-2">
-          {comPreco.map((i) => (
+          {aComprar.map((i) => (
             <ItemLinha
               key={i.itemId}
               item={i}
               aoMudar={(q) => void mudar(i, q)}
+              aoMarcar={(p) => void marcar(i, p)}
             />
           ))}
         </ul>
@@ -159,7 +177,7 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
       {semPreco.length > 0 && (
         <div className="flex flex-col gap-2">
           <p className="text-sm text-tinta-suave">
-            Sem preço conhecido — registre quando vir na prateleira:
+            Ainda sem preço. Registre quando vir na prateleira.
           </p>
           <ul className="flex flex-col gap-2">
             {semPreco.map((i) => (
@@ -167,16 +185,104 @@ export function Lista({ usuarioId }: { usuarioId: string }) {
                 key={i.itemId}
                 item={i}
                 aoMudar={(q) => void mudar(i, q)}
+                aoMarcar={(p) => void marcar(i, p)}
               />
             ))}
           </ul>
         </div>
       )}
 
-      {comPreco.length > 0 && (
-        <PorMercado itens={comPreco} posicao={posicao} />
+      {aComprar.length > 0 && <PorMercado itens={aComprar} posicao={posicao} />}
+
+      {noCarrinho.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={() => setCarrinhoAberto((v) => !v)}
+            aria-expanded={carrinhoAberto}
+            className="flex min-h-11 items-center gap-2 self-start rounded-lg text-sm font-medium text-tinta-suave"
+          >
+            No carrinho ({noCarrinho.length})
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className={`size-4 transition-transform ${carrinhoAberto ? 'rotate-90' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+          {carrinhoAberto && (
+            <ul className="anima-surgir flex flex-col gap-2">
+              {noCarrinho.map((i) => (
+                <ItemLinha
+                  key={i.itemId}
+                  item={i}
+                  aoMudar={(q) => void mudar(i, q)}
+                  aoMarcar={(p) => void marcar(i, p)}
+                />
+              ))}
+            </ul>
+          )}
+        </div>
       )}
     </section>
+  )
+}
+
+/**
+ * O que se vê ao abrir o app pela primeira vez.
+ *
+ * Antes era uma frase cinza dizendo que a lista estava vazia, o que a pessoa já
+ * sabia. Quem chega aqui por um link de um conhecido não sabe o que é isto, de
+ * onde vêm os preços, nem qual é o primeiro movimento.
+ *
+ * Estado vazio é a única tela que todo mundo vê, e por isso o melhor lugar para
+ * explicar o app. Um passo a mais que isso vira tutorial, e tutorial ninguém lê.
+ */
+function PrimeiraVez({
+  aoIrPara,
+}: {
+  aoIrPara: (aba: 'buscar' | 'registrar') => void
+}) {
+  return (
+    <div className="flex flex-col items-start gap-4 rounded-xl border border-borda bg-elevado p-5">
+      <div>
+        <p className="font-medium text-tinta">
+          Monte sua lista e veja onde sai mais barato
+        </p>
+        <p className="mt-1 text-sm text-tinta-suave">
+          Vá acrescentando o que precisa comprar. Para cada item o app mostra em
+          qual mercado está o menor preço, e soma quanto ficaria em cada um.
+        </p>
+      </div>
+
+      <p className="text-sm text-tinta-suave">
+        Os preços vêm de quem passou pela prateleira antes de você. Quando você
+        registra um, ajuda quem vier depois.
+      </p>
+
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={() => aoIrPara('buscar')}
+          className="min-h-11 rounded-lg bg-marca px-4 text-sm font-medium text-sobre-marca"
+        >
+          Ver um preço
+        </button>
+        <button
+          type="button"
+          onClick={() => aoIrPara('registrar')}
+          className="min-h-11 rounded-lg border border-borda-forte px-4 text-sm font-medium text-tinta-suave"
+        >
+          Registrar um preço
+        </button>
+      </div>
+    </div>
   )
 }
 
@@ -240,15 +346,57 @@ function Esqueleto() {
 function ItemLinha({
   item,
   aoMudar,
+  aoMarcar,
 }: {
   item: ItemDaLista
   aoMudar: (quantidade: number) => void
+  aoMarcar: (pego: boolean) => void
 }) {
-  const { melhor, produto, quantidade } = item
+  const { melhor, produto, quantidade, pego } = item
 
   return (
-    <li className="rounded-xl border border-borda bg-elevado p-4">
-      <p className="font-medium text-tinta">{nomeDeProduto(produto.nome)}</p>
+    <li
+      className={`rounded-xl border p-4 ${
+        pego ? 'border-borda bg-superficie' : 'border-borda bg-elevado'
+      }`}
+    >
+      <div className="flex items-start gap-3">
+        {/*
+          A marca de "já peguei" é a razão de a lista existir dentro do mercado.
+          Sem ela a pessoa perde o lugar e confere tudo de novo a cada corredor.
+        */}
+        <button
+          type="button"
+          role="checkbox"
+          aria-checked={pego}
+          onClick={() => aoMarcar(!pego)}
+          aria-label={`${pego ? 'Tirar do' : 'Pôr no'} carrinho: ${nomeDeProduto(produto.nome)}`}
+          className={`mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border-2 ${
+            pego
+              ? 'border-marca bg-marca text-sobre-marca'
+              : 'border-borda-forte'
+          }`}
+        >
+          {pego && (
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="size-3.5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+          )}
+        </button>
+
+        <div className="min-w-0 flex-1">
+      <p className={`font-medium ${pego ? 'text-tinta-fraca line-through' : 'text-tinta'}`}>
+        {nomeDeProduto(produto.nome)}
+      </p>
       <p className="mt-0.5 text-sm text-tinta-fraca">
         {descricaoDoProduto(produto)}
       </p>
@@ -295,6 +443,8 @@ function ItemLinha({
           >
             +
           </button>
+        </div>
+      </div>
         </div>
       </div>
     </li>
