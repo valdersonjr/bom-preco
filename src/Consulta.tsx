@@ -20,7 +20,7 @@ import {
   type Produto,
 } from './lib/produto'
 import { Historico } from './Historico'
-import { ComoChegar } from './Mercado'
+import { EnderecoComRota } from './Mercado'
 import { descricaoDoProduto, nomeDeProduto } from './lib/texto'
 import { useLeitorDeCodigo } from './lib/leitor'
 import type { useEnvio } from './lib/envio'
@@ -526,11 +526,7 @@ function Linha({
           <p className="truncate font-medium text-tinta">
             {preco.mercado.nome}
           </p>
-          {preco.mercado.endereco && (
-            <p className="mt-0.5 truncate text-sm text-tinta-suave">
-              {preco.mercado.endereco}
-            </p>
-          )}
+          <EnderecoComRota mercado={preco.mercado} />
           <p className="mt-0.5 text-sm text-tinta-fraca">
             {descreverIdade(preco.idadeEmDias)}
             {preco.distanciaM !== null && (
@@ -557,10 +553,6 @@ function Linha({
         </div>
       </div>
 
-      <div className="mt-1">
-        <ComoChegar mercado={preco.mercado} discreto />
-      </div>
-
       {(maisBarato || preco.tipo === 'promocional') && (
         <div className="mt-2 flex flex-wrap gap-1.5 text-xs font-medium">
           {maisBarato && (
@@ -576,8 +568,45 @@ function Linha({
         </div>
       )}
 
-      {procedencia.length > 0 && (
-        <p className="mt-2 text-xs text-tinta-fraca">{procedencia.join(' · ')}</p>
+      {/*
+        O histórico encosta na procedência porque é a mesma conversa: quem viu,
+        quando, quantas vezes. Fora da fileira de ações, que fica só com o que
+        se pede à pessoa.
+      */}
+      <button
+        type="button"
+        onClick={() => setAberto((v) => !v)}
+        aria-expanded={aberto}
+        className="mt-2 flex min-h-9 w-full items-center justify-between gap-2 rounded-lg text-left text-xs text-tinta-fraca"
+      >
+        <span className="truncate">
+          {procedencia.length > 0 ? procedencia.join(' · ') : 'sem confirmações'}
+        </span>
+        <span className="flex shrink-0 items-center gap-1 font-medium text-tinta-suave">
+          Histórico
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            className={`size-3.5 transition-transform ${aberto ? 'rotate-90' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </span>
+      </button>
+
+      {aberto && (
+        <div className="anima-surgir mt-1 border-t border-borda pt-3">
+          <Historico
+            produto={produto}
+            mercadoId={preco.mercado.id}
+            mercadoNome={preco.mercado.nome}
+          />
+        </div>
       )}
 
       {/*
@@ -605,7 +634,7 @@ function Linha({
           aoCancelar={() => setCorrigindo(false)}
         />
       ) : (
-        <div className="mt-3 flex items-center justify-between gap-1 border-t border-borda pt-1">
+        <div className="mt-3 flex gap-2 border-t border-borda pt-3">
           <button
             type="button"
             disabled={confirmado}
@@ -613,37 +642,38 @@ function Linha({
               const r = await confirmar(preco.registroId, usuarioId)
               if (r.ok) setConfirmado(true)
             }}
-            className="-ml-2 min-h-11 rounded-lg px-2 text-sm font-medium text-marca-forte disabled:font-normal disabled:text-tinta-fraca"
+            className="flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-lg border border-marca-borda text-sm font-medium text-marca-forte disabled:border-borda disabled:font-normal disabled:text-tinta-fraca"
           >
-            {confirmado ? 'Confirmado ✓' : 'Confere'}
+            {confirmado ? (
+              'Confirmado'
+            ) : (
+              <>
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  className="size-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+                Confere
+              </>
+            )}
           </button>
           <button
             type="button"
             onClick={() => setCorrigindo(true)}
-            className="min-h-11 rounded-lg px-2 text-sm font-medium text-marca-forte"
+            className="min-h-11 flex-1 rounded-lg border border-borda-forte text-sm font-medium text-tinta-suave"
           >
             Está diferente
-          </button>
-          <button
-            type="button"
-            onClick={() => setAberto((v) => !v)}
-            aria-expanded={aberto}
-            className="-mr-2 min-h-11 rounded-lg px-2 text-sm text-tinta-suave"
-          >
-            {aberto ? 'Fechar' : 'Histórico'}
           </button>
         </div>
       )}
 
-      {aberto && (
-        <div className="anima-surgir mt-1 border-t border-borda pt-3">
-          <Historico
-            produto={produto}
-            mercadoId={preco.mercado.id}
-            mercadoNome={preco.mercado.nome}
-          />
-        </div>
-      )}
     </li>
   )
 }
