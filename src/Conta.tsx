@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import {
-  deveConvidarAVincular,
   excluirConta,
-  registrosFeitos,
+  useRegistrosFeitos,
   useVinculo,
+  vinculoRecomendado,
 } from './lib/vinculo'
 
 /**
@@ -22,10 +22,13 @@ export function Conta({
   anonimo,
   apelido,
   renomear,
+  abrirVinculo = false,
 }: {
   anonimo: boolean
   apelido: string
   renomear: (novo: string) => void
+  /** Chegou pelo convite: a linha do e-mail abre sozinha, com o campo focado. */
+  abrirVinculo?: boolean
 }) {
   return (
     <section className="flex flex-col gap-6">
@@ -35,7 +38,7 @@ export function Conta({
 
       <Grupo titulo="Conta">
         <Apelido apelido={apelido} renomear={renomear} />
-        <Vinculo anonimo={anonimo} />
+        <Vinculo anonimo={anonimo} comecaAberta={abrirVinculo} />
       </Grupo>
 
       <Grupo titulo="Sobre">
@@ -187,7 +190,7 @@ function Identidade({
   apelido: string
   anonimo: boolean
 }) {
-  const registros = registrosFeitos()
+  const registros = useRegistrosFeitos()
 
   return (
     <div className="flex flex-col gap-4 rounded-xl border border-borda bg-elevado p-5">
@@ -313,9 +316,15 @@ function Apelido({
   )
 }
 
-function Vinculo({ anonimo }: { anonimo: boolean }) {
+function Vinculo({
+  anonimo,
+  comecaAberta,
+}: {
+  anonimo: boolean
+  comecaAberta: boolean
+}) {
   const { situacao, vincularEmail } = useVinculo()
-  const [aberta, setAberta] = useState(false)
+  const [aberta, setAberta] = useState(comecaAberta)
   const [email, setEmail] = useState('')
 
   if (!anonimo) {
@@ -330,7 +339,7 @@ function Vinculo({ anonimo }: { anonimo: boolean }) {
   return (
     <LinhaAbrivel
       rotulo="Proteger com e-mail"
-      valor={deveConvidarAVincular(anonimo) ? 'recomendado' : undefined}
+      valor={vinculoRecomendado(anonimo) ? 'recomendado' : undefined}
       aberta={aberta}
       aoAlternar={() => setAberta((v) => !v)}
     >

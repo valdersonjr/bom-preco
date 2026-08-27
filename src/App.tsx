@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useSessao, type Perfil } from './lib/sessao'
-import { ConviteDeInstalacao } from './ConviteDeInstalacao'
+import { Convites } from './Convites'
 import { Conta } from './Conta'
 import { Escaneamento } from './Escaneamento'
 import { Consulta } from './Consulta'
@@ -15,6 +15,23 @@ export default function App() {
   const [aba, setAba] = useState<Aba>('lista')
   const envio = useEnvio()
   const online = useConexao()
+
+  /*
+    Aceitar o convite de vínculo abre o formulário já na chegada.
+
+    Levar para a tela de conta e deixar a pessoa procurar qual das linhas era
+    desfaz metade do convite: ela disse que quer proteger a conta, e o passo
+    seguinte tem de ser digitar o e-mail, não caçar onde se digita.
+
+    Some ao sair da aba, para que voltar ali por conta própria não reabra um
+    formulário que ninguém pediu desta vez.
+  */
+  const [abrirVinculo, setAbrirVinculo] = useState(false)
+
+  const irPara = useCallback((nova: Aba) => {
+    setAba(nova)
+    if (nova !== 'conta') setAbrirVinculo(false)
+  }, [])
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -48,17 +65,25 @@ export default function App() {
         {sessao.situacao === 'pronto' && (
           <Abas
             aba={aba}
-            aoTrocar={setAba}
+            aoTrocar={irPara}
             perfil={sessao.perfil}
             renomear={sessao.renomear}
             envio={envio}
+            abrirVinculo={abrirVinculo}
           />
         )}
 
-        <ConviteDeInstalacao />
+        <Convites
+          anonimo={sessao.situacao === 'pronto' ? sessao.perfil.anonimo : null}
+          naTelaDeConta={aba === 'conta'}
+          aoQuererVincular={() => {
+            setAba('conta')
+            setAbrirVinculo(true)
+          }}
+        />
       </main>
 
-      <Navegacao ativa={aba} aoTrocar={setAba} pendentes={envio.naFila} />
+      <Navegacao ativa={aba} aoTrocar={irPara} pendentes={envio.naFila} />
     </div>
   )
 }
@@ -88,12 +113,15 @@ function Abas({
   perfil,
   renomear,
   envio,
+  abrirVinculo,
 }: {
   aba: Aba
   aoTrocar: (aba: Aba) => void
   perfil: Perfil
   renomear: (novo: string) => void
   envio: ReturnType<typeof useEnvio>
+  /** Chegou aqui pelo convite: a linha do e-mail já vem aberta. */
+  abrirVinculo: boolean
 }) {
   const locais = useMercados()
 
@@ -120,6 +148,7 @@ function Abas({
           anonimo={perfil.anonimo}
           apelido={perfil.apelido}
           renomear={renomear}
+          abrirVinculo={abrirVinculo}
         />
       )}
     </div>
