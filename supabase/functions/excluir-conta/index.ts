@@ -14,14 +14,46 @@
  */
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 
+/**
+ * Sem estes cabeçalhos a função é inalcançável pelo app.
+ *
+ * O app é servido pela Vercel e a função roda no domínio do Supabase, então
+ * toda chamada é de origem cruzada. E ela leva `Authorization` e `apikey`, dois
+ * cabeçalhos que obrigam o navegador a mandar antes um `OPTIONS` de sondagem —
+ * que a função respondia com 405, porque só conhecia POST. O navegador então
+ * bloqueava o POST sem nunca enviá-lo: quem tocava em "Excluir mesmo assim"
+ * recebia erro de rede, e o RF-40 não funcionava em lugar nenhum.
+ *
+ * A origem é liberada para qualquer uma, e isso não afrouxa nada: quem autoriza
+ * aqui é o token no cabeçalho, que o navegador não anexa sozinho e que um site
+ * de terceiro não consegue ler do armazenamento do app. CORS decide quem pode
+ * ler a resposta, não quem pode agir — a autorização continua sendo o Bearer.
+ */
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'authorization, apikey, content-type',
+  'Access-Control-Max-Age': '86400',
+}
+
+const responder = (corpo: string, status: number, tipo = 'text/plain') =>
+  new Response(corpo, {
+    status,
+    headers: { ...CORS, 'Content-Type': `${tipo};charset=UTF-8` },
+  })
+
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: CORS })
+  }
+
   if (req.method !== 'POST') {
-    return new Response('Método não permitido', { status: 405 })
+    return responder('Método não permitido', 405)
   }
 
   const autorizacao = req.headers.get('Authorization')
   if (!autorizacao) {
-    return new Response('Sem credencial', { status: 401 })
+    return responder('Sem credencial', 401)
   }
 
   const url = Deno.env.get('SUPABASE_URL')!
@@ -33,7 +65,7 @@ Deno.serve(async (req) => {
 
   const { data: quem, error: erroDeSessao } = await comoUsuario.auth.getUser()
   if (erroDeSessao || !quem.user) {
-    return new Response('Sessão inválida', { status: 401 })
+    return responder('Sessão inválida', 401)
   }
 
   // Cliente com privilégio de administração, só para apagar.
@@ -45,10 +77,8 @@ Deno.serve(async (req) => {
 
   const { error } = await comoAdmin.auth.admin.deleteUser(quem.user.id)
   if (error) {
-    return new Response(`Não consegui excluir: ${error.message}`, { status: 500 })
+    return responder(`Não consegui excluir: ${error.message}`, 500)
   }
 
-  return new Response(JSON.stringify({ excluido: true }), {
-    headers: { 'Content-Type': 'application/json' },
-  })
+  return responder(JSON.stringify({ excluido: true }), 200, 'application/json')
 })
