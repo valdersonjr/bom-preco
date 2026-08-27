@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import { DIAS_ATE_DESATUALIZAR } from './consulta'
+import { corteDeValidade, maisRecentePor } from './consulta'
 import type { Mercado } from './mercado'
 import type { Produto } from './produto'
 
@@ -45,34 +45,48 @@ export async function obterOuCriarLista(usuarioId: string): Promise<string> {
   return data.id
 }
 
+/** Violação de unicidade no Postgres. */
+const JA_EXISTE = '23505'
+
 /**
  * Acrescenta um produto. Repetir o mesmo soma à quantidade em vez de criar
- * outra linha (RD-15) — a restrição de unicidade no banco garante isso mesmo se
- * duas telas tentarem ao mesmo tempo.
+ * outra linha (RD-15).
+ *
+ * Ler e depois escrever tem uma janela no meio: duas telas da mesma conta
+ * podem ler "não existe" e as duas tentarem inserir. Quem chega em segundo
+ * esbarra na restrição de unicidade — e esse erro **é** a informação de que a
+ * linha já existe, então a soma é refeita por cima dela. Antes o erro era
+ * descartado em silêncio, e o segundo item simplesmente não entrava na lista.
  */
 export async function acrescentar(
   listaId: string,
   produtoId: string,
   quantidade = 1,
 ): Promise<void> {
-  const { data: existente } = await supabase
-    .from('item_lista')
-    .select('id, quantidade')
-    .eq('lista_id', listaId)
-    .eq('produto_id', produtoId)
-    .maybeSingle()
+  const somarAoExistente = async (): Promise<boolean> => {
+    const { data: existente } = await supabase
+      .from('item_lista')
+      .select('id, quantidade')
+      .eq('lista_id', listaId)
+      .eq('produto_id', produtoId)
+      .maybeSingle()
 
-  if (existente) {
+    if (!existente) return false
+
     await supabase
       .from('item_lista')
       .update({ quantidade: Number(existente.quantidade) + quantidade })
       .eq('id', existente.id)
-    return
+    return true
   }
 
-  await supabase
+  if (await somarAoExistente()) return
+
+  const { error } = await supabase
     .from('item_lista')
     .insert({ lista_id: listaId, produto_id: produtoId, quantidade })
+
+  if (error?.code === JA_EXISTE) await somarAoExistente()
 }
 
 /** Marca ou desmarca o item como já pego (RF-49). */
@@ -97,6 +111,17 @@ export async function mudarQuantidade(itemId: string, quantidade: number) {
  * Os preços de todos os itens vêm numa consulta só, e não uma por item: lista
  * de compra do mês tem trinta linhas, e trinta idas ao servidor no 4G do
  * mercado é o que faz um app parecer travado.
+ *
+ * **O corte dos 30 dias é feito no servidor.** Antes vinha o histórico inteiro
+ * de cada produto para o cliente descartar quase tudo — tráfego que cresce com
+ * a base enquanto a resposta não muda.
+ *
+ * **E o preço de cada mercado é o vigente, não o menor.** Esta era a diferença
+ * que fazia a lista e a consulta discordarem sobre o mesmo produto na mesma
+ * loja: `preco_publico` devolve uma linha por pessoa por dia, e ficar com o
+ * menor valor entre elas ressuscitava um preço de vinte dias atrás como se
+ * fosse o da prateleira. `maisRecentePor` aplica aqui a mesma RD-04 que a
+ * consulta já aplicava.
  */
 export async function carregarLista(
   listaId: string,
@@ -115,28 +140,40 @@ export async function carregarLista(
 
   const { data: precos } = await supabase
     .from('preco_publico')
-    .select('produto_id, mercado_id, valor, visto_em')
+    .select('produto_id, mercado_id, valor, visto_em, observado_em')
     .in('produto_id', produtoIds)
+    .gte('visto_em', corteDeValidade())
 
   const porMercado = new Map(mercados.map((m) => [m.id, m]))
-  const limite = Date.now() - DIAS_ATE_DESATUALIZAR * 86_400_000
 
-  /** Menor preço ainda válido de cada produto. */
+  const vigentes = maisRecentePor(
+    (precos ?? []).flatMap((p) => {
+      const mercado = p.mercado_id ? porMercado.get(p.mercado_id) : undefined
+      if (!mercado || !p.produto_id) return []
+      return [
+        {
+          produtoId: p.produto_id,
+          mercado,
+          valor: Number(p.valor),
+          vistoEm: new Date(p.visto_em!),
+          observadoEm: new Date(p.observado_em!),
+        },
+      ]
+    }),
+    (p) => `${p.produtoId}|${p.mercado.id}`,
+  )
+
+  /** Menor preço vigente de cada produto, entre os mercados. */
   const melhorPorProduto = new Map<string, ItemDaLista['melhor']>()
-  for (const p of precos ?? []) {
-    const visto = new Date(p.visto_em!).getTime()
-    if (visto < limite) continue
-
-    const mercado = porMercado.get(p.mercado_id!)
-    if (!mercado) continue
-
-    const atual = melhorPorProduto.get(p.produto_id!)
-    const valor = Number(p.valor)
-    if (!atual || valor < atual.valor) {
-      melhorPorProduto.set(p.produto_id!, {
-        mercado,
-        valor,
-        idadeEmDias: Math.floor((Date.now() - visto) / 86_400_000),
+  for (const p of vigentes) {
+    const atual = melhorPorProduto.get(p.produtoId)
+    if (!atual || p.valor < atual.valor) {
+      melhorPorProduto.set(p.produtoId, {
+        mercado: p.mercado,
+        valor: p.valor,
+        idadeEmDias: Math.floor(
+          (Date.now() - p.vistoEm.getTime()) / 86_400_000,
+        ),
       })
     }
   }

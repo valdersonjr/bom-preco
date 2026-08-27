@@ -5,6 +5,41 @@ import { semAcento } from './texto'
 /** RF-16: preço com mais de 30 dias sai da comparação por padrão. */
 export const DIAS_ATE_DESATUALIZAR = 30
 
+/** Instante a partir do qual um preço ainda conta como recente (RF-16). */
+export function corteDeValidade(): string {
+  return new Date(Date.now() - DIAS_ATE_DESATUALIZAR * 86_400_000).toISOString()
+}
+
+/**
+ * Fica com a observação mais recente de cada chave.
+ *
+ * `preco_publico` devolve o vigente de *cada pessoa em cada dia* — é a RD-04
+ * aplicada, e é o que alimenta o histórico. Mas comparar preços é comparar
+ * mercados: oito observações da mesma loja viram oito linhas disputando entre
+ * si, e o menor valor entre elas pode ser o de vinte dias atrás.
+ *
+ * Vence a observação mais recente, não o `visto_em` mais recente. Confirmar um
+ * preço antigo renova a idade dele (RD-14) e é para isso que serve, mas não o
+ * torna o preço atual da loja — quem viu depois viu depois.
+ *
+ * Mora aqui, e não em cada tela, porque estava em uma só: a consulta aplicava,
+ * a lista não, e as duas mostravam preços diferentes do mesmo produto no mesmo
+ * mercado.
+ */
+export function maisRecentePor<T extends { observadoEm: Date }>(
+  itens: T[],
+  chave: (item: T) => string,
+): T[] {
+  const vigentes = new Map<string, T>()
+  for (const item of itens) {
+    const atual = vigentes.get(chave(item))
+    if (!atual || item.observadoEm > atual.observadoEm) {
+      vigentes.set(chave(item), item)
+    }
+  }
+  return [...vigentes.values()]
+}
+
 export type PrecoNoMercado = {
   registroId: string
   mercado: Mercado
@@ -80,26 +115,9 @@ export async function precosDoProduto(
     ]
   })
 
-  /*
-    Um preço por mercado na comparação.
-
-    `preco_publico` devolve o vigente de cada pessoa em cada dia — é a RD-04
-    aplicada, e é o que alimenta o histórico. Mas a comparação é *entre*
-    mercados: oito observações da mesma loja viravam oito linhas disputando
-    entre si, o que só não aparecia porque a base estava vazia.
-
-    Vence a observação mais recente, não o `visto_em` mais recente. Confirmar um
-    preço antigo renova a idade dele (RD-14) e é para isso que serve, mas não o
-    torna o preço atual da loja — quem viu depois viu depois.
-  */
-  const vigentePorMercado = new Map<string, (typeof precos)[number]>()
-  for (const p of precos) {
-    const atual = vigentePorMercado.get(p.mercado.id)
-    if (!atual || p.observadoEm > atual.observadoEm) {
-      vigentePorMercado.set(p.mercado.id, p)
-    }
-  }
-  const unicos = [...vigentePorMercado.values()]
+  // Um preço por mercado na comparação. A regra mora em `maisRecentePor`,
+  // porque a lista de compras precisa exatamente da mesma.
+  const unicos = maisRecentePor(precos, (p) => p.mercado.id)
 
   const dentroDoRaio =
     raioKm === null
@@ -249,15 +267,11 @@ export async function buscarProduto(termo: string) {
 
 /** Quais destes produtos têm preço dentro da janela de validade (RF-16). */
 async function quaisTemPrecoRecente(ids: string[]): Promise<Set<string>> {
-  const corte = new Date(
-    Date.now() - DIAS_ATE_DESATUALIZAR * 86_400_000,
-  ).toISOString()
-
   const { data } = await supabase
     .from('preco_publico')
     .select('produto_id')
     .in('produto_id', ids)
-    .gte('visto_em', corte)
+    .gte('visto_em', corteDeValidade())
 
   return new Set((data ?? []).map((r) => r.produto_id).filter((x): x is string => !!x))
 }
