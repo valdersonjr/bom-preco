@@ -44,6 +44,18 @@ domínio deixaram de ser texto e viraram estrutura:
 o app já tem a coordenada do mercado, vinda do catálogo, e compara com a própria posição.
 Só o booleano sobe. A coordenada do usuário não chega nem a trafegar.
 
+**A RD-04 não termina na visão.** `preco_publico` devolve o vigente de cada pessoa em cada
+dia, que é o recorte certo para o histórico — mas comparar preço é comparar *mercados*, e
+oito observações da mesma loja chegam como oito linhas disputando entre si. O último passo,
+ficar com a observação mais recente de cada mercado, acontece no cliente, em
+`maisRecentePor`.
+
+Ele mora numa função só, e essa é a decisão: estava escrito na consulta e faltava na lista
+de compras, de modo que a lista pegava o **menor** valor entre as oito e apontava, como
+preço da prateleira, um número de vinte dias atrás. Regra de leitura duplicada diverge do
+mesmo jeito que regra de escrita. O lugar natural dela seria uma visão com `distinct on
+(produto_id, mercado_id)`; enquanto não existir, existe uma função e não duas cópias.
+
 ---
 
 ## 2. Segurança — matriz de acesso
@@ -167,6 +179,22 @@ saber que o preço ainda não subiu.
 
 Consulta. Só o cadastro é protegido contra falta de sinal — está escrito assim na Visão,
 entre os itens fora do MVP.
+
+### O que fica guardado para funcionar sem sinal
+
+O service worker precacheia o pacote do app por padrão, e o critério para tirar algo de lá
+é utilidade offline, não tamanho.
+
+O ponyfill do leitor de código de barras **fica**: ler etiqueta sem sinal é exatamente o
+que o RNF-06 protege, e no Safari do iOS não existe API nativa para servir de alternativa.
+Ele continua fora do pacote inicial, o que é assunto do RNF-08 — as duas coisas não se
+confundem: uma decide o que bloqueia a primeira tela, a outra decide o que sobrevive à
+falta de rede.
+
+O Leaflet **sai**. O mapa depende de tiles que vêm do OpenStreetMap, então guardar o código
+dele reserva espaço para uma tela que vai abrir vazia de qualquer forma. Sem esse corte o
+`generateSW` desfazia pelas costas a divisão de pacotes: o `import()` existia para o mapa
+não custar nada a quem nunca o abre, e o service worker o baixava para todo mundo.
 
 ---
 
