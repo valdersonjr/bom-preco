@@ -129,6 +129,15 @@ export function RegistroDePreco({
         )}
       </label>
 
+      {/*
+        Sem legenda embaixo dos botões.
+
+        Ela explicava que promoção fica marcada "para não ser confundida com o
+        preço de prateleira quando a oferta acabar" — o motivo da RD-07, dito a
+        quem só precisa escolher entre dois botões que já se explicam. E
+        ocupava altura fixa mesmo quando não dizia nada, empurrando o botão de
+        salvar para baixo numa tela que o RNF-07 quer curta.
+      */}
       <fieldset className="flex flex-col gap-1">
         <legend className="text-sm text-tinta-suave">Este preço é</legend>
         <div className="flex gap-2">
@@ -153,11 +162,6 @@ export function RegistroDePreco({
             </button>
           ))}
         </div>
-        <span className="min-h-10 text-sm text-tinta-fraca">
-          {tipo === 'promocional'
-            ? 'Fica marcado como promoção, para não ser confundido com o preço de prateleira quando a oferta acabar.'
-            : 'Preço normal de prateleira.'}
-        </span>
       </fieldset>
 
       {erro && <p className="text-perigo-tinta">{erro}</p>}

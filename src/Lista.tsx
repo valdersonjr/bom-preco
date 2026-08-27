@@ -264,11 +264,13 @@ export function Lista({
  * O que se vê ao abrir o app pela primeira vez.
  *
  * Antes era uma frase cinza dizendo que a lista estava vazia, o que a pessoa já
- * sabia. Quem chega aqui por um link de um conhecido não sabe o que é isto, de
- * onde vêm os preços, nem qual é o primeiro movimento.
+ * sabia. Quem chega aqui por um link de um conhecido não sabe o que é isto nem
+ * qual é o primeiro movimento.
  *
  * Estado vazio é a única tela que todo mundo vê, e por isso o melhor lugar para
- * explicar o app. Um passo a mais que isso vira tutorial, e tutorial ninguém lê.
+ * dizer o que o app faz. Uma frase e dois botões: o que vinha depois — de onde
+ * vêm os preços, como a contribuição ajuda quem vem atrás — é a missão do
+ * projeto, não instrução, e quem chegou aqui ainda não perguntou isso.
  */
 function PrimeiraVez({
   aoIrPara,
@@ -282,15 +284,10 @@ function PrimeiraVez({
           Monte sua lista e veja onde sai mais barato
         </p>
         <p className="mt-1 text-sm text-tinta-suave">
-          Vá acrescentando o que precisa comprar. Para cada item o app mostra em
-          qual mercado está o menor preço, e soma quanto ficaria em cada um.
+          Vá acrescentando o que precisa. O app mostra onde cada item está mais
+          barato.
         </p>
       </div>
-
-      <p className="text-sm text-tinta-suave">
-        Os preços vêm de quem passou pela prateleira antes de você. Quando você
-        registra um, ajuda quem vier depois.
-      </p>
 
       <div className="flex flex-wrap gap-2">
         <button
@@ -548,6 +545,15 @@ function PorMercado({
         ))}
       </ul>
 
+      {/*
+        Sem rodapé explicando o agrupamento.
+
+        Ele dizia que cada item vai para o mercado mais barato e que isso pode
+        espalhar a compra — a lista logo acima já mostra as duas coisas, com os
+        mercados separados e o total de cada um. E terminava avisando que
+        comparar a cesta inteira "ainda não existe", que é a issue #27 escrita
+        na tela: o backlog não é assunto de quem está montando a compra.
+      */}
       {mapaAberto ? (
         <MapaDeMercados mercados={mercados} />
       ) : (
@@ -559,12 +565,6 @@ function PorMercado({
           Ver no mapa
         </button>
       )}
-
-      <p className="text-xs text-tinta-fraca">
-        Cada item aparece no mercado mais barato. Isso pode espalhar a compra
-        por vários lugares — comparar o total da cesta inteira num mercado só
-        ainda não existe.
-      </p>
     </div>
   )
 }

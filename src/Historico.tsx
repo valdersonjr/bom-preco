@@ -41,8 +41,7 @@ export function Historico({
   if (pontos.length <= 1) {
     return (
       <p className="text-sm text-tinta-suave">
-        Só há um preço registrado aqui. O histórico aparece quando o mesmo
-        produto for cadastrado outras vezes neste mercado.
+        Só um preço registrado aqui ainda.
       </p>
     )
   }
@@ -94,10 +93,7 @@ export function Historico({
         })}
       </ol>
 
-      <p className="text-xs text-tinta-fraca">
-        Barra amarela é promoção. Um preço promocional baixo não significa que o
-        produto ficou barato — significa que estava em oferta naquele dia.
-      </p>
+      <p className="text-xs text-tinta-fraca">Barra amarela é promoção.</p>
     </div>
   )
 }

@@ -68,6 +68,20 @@ RF-13 e RF-16.
 **O GPS é sinal, nunca porteiro.** Falha de localização não bloqueia registro: o usuário
 escolhe o mercado na lista e o registro sai sem a marca de conferido.
 
+**O porquê de uma regra não vai para a tela.** Interface serve para três coisas: rotular o
+que se toca, dizer o que aconteceu, e desfazer um erro. A justificativa de uma decisão — por
+que só o mantenedor cadastra mercado, por que a autoria não aparece, por que promoção é
+marcada — mora no código e nos artefatos, que é onde ela já está.
+
+O teste antes de escrever qualquer frase na tela: **se eu apagar isto, alguém erra?** Se
+não, ela sai. Ficam as exceções em que a leitura é a própria decisão — a confirmação do que
+é irreversível, e a promessa sobre o dado pessoal que se está pedindo.
+
+Isto vale contra a inclinação natural deste repositório, e é por isso que está escrito: a
+mesma disciplina de explicar o porquê que faz o código ser bom faz a interface ser cansativa.
+Uma vez o app acumulou 740 palavras de instrução, e metade explicava regras a quem só queria
+saber quanto custa.
+
 ## Segredos
 
 Dois arquivos de ambiente, lidos por ferramentas diferentes, ambos no gitignore:

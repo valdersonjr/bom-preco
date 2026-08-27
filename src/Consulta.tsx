@@ -171,8 +171,7 @@ export function Consulta({
 
       {estado === 'negado' && (
         <p className="rounded-xl bg-alerta-fraca p-3 text-alerta-tinta">
-          Sem acesso à câmera. Libere a permissão nas configurações do navegador,
-          ou busque pelo nome.
+          Sem acesso à câmera. Libere nas configurações, ou busque pelo nome.
         </p>
       )}
 
@@ -200,8 +199,7 @@ export function Consulta({
             </span>
           </p>
           <p className="text-sm text-tinta-suave">
-            Ninguém cadastrou preço para ele em Goianésia. Se você está com o
-            produto na mão, é agora que a comparação nasce.
+            Ninguém cadastrou preço para ele ainda.
           </p>
           <button
             type="button"
@@ -379,10 +377,6 @@ function Precos({
         <div className="flex flex-col items-start gap-3 rounded-xl bg-sutil p-4">
           <p className="text-tinta">
             Ninguém cadastrou o preço deste produto por aqui ainda.
-          </p>
-          <p className="text-sm text-tinta-suave">
-            Da próxima vez que você vir na prateleira, registre. É assim que a
-            comparação nasce.
           </p>
         </div>
       ) : (

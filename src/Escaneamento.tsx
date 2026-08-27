@@ -347,8 +347,7 @@ function PorCodigo({
 
       {estado === 'negado' && (
         <p className="rounded-xl bg-alerta-fraca px-4 py-3 text-sm text-alerta-tinta">
-          Sem acesso à câmera. Libere a permissão nas configurações do navegador,
-          ou digite o código abaixo.
+          Sem acesso à câmera. Libere nas configurações, ou digite o código.
         </p>
       )}
 
@@ -363,8 +362,7 @@ function PorCodigo({
           mexer em configuração que já está certa. */}
       {estado === 'falhou' && (
         <p className="rounded-xl bg-alerta-fraca px-4 py-3 text-sm text-alerta-tinta">
-          Não consegui abrir a câmera. Toque em Escanear de novo, ou digite o
-          código abaixo.
+          Não consegui abrir a câmera. Tente de novo, ou digite o código.
         </p>
       )}
 

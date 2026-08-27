@@ -119,8 +119,7 @@ export function MapaDeMercados({ mercados }: { mercados: Mercado[] }) {
   if (plotaveis.length === 0) {
     return (
       <p className="rounded-xl bg-sutil p-3 text-sm text-tinta-suave">
-        Nenhum destes mercados tem ponto no mapa ainda. Os links de "como
-        chegar" continuam funcionando pelo endereço.
+        Nenhum destes mercados tem ponto no mapa ainda.
       </p>
     )
   }
@@ -129,8 +128,7 @@ export function MapaDeMercados({ mercados }: { mercados: Mercado[] }) {
     <div className="flex flex-col gap-2">
       {falhou ? (
         <p className="rounded-xl bg-alerta-fraca p-3 text-sm text-alerta-tinta">
-          Não consegui carregar o mapa — provavelmente falta sinal. Os links de
-          "como chegar" funcionam mesmo assim.
+          Não consegui carregar o mapa. Provavelmente falta sinal.
         </p>
       ) : (
         <div
@@ -141,13 +139,12 @@ export function MapaDeMercados({ mercados }: { mercados: Mercado[] }) {
         />
       )}
 
+      {/* Este aviso fica: sem ele o mapa induz a conclusão de que não há
+          mercado ali, que é pior do que não ter mapa. */}
       {faltando > 0 && (
         <p className="text-xs text-tinta-fraca">
-          {faltando}{' '}
-          {faltando === 1
-            ? 'mercado ainda não tem ponto no mapa e não aparece'
-            : 'mercados ainda não têm ponto no mapa e não aparecem'}{' '}
-          aqui. Estão na lista, com o endereço.
+          {faltando} {faltando === 1 ? 'mercado' : 'mercados'} sem ponto no
+          mapa — {faltando === 1 ? 'está' : 'estão'} na lista acima.
         </p>
       )}
     </div>

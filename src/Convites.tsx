@@ -90,12 +90,11 @@ function ConviteAVincular({
       <p className="text-alerta-tinta">
         <strong className="font-medium">
           {registros === 1
-            ? 'Seu preço registrado está seguro'
-            : `Seus ${registros} preços registrados estão seguros`}
+            ? 'Seu preço está seguro'
+            : `Seus ${registros} preços estão seguros`}
           .
         </strong>{' '}
-        Sua conta não. Ela existe só neste navegador — trocar de aparelho ou
-        limpar os dados leva embora seu apelido e suas listas.
+        Sua conta não — ela existe só neste navegador.
       </p>
 
       <div className="mt-3 flex gap-2">
@@ -125,13 +124,14 @@ function ConviteDeInstalacao({ convite }: { convite: Convite }) {
   return (
     <aside className="rounded-xl border border-marca-borda bg-marca-fraca p-4">
       <p className="text-marca-forte">
-        Instale o Bom Preço na tela inicial. Além de abrir mais rápido, é o que
-        impede o navegador de apagar seus dados depois de alguns dias sem uso.
+        Instale na tela inicial para não perder seus dados.
       </p>
 
+      {/* Esta fica: é o passo a passo de quem não tem botão de instalar, e
+          sem ele o convite pede algo que a pessoa não sabe fazer. */}
       {convite.tipo === 'instrucao' && (
         <p className="mt-2 text-sm text-marca-forte">
-          Toque em <strong>Compartilhar</strong> na barra de baixo e escolha{' '}
+          Toque em <strong>Compartilhar</strong> e escolha{' '}
           <strong>Adicionar à Tela de Início</strong>.
         </p>
       )}

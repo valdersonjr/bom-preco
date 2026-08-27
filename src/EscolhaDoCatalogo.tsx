@@ -66,8 +66,7 @@ export function EscolhaDoCatalogo({ aoEscolher }: Props) {
 
       {!carregando && itens.length === 0 && (
         <p className="rounded-xl bg-sutil p-3 text-tinta">
-          Não tenho esse item no catálogo. Me avise e eu acrescento — assim ele
-          fica igual para todo mundo, em vez de cada um cadastrar um nome.
+          Não tenho esse item. Me avise que eu acrescento.
         </p>
       )}
 

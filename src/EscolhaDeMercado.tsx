@@ -189,8 +189,7 @@ export function EscolhaDeMercado({
         ))}
       </ul>
       <p className="text-xs text-tinta-fraca">
-        Não achou o mercado? Ele precisa ser cadastrado pelo mantenedor — é o que
-        evita a mesma loja virar duas.
+        Não achou? Me avise que eu cadastro.
       </p>
     </div>
   )

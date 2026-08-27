@@ -106,8 +106,7 @@ export function ProdutoNovo({ gtin, aoCriar, aoDesistir }: Props) {
       <header className="flex items-start justify-between gap-3 border-b border-borda pb-4">
         <div className="min-w-0">
           <p className="text-tinta">
-            Não conheço esse produto. Me conta o que é, e da próxima vez eu já
-            sei.
+            Não conheço esse produto. Me conta o que é.
           </p>
           <p className="mt-1 font-mono text-xs text-tinta-fraca">{gtin}</p>
         </div>

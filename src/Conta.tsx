@@ -242,10 +242,7 @@ function Identidade({
 
       <p className="border-t border-borda pt-4 text-sm text-tinta-suave">
         {registros === 0 ? (
-          <>
-            Você ainda não registrou nenhum preço. O primeiro já ajuda quem
-            passar no mesmo corredor depois de você.
-          </>
+          <>Nenhum preço registrado ainda.</>
         ) : (
           <>
             <strong className="font-semibold text-tinta">
@@ -291,10 +288,7 @@ function Apelido({
           setAberta(false)
         }}
       >
-        <p className="text-sm text-tinta-suave">
-          É como você aparece para si mesmo. Ninguém mais vê: o autor de um
-          preço nunca é mostrado.
-        </p>
+        <p className="text-sm text-tinta-suave">Só você vê.</p>
         <div className="flex gap-2">
           <input
             autoFocus
@@ -345,8 +339,8 @@ function Vinculo({
     >
       {situacao.estado === 'enviado' ? (
         <p className="text-marca-forte">
-          Enviamos um link para <strong>{situacao.email}</strong>. Abra o e-mail
-          e confirme. Só depois disso a conta fica ligada a você.
+          Enviamos um link para <strong>{situacao.email}</strong>. Abra e
+          confirme.
         </p>
       ) : (
         <form
@@ -357,10 +351,8 @@ function Vinculo({
           }}
         >
           <p className="text-sm text-tinta-suave">
-            Hoje sua conta existe só neste navegador. Limpar os dados ou trocar
-            de aparelho leva embora seu apelido e suas listas. Com um e-mail,
-            você recupera tudo. Continua sendo a mesma pessoa aqui dentro, e
-            nada do que já cadastrou muda de dono.
+            Sua conta existe só neste navegador. Com um e-mail, você a recupera
+            em outro aparelho.
           </p>
           <div className="flex gap-2">
             <input
@@ -416,9 +408,11 @@ function Sobre() {
       </div>
       <div className="px-4 py-3">
         <p className="text-tinta">Sua localização</p>
+        {/* Um dos dois textos longos que ficam. É a única resposta a "por que
+            este app quer minha posição", e aqui a pessoa lê com calma. */}
         <p className="mt-0.5 text-sm text-tinta-suave">
-          Fica no aparelho. O app compara sua posição com a do mercado aqui
-          mesmo, e envia apenas se você estava perto, nunca onde você estava.
+          Fica no aparelho. O app envia só se você estava perto do mercado,
+          nunca onde você estava.
         </p>
       </div>
       <p className="px-4 py-3 text-xs text-tinta-fraca">
@@ -451,8 +445,7 @@ function Excluir() {
           Isso apaga sua conta, seu apelido e suas listas, e não tem volta.
         </p>
         <p className="text-sm text-perigo-tinta">
-          Os preços que você cadastrou continuam no app, sem seu nome. Eles
-          ajudam quem ficou, e ninguém consegue ligá-los a você depois disso.
+          Os preços que você cadastrou continuam, sem seu nome.
         </p>
         {erro && <p className="text-sm text-perigo-tinta">{erro}</p>}
         <div className="flex flex-wrap gap-2">
