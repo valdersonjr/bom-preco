@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 import { historico } from './lib/consulta'
+import { precoEmTexto } from './lib/formato'
 import { precoPorUnidade, unidadeDeComparacao, type Produto } from './lib/produto'
 
 type Ponto = Awaited<ReturnType<typeof historico>>[number]
-
-const real = (n: number) => `R$ ${n.toFixed(2).replace('.', ',')}`
 
 const data = (d: Date) =>
   d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })
@@ -56,7 +55,8 @@ export function Historico({
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm text-tinta-suave">
-        Histórico em {mercadoNome} · de {real(menor)} a {real(maior)}
+        Histórico em {mercadoNome} · de {precoEmTexto(menor)} a{' '}
+        {precoEmTexto(maior)}
       </p>
 
       <ol className="flex flex-col gap-1">
@@ -82,11 +82,11 @@ export function Historico({
                 />
               </span>
               <span className="shrink-0 tabular-nums text-tinta">
-                {real(p.valor)}
+                {precoEmTexto(p.valor)}
               </span>
               {porUnidade !== null && (
                 <span className="w-24 shrink-0 text-right tabular-nums text-tinta-fraca">
-                  {real(porUnidade)}/{unidadeDeComparacao(produto)}
+                  {precoEmTexto(porUnidade)}/{unidadeDeComparacao(produto)}
                 </span>
               )}
             </li>
