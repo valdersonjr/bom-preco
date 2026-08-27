@@ -18,6 +18,22 @@ type Props = {
 }
 
 /**
+ * Quantidade da embalagem: número positivo, com vírgula ou ponto.
+ *
+ * Aceita mais de duas casas, ao contrário de `lerValor`: preço tem centavos,
+ * embalagem tem "1,5 L" e também "0,395 kg". O que não pode passar é vazio ou
+ * texto — `Number('abc')` dá `NaN`, o banco recusa pela restrição `quantidade
+ * > 0`, e o que a pessoa via era a mensagem crua do Postgres sobre uma *check
+ * constraint*, no meio de um formulário em português.
+ */
+function lerQuantidade(texto: string): number | null {
+  const limpo = texto.trim().replace(/\s/g, '').replace(',', '.')
+  if (!/^\d+(\.\d+)?$/.test(limpo)) return null
+  const n = Number(limpo)
+  return n > 0 ? n : null
+}
+
+/**
  * Preenche um produto cujo código de barras a base pública não conhece
  * (RF-33, RD-09).
  *
@@ -33,7 +49,14 @@ export function ProdutoNovo({ gtin, aoCriar, aoDesistir }: Props) {
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
+  const medida = lerQuantidade(quantidade)
+
   async function salvar() {
+    if (medida === null) {
+      setErro('Informe a quantidade da embalagem, como 500 ou 1,5.')
+      return
+    }
+
     setSalvando(true)
     setErro(null)
 
@@ -46,6 +69,7 @@ export function ProdutoNovo({ gtin, aoCriar, aoDesistir }: Props) {
       .maybeSingle()
 
     if (existente) {
+      setSalvando(false)
       aoCriar(existente)
       return
     }
@@ -56,7 +80,7 @@ export function ProdutoNovo({ gtin, aoCriar, aoDesistir }: Props) {
         gtin,
         nome: nome.trim(),
         marca: marca.trim() || null,
-        quantidade: Number(quantidade.replace(',', '.')),
+        quantidade: medida,
         unidade_medida: unidade,
         origem: 'usuario',
       })
@@ -147,8 +171,8 @@ export function ProdutoNovo({ gtin, aoCriar, aoDesistir }: Props) {
 
       <button
         type="submit"
-        disabled={salvando}
-        className="min-h-12 rounded-xl bg-marca px-4 font-medium text-sobre-marca disabled:opacity-60"
+        disabled={salvando || medida === null || !nome.trim()}
+        className="min-h-12 rounded-xl bg-marca px-4 font-medium text-sobre-marca disabled:opacity-40"
       >
         {salvando ? 'Salvando…' : 'Salvar produto'}
       </button>
