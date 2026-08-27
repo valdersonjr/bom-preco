@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   buscarProduto,
   confirmar,
@@ -11,7 +11,7 @@ import { distanciaEmTexto, precoEmTexto } from './lib/formato'
 import {
   conferidoNoLocal,
   naCidade,
-  useMercados,
+  type EstadoMercados,
   type Mercado,
 } from './lib/mercado'
 import {
@@ -35,17 +35,22 @@ const RAIOS = [
 
 export function Consulta({
   usuarioId,
+  locais,
   envio,
   aoQuererRegistrar,
 }: {
   usuarioId: string
+  /** Catálogo de mercados e posição, vindos de cima: um só por app. */
+  locais: EstadoMercados
   /** Corrigir preço daqui passa pela mesma fila do cadastro (RNF-06). */
   envio: ReturnType<typeof useEnvio>
   /** Escaneou algo que não está no catálogo: leva para a aba de registro. */
   aoQuererRegistrar: () => void
 }) {
-  const { mercados, posicao, cidade } = useMercados()
-  const daCidade = naCidade(mercados, cidade)
+  const { mercados, posicao, cidade } = locais
+  // Memorizado porque vai como dependência de efeito lá embaixo: array novo a
+  // cada render faria os preços serem buscados de novo a cada tecla digitada.
+  const daCidade = useMemo(() => naCidade(mercados, cidade), [mercados, cidade])
   const [termo, setTermo] = useState('')
   const [achados, setAchados] = useState<Produto[]>([])
   const [produto, setProduto] = useState<Produto | null>(null)
@@ -174,6 +179,15 @@ export function Consulta({
       {estado === 'indisponivel' && (
         <p className="rounded-xl bg-alerta-fraca p-3 text-alerta-tinta">
           Este navegador não consegue ler código de barras. Busque pelo nome.
+        </p>
+      )}
+
+      {/* A câmera existe e a permissão foi dada, mas o vídeo não começou. É
+          transitório, então o convite é tentar de novo — e não mandar a pessoa
+          mexer em configuração que já está certa. */}
+      {estado === 'falhou' && (
+        <p className="rounded-xl bg-alerta-fraca p-3 text-alerta-tinta">
+          Não consegui abrir a câmera. Toque de novo, ou busque pelo nome.
         </p>
       )}
 

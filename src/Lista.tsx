@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   acrescentar,
   carregarLista,
@@ -11,7 +11,7 @@ import { buscarProduto } from './lib/consulta'
 import {
   distanciaAte,
   naCidade,
-  useMercados,
+  type EstadoMercados,
   type Mercado,
   type Posicao,
 } from './lib/mercado'
@@ -24,12 +24,15 @@ import { descricaoDoProduto, nomeDeProduto } from './lib/texto'
 
 export function Lista({
   usuarioId,
+  locais,
   aoIrPara,
 }: {
   usuarioId: string
+  /** Catálogo de mercados e posição, vindos de cima: um só por app. */
+  locais: EstadoMercados
   aoIrPara: (aba: 'buscar' | 'registrar') => void
 }) {
-  const { mercados, cidade, posicao } = useMercados()
+  const { mercados, cidade, posicao } = locais
   const [listaId, setListaId] = useState<string | null>(null)
   const [itens, setItens] = useState<ItemDaLista[] | null>(null)
   const [termo, setTermo] = useState('')
@@ -40,22 +43,45 @@ export function Lista({
   /** Estável de propósito: identidade nova reiniciaria o relógio do desfazer. */
   const dispensar = useCallback(() => setRemovido(null), [])
 
+  const daCidade = useMemo(() => naCidade(mercados, cidade), [mercados, cidade])
+
   const recarregar = useCallback(
-    async (id: string) => setItens(await carregarLista(id, naCidade(mercados, cidade))),
-    [mercados, cidade],
+    async (id: string) => setItens(await carregarLista(id, daCidade)),
+    [daCidade],
   )
 
+  /*
+    Dois efeitos, e não um.
+
+    Achar a lista depende só de quem é a pessoa; carregar o conteúdo dela
+    depende também de quais mercados existem, e essa segunda coisa chega depois
+    — primeiro sem mercado nenhum, depois com o catálogo. Num efeito só, a
+    chegada do catálogo refazia a busca da lista no servidor junto.
+  */
   useEffect(() => {
     let ativo = true
-    void obterOuCriarLista(usuarioId).then(async (id) => {
-      if (!ativo) return
-      setListaId(id)
-      await recarregar(id)
+    void obterOuCriarLista(usuarioId).then((id) => {
+      if (ativo) setListaId(id)
     })
     return () => {
       ativo = false
     }
-  }, [usuarioId, recarregar])
+  }, [usuarioId])
+
+  // Com guarda de cancelamento, e não `recarregar` direto: o catálogo de
+  // mercados chega depois da lista, então duas cargas podem estar no ar ao
+  // mesmo tempo, e sem a guarda a que voltar por último vence — mesmo sendo a
+  // que foi pedida primeiro, com o catálogo ainda vazio.
+  useEffect(() => {
+    if (!listaId) return
+    let ativo = true
+    void carregarLista(listaId, daCidade).then((r) => {
+      if (ativo) setItens(r)
+    })
+    return () => {
+      ativo = false
+    }
+  }, [listaId, daCidade])
 
   useEffect(() => {
     let ativo = true

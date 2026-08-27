@@ -4,7 +4,11 @@ import { buscarPorGtin, type Produto } from './lib/produto'
 import { ProdutoNovo } from './ProdutoNovo'
 import { EscolhaDeMercado } from './EscolhaDeMercado'
 import { EscolhaDoCatalogo } from './EscolhaDoCatalogo'
-import { conferidoNoLocal, useMercados, type Mercado } from './lib/mercado'
+import {
+  conferidoNoLocal,
+  type EstadoMercados,
+  type Mercado,
+} from './lib/mercado'
 import { RegistroDePreco } from './RegistroDePreco'
 import type { useEnvio } from './lib/envio'
 
@@ -30,9 +34,16 @@ type Resultado =
  */
 export function Escaneamento({
   usuarioId,
+  locais,
   envio,
 }: {
   usuarioId: string
+  /**
+   * Catálogo de mercados e posição, vindos de cima pelo mesmo motivo da fila:
+   * são do app inteiro. Um `useMercados` por aba pedia o GPS de novo a cada
+   * troca, com os 8 segundos de espera que isso custa.
+   */
+  locais: EstadoMercados
   /**
    * Vem de cima porque a fila é do app inteiro, não desta aba: o aviso de
    * preço represado precisa aparecer em qualquer tela, e dois `useEnvio` no
@@ -41,7 +52,7 @@ export function Escaneamento({
   envio: ReturnType<typeof useEnvio>
 }) {
   const [resultado, setResultado] = useState<Resultado>({ tipo: 'nenhum' })
-  const { carregando, mercados, sugerido, posicao, cidade } = useMercados()
+  const { carregando, mercados, sugerido, posicao, cidade } = locais
   const [escolhaManual, setEscolhaManual] = useState<Mercado | null>(null)
   const [modo, setModo] = useState<'codigo' | 'catalogo'>('codigo')
   const [salvos, setSalvos] = useState(0)
@@ -344,6 +355,16 @@ function PorCodigo({
       {estado === 'indisponivel' && (
         <p className="rounded-xl bg-alerta-fraca px-4 py-3 text-sm text-alerta-tinta">
           Este navegador não lê código de barras. Digite o código abaixo.
+        </p>
+      )}
+
+      {/* A câmera existe e a permissão foi dada, mas o vídeo não começou. É
+          transitório, então o convite é tentar de novo — e não mandar a pessoa
+          mexer em configuração que já está certa. */}
+      {estado === 'falhou' && (
+        <p className="rounded-xl bg-alerta-fraca px-4 py-3 text-sm text-alerta-tinta">
+          Não consegui abrir a câmera. Toque em Escanear de novo, ou digite o
+          código abaixo.
         </p>
       )}
 
