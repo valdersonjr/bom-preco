@@ -24,10 +24,15 @@
   --color-inverso: oklch(0.24 0.008 250);
   --color-sobre-inverso: oklch(0.98 0.002 250);
 
-  /* Três níveis de tinta. Mais que três vira decisão sem critério. */
+  /* Três níveis de tinta. Mais que três vira decisão sem critério.
+
+     A `tinta-fraca` é calibrada pelo pior fundo em que aparece, não pelo mais
+     comum: em `elevado` ela já passava, mas em `sutil` — o fundo do aviso que
+     carrega o código de barras, em corpo pequeno — ficava em 4,00:1, abaixo dos
+     4,5:1 que texto normal exige. Escurecida, os três fundos passam. */
   --color-tinta: oklch(0.24 0.008 250);
   --color-tinta-suave: oklch(0.48 0.008 250);
-  --color-tinta-fraca: oklch(0.565 0.006 250);
+  --color-tinta-fraca: oklch(0.535 0.006 250);
 
   --color-borda: oklch(0.915 0.004 250);
   --color-borda-forte: oklch(0.85 0.005 250);
@@ -97,7 +102,9 @@
 
     --color-tinta: oklch(0.96 0.002 250);
     --color-tinta-suave: oklch(0.74 0.007 250);
-    --color-tinta-fraca: oklch(0.610 0.007 250);
+    /* Clareada pelo mesmo motivo que a do modo claro escureceu: sobre `sutil`
+       ela estava em 4,10:1. Aqui o ajuste é para cima, porque o fundo é escuro. */
+    --color-tinta-fraca: oklch(0.635 0.007 250);
 
     --color-borda: oklch(0.3 0.008 250);
     --color-borda-forte: oklch(0.38 0.009 250);

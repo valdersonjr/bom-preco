@@ -2,12 +2,41 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { comCoordenada, urlDeRota, type Mercado } from './lib/mercado'
 
 /**
+ * O balão do alfinete, montado como elemento e não como texto.
+ *
+ * `bindPopup` com string interpreta o conteúdo como HTML, e o nome e o endereço
+ * do mercado entravam ali crus. O catálogo é curado pelo mantenedor (RD-10), o
+ * que torna o risco pequeno — mas era a única passagem de dado para HTML sem
+ * escape no app inteiro, e `textContent` a fecha sem custo nenhum.
+ */
+function balao(mercado: Mercado): HTMLElement {
+  const caixa = document.createElement('div')
+
+  const nome = document.createElement('strong')
+  nome.textContent = mercado.nome
+
+  const endereco = document.createElement('div')
+  endereco.textContent = mercado.endereco ?? ''
+
+  const rota = document.createElement('a')
+  rota.href = urlDeRota(mercado)
+  rota.target = '_blank'
+  rota.rel = 'noreferrer'
+  rota.textContent = 'Como chegar'
+
+  caixa.append(nome, endereco, rota)
+  return caixa
+}
+
+/**
  * Mapa dos mercados (RF-44).
  *
  * **Leaflet entra sob demanda**, como o leitor de código de barras. São 42 KB
  * que só descem para quem abre o mapa — o RNF-08 dá 200 KB para o app inteiro,
  * e cobrar isso de quem nunca vai tocar no botão seria gastar o orçamento de
- * todos com a conveniência de alguns.
+ * todos com a conveniência de alguns. O service worker o deixa de fora do
+ * precache pelo mesmo motivo, e por mais um: mapa em cache sem tile em cache
+ * abre vazio (ver `globIgnores` em `vite.config.ts`).
  *
  * **O mapa é incompleto de propósito, e diz isso.** Alfinete precisa de
  * coordenada, e só nove dos vinte e seis mercados têm. Um mapa que esconde
@@ -68,10 +97,7 @@ export function MapaDeMercados({ mercados }: { mercados: Mercado[] }) {
             title: mercado.nome,
           })
             .addTo(m)
-            .bindPopup(
-              `<strong>${mercado.nome}</strong><br>${mercado.endereco ?? ''}<br>` +
-                `<a href="${urlDeRota(mercado)}" target="_blank" rel="noreferrer">Como chegar</a>`,
-            )
+            .bindPopup(balao(mercado))
         })
 
         m.fitBounds(L.latLngBounds(pontos), { padding: [32, 32], maxZoom: 16 })
@@ -85,7 +111,7 @@ export function MapaDeMercados({ mercados }: { mercados: Mercado[] }) {
       mapa?.remove()
     }
     // `plotaveis` entra só para ler nome e endereço; a assinatura é que manda.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [assinatura])
 
   const faltando = mercados.length - plotaveis.length
