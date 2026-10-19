@@ -66,7 +66,16 @@ export function useSessao(): Estado & { renomear: (novo: string) => void } {
       setEstado({ situacao: 'pronto', perfil })
     }
 
-    void iniciar()
+    // Sem rede, o cliente lança em vez de devolver `error`, e o estado ficava
+    // preso em 'carregando' para sempre.
+    iniciar().catch((erro: unknown) => {
+      if (ativo) {
+        setEstado({
+          situacao: 'erro',
+          mensagem: erro instanceof Error ? erro.message : String(erro),
+        })
+      }
+    })
     return () => {
       ativo = false
     }
