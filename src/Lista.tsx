@@ -39,6 +39,14 @@ export function Lista({
   const [achados, setAchados] = useState<Produto[]>([])
   const [removido, setRemovido] = useState<Removido | null>(null)
   const [carrinhoAberto, setCarrinhoAberto] = useState(false)
+  /*
+    O que deu errado, se deu. "carregar" é não ter lista para mostrar; "salvar"
+    é a lista estar na tela e a última mudança não ter subido. São avisos
+    diferentes porque pedem coisas diferentes: tentar de novo, ou refazer o
+    toque.
+  */
+  const [falha, setFalha] = useState<'carregar' | 'salvar' | null>(null)
+  const [tentativa, setTentativa] = useState(0)
 
   /** Estável de propósito: identidade nova reiniciaria o relógio do desfazer. */
   const dispensar = useCallback(() => setRemovido(null), [])
@@ -48,6 +56,30 @@ export function Lista({
   const recarregar = useCallback(
     async (id: string) => setItens(await carregarLista(id, daCidade)),
     [daCidade],
+  )
+
+  /**
+   * Toda escrita passa por aqui: faz, recarrega, e avisa se não deu.
+   *
+   * Recarrega também na falha, sem deixar a segunda falha escapar: a tela pode
+   * estar mostrando a mudança que não subiu, e o que está no servidor é a
+   * verdade. Se nem recarregar der, a lista que já estava fica onde está.
+   */
+  const salvar = useCallback(
+    async (acao: () => Promise<void>): Promise<boolean> => {
+      if (!listaId) return false
+      try {
+        await acao()
+        await recarregar(listaId)
+        setFalha(null)
+        return true
+      } catch {
+        setFalha('salvar')
+        await recarregar(listaId).catch(() => {})
+        return false
+      }
+    },
+    [listaId, recarregar],
   )
 
   /*
@@ -60,13 +92,17 @@ export function Lista({
   */
   useEffect(() => {
     let ativo = true
-    void obterOuCriarLista(usuarioId).then((id) => {
-      if (ativo) setListaId(id)
-    })
+    obterOuCriarLista(usuarioId)
+      .then((id) => {
+        if (ativo) setListaId(id)
+      })
+      .catch(() => {
+        if (ativo) setFalha('carregar')
+      })
     return () => {
       ativo = false
     }
-  }, [usuarioId])
+  }, [usuarioId, tentativa])
 
   // Com guarda de cancelamento, e não `recarregar` direto: o catálogo de
   // mercados chega depois da lista, então duas cargas podem estar no ar ao
@@ -75,13 +111,19 @@ export function Lista({
   useEffect(() => {
     if (!listaId) return
     let ativo = true
-    void carregarLista(listaId, daCidade).then((r) => {
-      if (ativo) setItens(r)
-    })
+    carregarLista(listaId, daCidade)
+      .then((r) => {
+        if (!ativo) return
+        setItens(r)
+        setFalha(null)
+      })
+      .catch(() => {
+        if (ativo) setFalha('carregar')
+      })
     return () => {
       ativo = false
     }
-  }, [listaId, daCidade])
+  }, [listaId, daCidade, tentativa])
 
   useEffect(() => {
     let ativo = true
@@ -103,10 +145,9 @@ export function Lista({
    * toque. A confirmação fica onde o dano é real, na exclusão da conta.
    */
   async function mudar(item: ItemDaLista, quantidade: number) {
-    await mudarQuantidade(item.itemId, quantidade)
-    if (listaId) await recarregar(listaId)
+    const salvou = await salvar(() => mudarQuantidade(item.itemId, quantidade))
     setRemovido(
-      quantidade <= 0
+      salvou && quantidade <= 0
         ? {
             produtoId: item.produto.id,
             nome: item.produto.nome,
@@ -117,8 +158,7 @@ export function Lista({
   }
 
   async function marcar(item: ItemDaLista, pego: boolean) {
-    await marcarPego(item.itemId, pego)
-    if (listaId) await recarregar(listaId)
+    await salvar(() => marcarPego(item.itemId, pego))
   }
 
   /*
@@ -153,10 +193,12 @@ export function Lista({
                 type="button"
                 onClick={async () => {
                   if (!listaId) return
-                  await acrescentar(listaId, p.id)
+                  const salvou = await salvar(() => acrescentar(listaId, p.id))
+                  // O termo fica quando não salvou: é o que a pessoa vai
+                  // tocar de novo, e apagá-lo a faria digitar outra vez.
+                  if (!salvou) return
                   setTermo('')
                   setAchados([])
-                  await recarregar(listaId)
                 }}
                 className="min-h-11 w-full rounded px-3 py-2 text-left hover:bg-sutil"
               >
@@ -175,15 +217,41 @@ export function Lista({
           removido={removido}
           aoDesfazer={async () => {
             if (!listaId) return
-            await acrescentar(listaId, removido.produtoId, removido.quantidade)
-            await recarregar(listaId)
-            setRemovido(null)
+            const salvou = await salvar(() =>
+              acrescentar(listaId, removido.produtoId, removido.quantidade),
+            )
+            if (salvou) setRemovido(null)
           }}
           aoDispensar={dispensar}
         />
       )}
 
-      {itens === null && <Esqueleto />}
+      {falha === 'salvar' && (
+        <p role="alert" className="rounded-xl bg-alerta-fraca p-3 text-sm text-alerta-tinta">
+          Não salvou. Tente de novo.
+        </p>
+      )}
+
+      {/* Sem lista na tela e sem conseguir buscar: nem esqueleto, que promete
+          uma resposta a caminho, nem cartão de primeira vez, que afirma que
+          não há nada. */}
+      {falha === 'carregar' && itens === null && (
+        <div role="alert" className="flex flex-col items-start gap-3 rounded-xl bg-alerta-fraca p-4">
+          <p className="text-alerta-tinta">Não consegui carregar sua lista.</p>
+          <button
+            type="button"
+            onClick={() => {
+              setFalha(null)
+              setTentativa((n) => n + 1)
+            }}
+            className="min-h-11 rounded-lg bg-marca px-4 text-sm font-medium text-sobre-marca"
+          >
+            Tentar de novo
+          </button>
+        </div>
+      )}
+
+      {itens === null && falha !== 'carregar' && <Esqueleto />}
 
       {itens?.length === 0 && <PrimeiraVez aoIrPara={aoIrPara} />}
 

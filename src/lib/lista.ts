@@ -35,7 +35,7 @@ const COLUNAS_PRODUTO =
  * alguém quiser é barato; carregar a complexidade desde já, não.
  */
 export async function obterOuCriarLista(usuarioId: string): Promise<string> {
-  const { data: existente } = await supabase
+  const { data: existente, error: aoBuscar } = await supabase
     .from('lista')
     .select('id')
     .eq('usuario_id', usuarioId)
@@ -43,6 +43,9 @@ export async function obterOuCriarLista(usuarioId: string): Promise<string> {
     .limit(1)
     .maybeSingle()
 
+  // "Não consegui perguntar" não é "não existe". Sem esta linha, uma falha de
+  // rede aqui seguia para o `insert` e podia criar uma segunda lista vazia.
+  if (aoBuscar) throw new Error(aoBuscar.message)
   if (existente) return existente.id
 
   const { data, error } = await supabase
@@ -83,10 +86,11 @@ export async function acrescentar(
 
     if (!existente) return false
 
-    await supabase
+    const { error } = await supabase
       .from('item_lista')
       .update({ quantidade: Number(existente.quantidade) + quantidade })
       .eq('id', existente.id)
+    if (error) throw new Error(error.message)
     return true
   }
 
@@ -97,22 +101,24 @@ export async function acrescentar(
     .insert({ lista_id: listaId, produto_id: produtoId, quantidade })
 
   if (error?.code === JA_EXISTE) await somarAoExistente()
+  else if (error) throw new Error(error.message)
 }
 
 /** Marca ou desmarca o item como já pego (RF-49). */
 export async function marcarPego(itemId: string, pego: boolean) {
-  await supabase
+  const { error } = await supabase
     .from('item_lista')
     .update({ pego_em: pego ? new Date().toISOString() : null })
     .eq('id', itemId)
+  if (error) throw new Error(error.message)
 }
 
 export async function mudarQuantidade(itemId: string, quantidade: number) {
-  if (quantidade <= 0) {
-    await supabase.from('item_lista').delete().eq('id', itemId)
-    return
-  }
-  await supabase.from('item_lista').update({ quantidade }).eq('id', itemId)
+  const { error } =
+    quantidade <= 0
+      ? await supabase.from('item_lista').delete().eq('id', itemId)
+      : await supabase.from('item_lista').update({ quantidade }).eq('id', itemId)
+  if (error) throw new Error(error.message)
 }
 
 /**
@@ -132,27 +138,36 @@ export async function mudarQuantidade(itemId: string, quantidade: number) {
  * menor valor entre elas ressuscitava um preço de vinte dias atrás como se
  * fosse o da prateleira. `maisRecentePor` aplica aqui a mesma RD-04 que a
  * consulta já aplicava.
+ *
+ * **Falha lança, não devolve vazio.** Lista vazia é uma afirmação — "você não
+ * tem nada aqui" — e a tela responde a ela com o cartão de primeira vez. Com o
+ * erro engolido, sinal ruim dentro do mercado virava "sua lista sumiu".
  */
 export async function carregarLista(
   listaId: string,
   mercados: Mercado[],
 ): Promise<ItemDaLista[]> {
-  const { data: itens } = await supabase
+  const { data: itens, error: aoLerItens } = await supabase
     .from('item_lista')
     .select(`id, quantidade, pego_em, produto:produto_id (${COLUNAS_PRODUTO})`)
     .eq('lista_id', listaId)
     // Ordem de inserção: é a ordem em que a pessoa pensou a compra.
     .order('criado_em')
 
-  if (!itens || itens.length === 0) return []
+  if (aoLerItens || !itens) {
+    throw new Error(aoLerItens?.message ?? 'Não consegui ler a lista.')
+  }
+  if (itens.length === 0) return []
 
   const produtoIds = itens.map((i) => i.produto?.id).filter((x): x is string => !!x)
 
-  const { data: precos } = await supabase
+  const { data: precos, error: aoLerPrecos } = await supabase
     .from('preco_publico')
     .select('produto_id, mercado_id, valor, visto_em, observado_em')
     .in('produto_id', produtoIds)
     .gte('visto_em', corteDeValidade())
+
+  if (aoLerPrecos) throw new Error(aoLerPrecos.message)
 
   const porMercado = new Map(mercados.map((m) => [m.id, m]))
 
