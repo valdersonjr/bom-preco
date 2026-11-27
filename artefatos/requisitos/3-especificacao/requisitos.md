@@ -103,6 +103,7 @@ referenciam o `RF-xx` de origem.
 | RF-22 | O sistema deve comparar o custo total da lista entre os mercados | ❌ | `Elic` |
 | RF-23 | O sistema deve sugerir a divisão da lista entre dois ou três mercados | ❌ | `Elic` |
 | RF-49 | O sistema deve permitir marcar um item da lista como já posto no carrinho, e desmarcar | ✅ | `Der` |
+| RF-50 | O sistema deve permitir concluir a compra, retirando da lista os itens postos no carrinho e guardando-os como compra feita, com a possibilidade de desfazer | ✅ | `Der` |
 
 ### Confiança no dado · UC-05
 
@@ -132,7 +133,7 @@ referenciam o `RF-xx` de origem.
 | RF-30 | O sistema deve importar carga inicial de preços de base pública | ❌ | `Elic` |
 | RF-31 | O sistema deve atribuir pontos e distintivos a contribuidores | ❌ | `Elic` |
 
-**Resumo:** 49 requisitos funcionais, 33 no MVP.
+**Resumo:** 50 requisitos funcionais, 34 no MVP.
 
 ---
 
@@ -245,6 +246,7 @@ coletado, para que serve e por quanto tempo fica.
 | Apelido | Identificar a pessoa na interface para ela mesma | Idem |
 | E-mail ou identidade Google | Recuperar a conta em outro aparelho. Só existe se a pessoa optar por vincular | Até a exclusão da conta |
 | Lista de compras | Montar a comparação por item | Até a pessoa apagar, por exclusão lógica, ou excluir a conta, quando é removida de fato (RD-12) |
+| Compras concluídas: produto, quantidade, instante e, quando conhecido, o mercado | Lembrar o que a pessoa costuma comprar, para sugerir na montagem da lista seguinte (RF-50) | Até a pessoa desfazer a compra ou excluir a conta, quando é removida de fato. Nunca é lida por outro usuário |
 
 **Não coletados:** nome civil, telefone, endereço, documento, foto e histórico de
 deslocamento. Nenhum é necessário a qualquer função especificada.

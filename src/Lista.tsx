@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   acrescentar,
   carregarLista,
+  concluirCompra,
+  desfazerCompra,
   marcarPego,
   mudarQuantidade,
   obterOuCriarLista,
@@ -9,7 +11,9 @@ import {
 } from './lib/lista'
 import { buscarProduto, type ProdutoAchado } from './lib/consulta'
 import {
+  conferidoNoLocal,
   distanciaAte,
+  escolhaRecente,
   naCidade,
   type EstadoMercados,
   type Mercado,
@@ -35,12 +39,13 @@ export function Lista({
   /** Abre o registro com o produto já escolhido. */
   aoRegistrar: (produto: Produto) => void
 }) {
-  const { mercados, cidade, posicao } = locais
+  const { mercados, cidade, posicao, sugerido } = locais
   const [listaId, setListaId] = useState<string | null>(null)
   const [itens, setItens] = useState<ItemDaLista[] | null>(null)
   const [termo, setTermo] = useState('')
   const [achados, setAchados] = useState<ProdutoAchado[]>([])
   const [removido, setRemovido] = useState<Removido | null>(null)
+  const [concluida, setConcluida] = useState<Concluida | null>(null)
   const [carrinhoAberto, setCarrinhoAberto] = useState(false)
   /*
     O que deu errado, se deu. "carregar" é não ter lista para mostrar; "salvar"
@@ -53,6 +58,7 @@ export function Lista({
 
   /** Estável de propósito: identidade nova reiniciaria o relógio do desfazer. */
   const dispensar = useCallback(() => setRemovido(null), [])
+  const dispensarConcluida = useCallback(() => setConcluida(null), [])
 
   const daCidade = useMemo(() => naCidade(mercados, cidade), [mercados, cidade])
 
@@ -160,6 +166,38 @@ export function Lista({
     )
   }
 
+  /**
+   * Concluir não pede confirmação, pelo mesmo motivo de tirar um item: pede
+   * desfazer. O toque errado aqui custaria caro — trinta itens somem da lista
+   * — e é por isso que o desfazer devolve todos, marcados como estavam.
+   *
+   * O mercado só vai junto quando se sabe qual é: a pessoa está nele, pelo
+   * GPS, ou o escolheu à mão nas últimas horas. Palpite não entra no
+   * histórico.
+   */
+  async function concluir(noCarrinho: ItemDaLista[]) {
+    if (!listaId) return
+    const mercado =
+      sugerido && conferidoNoLocal(sugerido, posicao, mercados)
+        ? sugerido
+        : escolhaRecente(mercados)
+
+    let compraId: string | null = null
+    const salvou = await salvar(async () => {
+      compraId = await concluirCompra(listaId, mercado?.id ?? null)
+    })
+    if (!salvou || !compraId) return
+
+    setCarrinhoAberto(false)
+    setConcluida({
+      compraId,
+      itens: noCarrinho.map((i) => ({
+        produtoId: i.produto.id,
+        quantidade: i.quantidade,
+      })),
+    })
+  }
+
   async function marcar(item: ItemDaLista, pego: boolean) {
     await salvar(() => marcarPego(item.itemId, pego))
   }
@@ -222,9 +260,29 @@ export function Lista({
         </ul>
       )}
 
+      {concluida && (
+        <Desfazer
+          marca={concluida}
+          texto={
+            concluida.itens.length === 1
+              ? 'Compra concluída: 1 item.'
+              : `Compra concluída: ${concluida.itens.length} itens.`
+          }
+          aoDesfazer={async () => {
+            if (!listaId) return
+            const salvou = await salvar(() =>
+              desfazerCompra(concluida.compraId, listaId, concluida.itens),
+            )
+            if (salvou) setConcluida(null)
+          }}
+          aoDispensar={dispensarConcluida}
+        />
+      )}
+
       {removido && (
         <Desfazer
-          removido={removido}
+          marca={removido}
+          texto={`${nomeDeProduto(removido.nome)} saiu da lista.`}
           aoDesfazer={async () => {
             if (!listaId) return
             const salvou = await salvar(() =>
@@ -263,7 +321,9 @@ export function Lista({
 
       {itens === null && falha !== 'carregar' && <Esqueleto />}
 
-      {itens?.length === 0 && <PrimeiraVez aoIrPara={aoIrPara} />}
+      {/* Quem acabou de concluir a compra esvaziou a lista de propósito: o
+          cartão de primeira vez, ali, seria apresentar o app a quem já o usa. */}
+      {itens?.length === 0 && !concluida && <PrimeiraVez aoIrPara={aoIrPara} />}
 
       {aComprar.length > 0 && (
         <ul className="flex flex-col gap-2">
@@ -299,11 +359,12 @@ export function Lista({
 
       {noCarrinho.length > 0 && (
         <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={() => setCarrinhoAberto((v) => !v)}
             aria-expanded={carrinhoAberto}
-            className="flex min-h-11 items-center gap-2 self-start rounded-lg text-sm font-medium text-tinta-suave"
+            className="flex min-h-11 items-center gap-2 rounded-lg text-sm font-medium text-tinta-suave"
           >
             No carrinho ({noCarrinho.length})
             <svg
@@ -319,6 +380,14 @@ export function Lista({
               <path d="M9 18l6-6-6-6" />
             </svg>
           </button>
+          <button
+            type="button"
+            onClick={() => void concluir(noCarrinho)}
+            className="min-h-11 rounded-lg bg-marca px-4 text-sm font-medium text-sobre-marca"
+          >
+            Concluir compra
+          </button>
+          </div>
           {carrinhoAberto && (
             <ul className="anima-surgir flex flex-col gap-2">
               {noCarrinho.map((i) => (
@@ -388,31 +457,38 @@ function PrimeiraVez({
 
 type Removido = { produtoId: string; nome: string; quantidade: number }
 
+/** A compra recém-concluída, com o que o desfazer precisa devolver à lista. */
+type Concluida = {
+  compraId: string
+  itens: { produtoId: string; quantidade: number }[]
+}
+
 /** Sete segundos é o tempo de ler a frase e decidir. Depois some sozinha. */
 const SEGUNDOS_PARA_DESFAZER = 7
 
 function Desfazer({
-  removido,
+  marca,
+  texto,
   aoDesfazer,
   aoDispensar,
 }: {
-  removido: Removido
+  /** O que foi feito. Trocar de objeto reinicia o relógio. */
+  marca: object
+  texto: string
   aoDesfazer: () => void
   aoDispensar: () => void
 }) {
   useEffect(() => {
     const t = setTimeout(aoDispensar, SEGUNDOS_PARA_DESFAZER * 1000)
     return () => clearTimeout(t)
-  }, [removido, aoDispensar])
+  }, [marca, aoDispensar])
 
   return (
     <div
       role="status"
       className="anima-subir flex items-center justify-between gap-2 rounded-xl bg-inverso p-3 text-sobre-inverso"
     >
-      <span className="min-w-0 truncate text-sm">
-        {nomeDeProduto(removido.nome)} saiu da lista.
-      </span>
+      <span className="min-w-0 truncate text-sm">{texto}</span>
       <button
         type="button"
         onClick={aoDesfazer}

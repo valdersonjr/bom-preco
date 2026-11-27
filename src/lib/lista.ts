@@ -128,6 +128,53 @@ export async function mudarQuantidade(itemId: string, quantidade: number) {
 }
 
 /**
+ * Conclui a compra: o que está no carrinho sai da lista e fica guardado como
+ * compra feita (RF-50).
+ *
+ * Uma chamada só, e a função do banco faz as três coisas juntas — ver a
+ * migração `compra_concluida`. Devolve o identificador da compra, que é o que
+ * o desfazer precisa; nulo quando não havia nada no carrinho.
+ */
+export async function concluirCompra(
+  listaId: string,
+  mercadoId: string | null,
+): Promise<string | null> {
+  const { data, error } = await supabase.rpc('concluir_compra', {
+    p_lista: listaId,
+    ...(mercadoId ? { p_mercado: mercadoId } : {}),
+  })
+  if (error) throw new Error(error.message)
+  return data
+}
+
+/**
+ * Desfaz a conclusão: apaga a compra e devolve os itens ao carrinho, marcados.
+ *
+ * Devolve primeiro e apaga depois. Se a rede cair no meio, sobra uma compra
+ * gravada a mais — que é histórico impreciso — em vez de itens sumidos da
+ * lista, que é trabalho perdido.
+ */
+export async function desfazerCompra(
+  compraId: string,
+  listaId: string,
+  itens: { produtoId: string; quantidade: number }[],
+): Promise<void> {
+  const agora = new Date().toISOString()
+  const { error: aoDevolver } = await supabase.from('item_lista').insert(
+    itens.map((i) => ({
+      lista_id: listaId,
+      produto_id: i.produtoId,
+      quantidade: i.quantidade,
+      pego_em: agora,
+    })),
+  )
+  if (aoDevolver) throw new Error(aoDevolver.message)
+
+  const { error } = await supabase.from('compra').delete().eq('id', compraId)
+  if (error) throw new Error(error.message)
+}
+
+/**
  * Carrega a lista com o mercado mais barato de cada item (RF-20, RF-21).
  *
  * Os preços de todos os itens vêm numa consulta só, e não uma por item: lista

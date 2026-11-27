@@ -82,6 +82,7 @@ primeira abertura, `anon` não precisa alcançar tabela alguma, e não alcança.
 | `registro_vigente` | **ninguém** | — | — | — |
 | `preco_publico` | todos | — | — | — |
 | `lista`, `item_lista` | só o dono | só o dono | só o dono | só o dono |
+| `compra`, `item_compra` | só o dono | só o dono | **ninguém** | só o dono |
 
 Quatro linhas merecem atenção:
 
@@ -107,8 +108,11 @@ dono e exposta pela API, ela devolveria a autoria de todos os preços — refaze
 acima, exatamente o furo que a revogação da tabela fechou. Visão intermediária que carrega
 dado sensível precisa ser revogada junto com a tabela, não só a tabela.
 
-**Lista de compras é a única coisa privada do sistema.** É também o dado que mais revela
-sobre a pessoa — hábito de consumo — e por isso a política é a mais restrita das oito.
+**Lista de compras e compras concluídas são as únicas coisas privadas do sistema.** São
+também o dado que mais revela sobre a pessoa — hábito de consumo — e por isso a política é a
+mais restrita de todas. A compra concluída (RF-50) entra por uma função do banco,
+`concluir_compra`, que grava a compra e esvazia o carrinho numa transação só; ela roda com
+os privilégios de quem chama, de modo que as políticas de dono valem dentro dela.
 
 ### Exclusão de conta
 
