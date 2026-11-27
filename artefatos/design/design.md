@@ -188,8 +188,23 @@ saber que o preço ainda não subiu.
 
 ### O que não entra na fila
 
-Consulta. Só o cadastro é protegido contra falta de sinal — está escrito assim na Visão,
-entre os itens fora do MVP.
+Consulta de preço. Buscar um produto e ver os preços dele exige conexão — está escrito assim
+na Visão, entre os itens fora do MVP.
+
+### A lista de compras sem sinal
+
+A lista é a exceção, porque é a tela usada no corredor. O aparelho guarda a última versão
+lida do servidor e o perfil de quem está na sessão; sem rede, o app abre com os dois e diz
+desde quando a lista não atualiza.
+
+Uma única escrita tem fila própria: a marca de "já peguei". Ela é guardada com o instante em
+que aconteceu — a mesma regra do `observado_em` —, aparece na hora e sobe em série quando a
+conexão volta, antes de a lista ser relida. Acrescentar item e mudar quantidade continuam
+pedindo rede: são coisas de antes de sair de casa.
+
+O perfil guardado só é aceito quando a pergunta ao servidor falha por rede. Se o servidor
+responde que a sessão não existe, a cópia local é de uma conta que acabou, e o app não abre
+com ela.
 
 ### O que fica guardado para funcionar sem sinal
 

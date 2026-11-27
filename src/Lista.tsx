@@ -17,6 +17,15 @@ import {
 } from './lib/lista'
 import { buscarProduto, confirmar, type ProdutoAchado } from './lib/consulta'
 import {
+  comMarcas,
+  enviarMarcas,
+  guardarLista,
+  guardarMarca,
+  listaGuardada,
+  marcasPendentes,
+  type Marcas,
+} from './lib/listaLocal'
+import {
   conferidoNoLocal,
   distanciaAte,
   escolhaRecente,
@@ -67,6 +76,31 @@ export function Lista({
   const [costumeiros, setCostumeiros] = useState<Costume[]>([])
   const [falha, setFalha] = useState<'carregar' | 'salvar' | null>(null)
   const [tentativa, setTentativa] = useState(0)
+  /** Marcas de "já peguei" feitas sem sinal, ainda por subir. */
+  const [marcas, setMarcas] = useState<Marcas>(marcasPendentes)
+  /** Quando a lista na tela foi lida do servidor, se ela veio da cópia local. */
+  const [guardadaEm, setGuardadaEm] = useState<number | null>(null)
+
+  /**
+   * Sem conseguir falar com o servidor, mostra a última lista que este
+   * aparelho viu. Devolve falso quando não há cópia — aí sim é erro.
+   */
+  const usarGuardada = useCallback((): boolean => {
+    const guardada = listaGuardada(usuarioId)
+    if (!guardada) return false
+    setListaId((atual) => atual ?? guardada.listaId)
+    setItens((atuais) => atuais ?? guardada.itens)
+    setGuardadaEm(guardada.em)
+    return true
+  }, [usuarioId])
+
+  // A rede voltou: é a hora de subir as marcas e trocar a cópia pela lista
+  // de verdade. Reusa o mesmo gatilho do "Tentar de novo".
+  useEffect(() => {
+    const aoVoltar = () => setTentativa((n) => n + 1)
+    window.addEventListener('online', aoVoltar)
+    return () => window.removeEventListener('online', aoVoltar)
+  }, [])
 
   /** Estável de propósito: identidade nova reiniciaria o relógio do desfazer. */
   const dispensar = useCallback(() => setRemovido(null), [])
@@ -119,12 +153,12 @@ export function Lista({
         if (ativo) setListaId(id)
       })
       .catch(() => {
-        if (ativo) setFalha('carregar')
+        if (ativo && !usarGuardada()) setFalha('carregar')
       })
     return () => {
       ativo = false
     }
-  }, [usuarioId, tentativa])
+  }, [usuarioId, tentativa, usarGuardada])
 
   // Com guarda de cancelamento, e não `recarregar` direto: o catálogo de
   // mercados chega depois da lista, então duas cargas podem estar no ar ao
@@ -133,19 +167,29 @@ export function Lista({
   useEffect(() => {
     if (!listaId) return
     let ativo = true
-    carregarLista(listaId, daCidade)
+    // As marcas feitas sem sinal sobem antes da leitura, para a lista que
+    // volta do servidor já vir com elas.
+    enviarMarcas()
+      .then((restantes) => {
+        if (ativo) setMarcas(restantes)
+        return carregarLista(listaId, daCidade)
+      })
       .then((r) => {
         if (!ativo) return
         setItens(r)
         setFalha(null)
+        setGuardadaEm(null)
+        // Só guarda depois de o catálogo de mercados ter chegado: a primeira
+        // leitura acontece sem ele, e guardaria uma lista inteira "sem preço".
+        if (daCidade.length > 0) guardarLista(usuarioId, listaId, r)
       })
       .catch(() => {
-        if (ativo) setFalha('carregar')
+        if (ativo && !usarGuardada()) setFalha('carregar')
       })
     return () => {
       ativo = false
     }
-  }, [listaId, daCidade, tentativa])
+  }, [listaId, daCidade, tentativa, usuarioId, usarGuardada])
 
   // Relido quando uma compra é concluída ou desfeita: é aí que o costume muda.
   useEffect(() => {
@@ -235,7 +279,20 @@ export function Lista({
    * pouca gente registrando (RD-03).
    */
   async function marcar(item: ItemDaLista, pego: boolean) {
-    const salvou = await salvar(() => marcarPego(item.itemId, pego))
+    /*
+      A única escrita que não pode depender de sinal: é feita andando pelo
+      corredor. Se não subir, fica guardada no aparelho, aparece marcada na
+      hora e sobe quando a rede voltar — sem aviso de erro, porque para quem
+      marcou, marcou.
+    */
+    let salvou = true
+    try {
+      await marcarPego(item.itemId, pego)
+    } catch {
+      salvou = false
+      setMarcas(guardarMarca(item.itemId, pego))
+    }
+    if (salvou && listaId) await recarregar(listaId).catch(() => {})
     if (!salvou || !pego || !item.produto || item.termo) return
 
     const aqui =
@@ -259,7 +316,7 @@ export function Lista({
     frente é só o que falta. Manter o item pego no lugar, riscado, obriga a
     pular por cima dele em cada corredor.
   */
-  const todos = itens ?? []
+  const todos = comMarcas(itens ?? [], marcas)
   const noCarrinho = todos.filter((i) => i.pego)
   const aComprar = todos.filter((i) => !i.pego && i.melhor)
   const semPreco = todos.filter((i) => !i.pego && !i.melhor)
@@ -426,6 +483,19 @@ export function Lista({
           }}
           aoDispensar={dispensar}
         />
+      )}
+
+      {/* A lista veio da cópia do aparelho: os preços são os daquela hora. */}
+      {guardadaEm !== null && (
+        <p className="text-sm text-tinta-suave">
+          Sem atualizar desde{' '}
+          {new Date(guardadaEm).toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
+        </p>
       )}
 
       {falha === 'salvar' && (

@@ -159,7 +159,7 @@ localidades vem depois, quando a operação em uma cidade estiver validada.
 | *Shrinkflation*, alertas, recomendação de alternativo | Dependem de histórico acumulado, que ainda não existe no lançamento |
 | Condição da promoção, do tipo "leve 3 pague 2" | O MVP apenas marca que o preço é promocional. Basta para não confundir promoção com preço de prateleira, que era o risco real |
 | Dividir a compra, cesta inteira | Exigem cobertura de preços que a base nova não terá |
-| Consulta de preços offline | Só o cadastro é protegido contra falta de sinal; consultar exige conexão |
+| Consulta de preços offline | O cadastro é protegido contra falta de sinal, e a lista de compras abre com a última versão vista no aparelho, aceitando a marca de "já peguei". Consultar o preço de outros produtos exige conexão |
 | Preço em tempo real | Exigiria integração com os mercados — inviável |
 
 ---
