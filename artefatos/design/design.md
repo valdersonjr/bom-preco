@@ -84,6 +84,7 @@ primeira abertura, `anon` não precisa alcançar tabela alguma, e não alcança.
 | `meus_registros` | só as próprias linhas | — | — | — |
 | `lista`, `item_lista` | só o dono | só o dono | só o dono | só o dono |
 | `compra`, `item_compra` | só o dono | só o dono | **ninguém** | só o dono |
+| `evento` | **não** | só como autor, ou sem autor | **ninguém** | **ninguém** |
 
 Quatro linhas merecem atenção:
 

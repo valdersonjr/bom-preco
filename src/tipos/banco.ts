@@ -138,6 +138,48 @@ export type Database = {
           },
         ]
       }
+      evento: {
+        Row: {
+          id: string
+          ocorrido_em: string
+          produto_id: string | null
+          termo: string | null
+          tipo: string
+          usuario_id: string | null
+        }
+        Insert: {
+          id?: string
+          ocorrido_em?: string
+          produto_id?: string | null
+          termo?: string | null
+          tipo: string
+          usuario_id?: string | null
+        }
+        Update: {
+          id?: string
+          ocorrido_em?: string
+          produto_id?: string | null
+          termo?: string | null
+          tipo?: string
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evento_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produto"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evento_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "perfil"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       item_compra: {
         Row: {
           compra_id: string

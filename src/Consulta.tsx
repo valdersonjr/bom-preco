@@ -24,6 +24,11 @@ import { Historico } from './Historico'
 import { Acao, AcaoDeLocalizacao } from './Mercado'
 import { descricaoDoProduto, nomeDeProduto } from './lib/texto'
 import { useLeitorDeCodigo } from './lib/leitor'
+import {
+  buscouSemResultado,
+  consultouProduto,
+  leuCodigoDesconhecido,
+} from './lib/evento'
 import type { useEnvio } from './lib/envio'
 import {
   montarRegistro,
@@ -85,8 +90,16 @@ export function Consulta({
     } else {
       setProduto(null)
       setForaDoCatalogo(gtin)
+      leuCodigoDesconhecido(gtin)
     }
   }, [])
+
+  // Uma consulta por produto aberto, venha da busca ou da câmera. No efeito, e
+  // não em cada `setProduto`, para os dois caminhos contarem do mesmo jeito.
+  const produtoId = produto?.id
+  useEffect(() => {
+    if (produtoId) consultouProduto(usuarioId, produtoId)
+  }, [produtoId, usuarioId])
 
   // Desestruturado, e não guardado como objeto: `leitor.estado` no meio do
   // render faz o lint acusar acesso a ref durante a renderização, porque o
@@ -103,9 +116,23 @@ export function Consulta({
       setAchados(r)
       setBuscando(false)
     }, 250)
+    /*
+      Busca que não achou nada, registrada só depois de a pessoa parar.
+
+      Dois segundos, e não os 250 ms da busca: enquanto se digita "sabão em
+      pó", "sabã" não acha nada por um instante, e isso não é falta no
+      catálogo. O que interessa é o termo em que a pessoa desistiu.
+    */
+    const semResultado = setTimeout(async () => {
+      const t = termo.trim()
+      if (t.length < 3 || !navigator.onLine) return
+      const r = await buscarProduto(t)
+      if (ativo && r.length === 0) buscouSemResultado(t)
+    }, 2000)
     return () => {
       ativo = false
       clearTimeout(id)
+      clearTimeout(semResultado)
     }
   }, [termo])
 

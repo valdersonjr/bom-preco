@@ -251,6 +251,13 @@ coletado, para que serve e por quanto tempo fica.
 | Lista de compras | Montar a comparação por item | Até a pessoa apagar, por exclusão lógica, ou excluir a conta, quando é removida de fato (RD-12) |
 | Compras concluídas: produto, quantidade, instante e, quando conhecido, o mercado | Lembrar o que a pessoa costuma comprar, para sugerir na montagem da lista seguinte (RF-50) | Até a pessoa desfazer a compra ou excluir a conta, quando é removida de fato. Nunca é lida por outro usuário |
 
+| Produto consultado: qual produto a pessoa abriu para ver preços, e quando | Medir as hipóteses da Visão §6 — consultas por usuário por semana. Não guarda o que foi digitado na busca | Até a exclusão da conta, quando é removido de fato |
+
+Dois eventos sobre o catálogo são gravados **sem** identificador de pessoa e por isso não são
+dado pessoal: o termo de uma busca que não achou nenhum produto, e o código de barras lido
+que não existe na base. Servem para saber o que falta cadastrar. O termo de uma busca que
+achou resultado não é gravado.
+
 **Não coletados:** nome civil, telefone, endereço, documento, foto e histórico de
 deslocamento. Nenhum é necessário a qualquer função especificada.
 
