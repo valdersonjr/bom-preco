@@ -1,4 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import {
+  contarMeusRegistros,
+  meusRegistros,
+  montarMeusDados,
+  type MeuRegistro,
+} from './lib/meusDados'
+import { precoEmTexto } from './lib/formato'
+import { nomeDeProduto } from './lib/texto'
 import {
   excluirConta,
   useRegistrosFeitos,
@@ -39,6 +47,11 @@ export function Conta({
       <Grupo titulo="Conta">
         <Apelido apelido={apelido} renomear={renomear} />
         <Vinculo anonimo={anonimo} comecaAberta={abrirVinculo} />
+      </Grupo>
+
+      <Grupo titulo="Seus dados">
+        <MeusPrecos />
+        <Baixar apelido={apelido} />
       </Grupo>
 
       <Grupo titulo="Sobre">
@@ -179,9 +192,13 @@ function iniciais(apelido: string): string {
  * isso de cara é mais honesto do que esperar a pessoa perder tudo para
  * descobrir.
  *
- * A contagem de preços vem do armazenamento local, porque o cliente não lê
- * `registro_preco`: a revogação que protege a autoria (RNF-12) também impede
- * contar do lado de cá. É por aparelho, e o texto diz isso.
+ * A contagem de preços vem do banco, pela visão `meus_registros`, e vale para
+ * a conta inteira. Antes vinha do armazenamento local e era por aparelho: quem
+ * vinculava o e-mail e trocava de celular via "nenhum preço registrado" sobre
+ * uma conta com cinquenta.
+ *
+ * O número local continua como reserva enquanto o do banco não chega, ou
+ * quando não há rede — é o que o aparelho sabe, e é melhor que nada.
  */
 function Identidade({
   apelido,
@@ -190,7 +207,20 @@ function Identidade({
   apelido: string
   anonimo: boolean
 }) {
-  const registros = useRegistrosFeitos()
+  const locais = useRegistrosFeitos()
+  const [noBanco, setNoBanco] = useState<number | null>(null)
+  useEffect(() => {
+    let ativo = true
+    void contarMeusRegistros().then((n) => {
+      if (ativo) setNoBanco(n)
+    })
+    return () => {
+      ativo = false
+    }
+  }, [])
+  // O maior dos dois: o local inclui o que ainda está na fila sem sinal, o do
+  // banco inclui o que foi registrado em outro aparelho.
+  const registros = Math.max(noBanco ?? 0, locais)
 
   return (
     <div className="flex flex-col gap-4 rounded-xl border border-borda bg-elevado p-5">
@@ -248,7 +278,7 @@ function Identidade({
             <strong className="font-semibold text-tinta">
               {registros} {registros === 1 ? 'preço' : 'preços'}
             </strong>{' '}
-            {registros === 1 ? 'registrado' : 'registrados'} neste aparelho.
+            {registros === 1 ? 'registrado' : 'registrados'}.
           </>
         )}
       </p>
@@ -392,6 +422,105 @@ function Vinculo({
  * pessoa faz ao ver um app pedir localização, e respondê-la antes de ser
  * perguntada custa duas linhas.
  */
+/** Os últimos registros da pessoa, para ela conferir o que fez. */
+function MeusPrecos() {
+  const [aberta, setAberta] = useState(false)
+  const [registros, setRegistros] = useState<MeuRegistro[] | 'erro' | null>(null)
+
+  useEffect(() => {
+    if (!aberta) return
+    let ativo = true
+    meusRegistros(30)
+      .then((r) => {
+        if (ativo) setRegistros(r)
+      })
+      .catch(() => {
+        if (ativo) setRegistros('erro')
+      })
+    return () => {
+      ativo = false
+    }
+  }, [aberta])
+
+  return (
+    <LinhaAbrivel
+      rotulo="Preços que registrei"
+      aberta={aberta}
+      aoAlternar={() => setAberta((v) => !v)}
+    >
+      {registros === null && <p className="text-sm text-tinta-fraca">Carregando…</p>}
+      {registros === 'erro' && (
+        <p className="text-sm text-alerta-tinta">Não consegui carregar.</p>
+      )}
+      {Array.isArray(registros) && registros.length === 0 && (
+        <p className="text-sm text-tinta-suave">Nenhum ainda.</p>
+      )}
+      {Array.isArray(registros) && registros.length > 0 && (
+        <ul className="flex flex-col divide-y divide-borda">
+          {registros.map((r) => (
+            <li key={r.id} className="flex items-baseline justify-between gap-3 py-2">
+              <span className="min-w-0">
+                <span className="block truncate text-tinta">
+                  {nomeDeProduto(r.produto)}
+                </span>
+                <span className="block truncate text-sm text-tinta-suave">
+                  {r.mercado} · {r.observadoEm.toLocaleDateString('pt-BR')}
+                  {r.tipo === 'promocional' && ' · promoção'}
+                </span>
+              </span>
+              <span className="shrink-0 tabular-nums text-tinta">
+                {precoEmTexto(r.valor)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </LinhaAbrivel>
+  )
+}
+
+/**
+ * Entrega à pessoa uma cópia do que o app guarda sobre ela.
+ *
+ * O arquivo é montado e baixado no próprio navegador. O link é criado, clicado
+ * e revogado na hora: é o único jeito de dar nome a um download gerado em
+ * memória.
+ */
+function Baixar({ apelido }: { apelido: string }) {
+  const [situacao, setSituacao] = useState<'parado' | 'montando' | 'erro'>('parado')
+
+  async function baixar() {
+    setSituacao('montando')
+    try {
+      const arquivo = await montarMeusDados(apelido)
+      const url = URL.createObjectURL(arquivo)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'bom-preco-meus-dados.json'
+      link.click()
+      URL.revokeObjectURL(url)
+      setSituacao('parado')
+    } catch {
+      setSituacao('erro')
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => void baixar()}
+      disabled={situacao === 'montando'}
+      className="flex min-h-14 w-full items-center gap-3 px-4 text-left disabled:opacity-60"
+    >
+      <span className="flex-1 text-tinta">Baixar meus dados</span>
+      <span className="text-sm text-tinta-suave">
+        {situacao === 'montando' && 'Montando…'}
+        {situacao === 'erro' && 'Não consegui. Toque de novo.'}
+      </span>
+    </button>
+  )
+}
+
 function Sobre() {
   return (
     <>

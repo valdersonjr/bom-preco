@@ -41,6 +41,7 @@ referenciam o `RF-xx` de origem.
 | RF-38 | O sistema deve permitir vincular a conta anônima a uma identidade Google ou e-mail, preservando o mesmo usuário e todos os seus registros | ✅ | `Der` |
 | RF-39 | O sistema deve convidar o usuário a instalar o app na tela inicial | ✅ | `Der` |
 | RF-40 | O sistema deve permitir excluir a conta, anonimizando a autoria dos registros de preço e preservando os preços | ✅ | `Der` · RD-11 |
+| RF-51 | O sistema deve permitir ao usuário ver os preços que ele mesmo registrou e baixar uma cópia dos seus dados: registros, lista e compras concluídas | ✅ | `Der` · RNF-11 |
 
 > RF-40 é a única operação que exige código no servidor: apagar a conta significa apagar do
 > serviço de identidade, com privilégio que o cliente não tem nem deve ter. O desenho está
@@ -133,7 +134,7 @@ referenciam o `RF-xx` de origem.
 | RF-30 | O sistema deve importar carga inicial de preços de base pública | ❌ | `Elic` |
 | RF-31 | O sistema deve atribuir pontos e distintivos a contribuidores | ❌ | `Elic` |
 
-**Resumo:** 50 requisitos funcionais, 34 no MVP.
+**Resumo:** 51 requisitos funcionais, 35 no MVP.
 
 ---
 

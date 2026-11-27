@@ -105,6 +105,13 @@ export type Database = {
             foreignKeyName: "confirmacao_registro_id_fkey"
             columns: ["registro_id"]
             isOneToOne: false
+            referencedRelation: "meus_registros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "confirmacao_registro_id_fkey"
+            columns: ["registro_id"]
+            isOneToOne: false
             referencedRelation: "preco_publico"
             referencedColumns: ["id"]
           },
@@ -426,6 +433,51 @@ export type Database = {
       }
     }
     Views: {
+      meus_registros: {
+        Row: {
+          id: string | null
+          local_conferido: boolean | null
+          mercado_id: string | null
+          observado_em: string | null
+          produto_id: string | null
+          tipo: string | null
+          valor: number | null
+        }
+        Insert: {
+          id?: string | null
+          local_conferido?: boolean | null
+          mercado_id?: string | null
+          observado_em?: string | null
+          produto_id?: string | null
+          tipo?: string | null
+          valor?: number | null
+        }
+        Update: {
+          id?: string | null
+          local_conferido?: boolean | null
+          mercado_id?: string | null
+          observado_em?: string | null
+          produto_id?: string | null
+          tipo?: string | null
+          valor?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registro_preco_mercado_id_fkey"
+            columns: ["mercado_id"]
+            isOneToOne: false
+            referencedRelation: "mercado"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registro_preco_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produto"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       preco_publico: {
         Row: {
           autoconfirmacoes: number | null

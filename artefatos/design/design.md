@@ -81,6 +81,7 @@ primeira abertura, `anon` não precisa alcançar tabela alguma, e não alcança.
 | `confirmacao` | **não** | só como autor | não | não |
 | `registro_vigente` | **ninguém** | — | — | — |
 | `preco_publico` | todos | — | — | — |
+| `meus_registros` | só as próprias linhas | — | — | — |
 | `lista`, `item_lista` | só o dono | só o dono | só o dono | só o dono |
 | `compra`, `item_compra` | só o dono | só o dono | **ninguém** | só o dono |
 
@@ -107,6 +108,12 @@ existe só para `preco_publico` consumir, e projeta `usuario_id`. Rodando com pr
 dono e exposta pela API, ela devolveria a autoria de todos os preços — refazendo, uma camada
 acima, exatamente o furo que a revogação da tabela fechou. Visão intermediária que carrega
 dado sensível precisa ser revogada junto com a tabela, não só a tabela.
+
+**`meus_registros` não reabre o que a revogação fechou.** A pessoa precisa ler o que ela
+mesma registrou — para conferir, e para levar uma cópia (RF-51) — e a tabela continua
+inalcançável. A visão filtra por `auth.uid()` dentro dela, com `security_barrier`, e não
+projeta `usuario_id`: cada sessão alcança só as próprias linhas, e a autoria alheia segue
+sem caminho de leitura.
 
 **Lista de compras e compras concluídas são as únicas coisas privadas do sistema.** São
 também o dado que mais revela sobre a pessoa — hábito de consumo — e por isso a política é a
