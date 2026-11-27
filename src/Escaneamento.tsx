@@ -6,6 +6,8 @@ import { EscolhaDeMercado } from './EscolhaDeMercado'
 import { EscolhaDoCatalogo } from './EscolhaDoCatalogo'
 import {
   conferidoNoLocal,
+  escolhaRecente,
+  lembrarMercado,
   type EstadoMercados,
   type Mercado,
 } from './lib/mercado'
@@ -61,7 +63,7 @@ export function Escaneamento({
 
   // Derivado, não guardado: a sugestão chega depois da localização, e guardá-la
   // em estado exigiria um efeito que dispara outro render sem necessidade.
-  const mercado = escolhaManual ?? sugerido
+  const mercado = escolhaManual ?? escolhaRecente(mercados) ?? sugerido
   const conferido = mercado ? conferidoNoLocal(mercado, posicao, mercados) : false
 
   const aoLer = useCallback(async (gtin: string) => {
@@ -96,7 +98,10 @@ export function Escaneamento({
         posicao={posicao}
         cidade={cidade}
         carregando={carregando}
-        aoEscolher={setEscolhaManual}
+        aoEscolher={(m) => {
+          lembrarMercado(m.id)
+          setEscolhaManual(m)
+        }}
       />
 
       {/*

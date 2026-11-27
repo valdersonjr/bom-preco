@@ -102,13 +102,64 @@ function obterPosicao(): Promise<Posicao | null> {
   })
 }
 
+const CHAVE_ULTIMO = 'ultimo-mercado'
+
+/** Por quanto tempo uma escolha manual ainda é "onde eu estou". */
+const HORAS_DE_ESCOLHA_RECENTE = 3
+
+/**
+ * Guarda no aparelho o mercado que a pessoa escolheu à mão.
+ *
+ * Dezessete dos vinte e seis mercados não têm coordenada, então o GPS nunca os
+ * sugere: quem compra num deles escolhia na lista a cada registro, e de novo a
+ * cada troca de aba. Fica só no aparelho — é o identificador de uma loja do
+ * catálogo, não uma posição, e nada disso sobe (RD-13).
+ */
+export function lembrarMercado(mercadoId: string) {
+  try {
+    localStorage.setItem(
+      CHAVE_ULTIMO,
+      JSON.stringify({ id: mercadoId, em: Date.now() }),
+    )
+  } catch {
+    // Armazenamento bloqueado: a pessoa escolhe de novo, que é o que já fazia.
+  }
+}
+
+function mercadoLembrado(): { id: string; em: number } | null {
+  try {
+    const bruto = localStorage.getItem(CHAVE_ULTIMO)
+    if (!bruto) return null
+    const lido = JSON.parse(bruto) as { id?: unknown; em?: unknown }
+    return typeof lido.id === 'string' && typeof lido.em === 'number'
+      ? { id: lido.id, em: lido.em }
+      : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * A escolha manual das últimas horas, se ainda existir no catálogo.
+ *
+ * Vale mais que a sugestão do GPS: quem trocou o mercado à mão corrigiu o GPS,
+ * e desfazer a correção na troca de aba seria o app teimando. Depois de
+ * algumas horas a pessoa já saiu de lá, e a sugestão volta a mandar.
+ */
+export function escolhaRecente(mercados: Mercado[]): Mercado | null {
+  const lembrado = mercadoLembrado()
+  if (!lembrado) return null
+  if (Date.now() - lembrado.em > HORAS_DE_ESCOLHA_RECENTE * 3_600_000) return null
+  return mercados.find((m) => m.id === lembrado.id) ?? null
+}
+
 export type EstadoMercados = {
   carregando: boolean
   mercados: Mercado[]
-  /** Ordenados por distância quando há posição; por nome quando não há. */
+  /** O mais próximo quando há posição; o último escolhido quando não há. */
   sugerido: Mercado | null
   posicao: Posicao | null
-  /** Cidade do mercado mais próximo. Nula sem localização. */
+  /** Cidade do mercado sugerido. Nula sem localização nem escolha anterior. */
   cidade: string | null
 }
 
@@ -156,6 +207,14 @@ export function useMercados(): EstadoMercados {
               d: distanciaM(posicao.lat, posicao.lon, m.latitude!, m.longitude!),
             }))
             .sort((a, b) => a.d - b.d)[0]?.m ?? null
+      }
+
+      // Sem posição, o último mercado escolhido é o melhor palpite que existe,
+      // por mais antigo que seja: ele diz ao menos em que cidade a pessoa
+      // compra, e sem cidade a comparação misturaria todas.
+      if (!posicao) {
+        const id = mercadoLembrado()?.id
+        sugerido = mercados.find((m) => m.id === id) ?? null
       }
 
       setEstado({
