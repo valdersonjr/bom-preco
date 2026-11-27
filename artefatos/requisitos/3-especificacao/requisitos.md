@@ -89,6 +89,11 @@ referenciam o `RF-xx` de origem.
 | RF-45 | O sistema deve permitir identificar o produto da consulta pela leitura do código de barras, além da busca por nome | ✅ | `Elic` |
 | RF-48 | O sistema deve buscar produto ignorando acentuação e exigindo todas as palavras do termo em qualquer ordem, apresentando os resultados por relevância textual e não por ordem alfabética | ✅ | `Der` |
 
+> RF-16 tira o preço vencido da **comparação**, não da vista. Na lista de compras, o item
+> sem preço válido mostra o último preço conhecido como referência — com mercado e idade,
+> fora do roteiro de compra e de qualquer total. Com poucos contribuidores, esconder esse
+> número apagava a única informação que a pessoa tinha sobre o produto.
+
 ### Lista de compras · UC-04
 
 | ID | Requisito | MVP | Origem |

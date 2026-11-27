@@ -448,7 +448,7 @@ function ItemLinha({
   /** Só nos itens sem preço: leva ao registro com este produto. */
   aoRegistrar?: () => void
 }) {
-  const { melhor, produto, quantidade, pego } = item
+  const { melhor, vencido, produto, quantidade, pego } = item
 
   return (
     <li
@@ -534,13 +534,23 @@ function ItemLinha({
             /* O espaço do preço não colapsa quando não há preço: a lista
                continua alinhada, e a ausência fica evidente por comparação. */
             aoRegistrar ? (
-              <button
-                type="button"
-                onClick={aoRegistrar}
-                className="min-h-11 rounded-lg border border-borda-forte px-4 text-sm font-medium text-marca-forte"
-              >
-                Registrar preço
-              </button>
+              <>
+                {/* Vencido é referência: tinta fraca, sem o corpo de preço, e
+                    a idade colada no número para ninguém ler como atual. */}
+                {vencido && (
+                  <p className="mb-2 text-sm text-tinta-fraca">
+                    {precoEmTexto(vencido.valor)} · {vencido.mercado.nome} ·{' '}
+                    {idadeEmTexto(vencido.idadeEmDias)}
+                  </p>
+                )}
+                <button
+                  type="button"
+                  onClick={aoRegistrar}
+                  className="min-h-11 rounded-lg border border-borda-forte px-4 text-sm font-medium text-marca-forte"
+                >
+                  Registrar preço
+                </button>
+              </>
             ) : (
               <p className="text-preco-menor font-normal text-tinta-fraca">
                 sem preço

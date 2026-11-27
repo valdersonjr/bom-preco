@@ -23,6 +23,12 @@ export type ItemDaLista = {
      */
     entreQuantos: number
   } | null
+  /**
+   * Último preço conhecido quando nenhum é válido. Referência, não comparação:
+   * passou dos 30 dias (RF-16), então não aponta onde comprar nem entra em
+   * total nenhum — só diz quanto custava, onde, e há quanto tempo.
+   */
+  vencido: { mercado: Mercado; valor: number; idadeEmDias: number } | null
 }
 
 const COLUNAS_PRODUTO =
@@ -207,6 +213,41 @@ export async function carregarLista(
     }
   }
 
+  /*
+    Segunda consulta, só para quem ficou sem preço válido.
+
+    O corte de 30 dias continua no servidor para o caso comum. Aqui vem o
+    histórico apenas dos produtos que sobraram, do mais novo para o mais velho,
+    e fica-se com o primeiro de cada um. Com uma pessoa só registrando, um mês
+    sem voltar a um mercado apagava da lista um preço que ela mesma tinha visto.
+
+    Se falhar, a lista sai sem a referência: é complemento, e não vale derrubar
+    a resposta principal por causa dele.
+  */
+  const semValido = produtoIds.filter((id) => !melhorPorProduto.has(id))
+  const vencidoPorProduto = new Map<string, NonNullable<ItemDaLista['vencido']>>()
+
+  if (semValido.length > 0) {
+    const { data: antigos } = await supabase
+      .from('preco_publico')
+      .select('produto_id, mercado_id, valor, visto_em, observado_em')
+      .in('produto_id', semValido)
+      .order('observado_em', { ascending: false })
+      .limit(500)
+
+    for (const p of antigos ?? []) {
+      const mercado = p.mercado_id ? porMercado.get(p.mercado_id) : undefined
+      if (!mercado || !p.produto_id || vencidoPorProduto.has(p.produto_id)) continue
+      vencidoPorProduto.set(p.produto_id, {
+        mercado,
+        valor: Number(p.valor),
+        idadeEmDias: Math.floor(
+          (Date.now() - new Date(p.visto_em!).getTime()) / 86_400_000,
+        ),
+      })
+    }
+  }
+
   return itens.flatMap((i) =>
     i.produto
       ? [
@@ -216,6 +257,7 @@ export async function carregarLista(
             quantidade: Number(i.quantidade),
             pego: i.pego_em !== null,
             melhor: melhorPorProduto.get(i.produto.id) ?? null,
+            vencido: vencidoPorProduto.get(i.produto.id) ?? null,
           },
         ]
       : [],
