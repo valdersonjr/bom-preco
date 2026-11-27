@@ -69,7 +69,7 @@ export function Escaneamento({
   const [modo, setModo] = useState<'codigo' | 'catalogo'>('codigo')
   const [salvos, setSalvos] = useState(0)
   const [veioDaCamera, setVeioDaCamera] = useState(false)
-  const { naFila, enviando, registrar } = envio
+  const { naFila, enviando, registrar, recusados, descartarRecusados } = envio
 
   // Derivado, não guardado: a sugestão chega depois da localização, e guardá-la
   // em estado exigiria um efeito que dispara outro render sem necessidade.
@@ -107,6 +107,26 @@ export function Escaneamento({
       <h2 className="font-medium text-tinta">Registrar preço</h2>
 
       <Situacao salvos={salvos} naFila={naFila} enviando={enviando} />
+
+      {recusados > 0 && (
+        <div
+          role="alert"
+          className="flex items-center justify-between gap-3 rounded-xl bg-perigo-fraca px-4 py-3 text-sm text-perigo-tinta"
+        >
+          <span>
+            {recusados === 1
+              ? 'Um preço não foi aceito.'
+              : `${recusados} preços não foram aceitos.`}
+          </span>
+          <button
+            type="button"
+            onClick={() => void descartarRecusados()}
+            className="min-h-11 shrink-0 rounded-lg px-2 font-medium underline"
+          >
+            Descartar
+          </button>
+        </div>
+      )}
 
       <EscolhaDeMercado
         mercados={mercados}

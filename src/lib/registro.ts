@@ -64,15 +64,40 @@ const JA_EXISTE = '23505'
  */
 export async function enviarRegistro(
   registro: Registro,
-): Promise<{ ok: true; jaEstava: boolean } | { ok: false; motivo: string }> {
+): Promise<
+  | { ok: true; jaEstava: boolean }
+  | { ok: false; motivo: string; recusado: boolean }
+> {
   const { error } = await supabase.from('registro_preco').insert(registro)
 
   if (error && error.code !== JA_EXISTE) {
-    return { ok: false, motivo: error.message }
+    return {
+      ok: false,
+      motivo: error.message,
+      recusado: recusaDoBanco(error.code),
+    }
   }
 
   if (!error) contarRegistro()
   return { ok: true, jaEstava: Boolean(error) }
+}
+
+/**
+ * O banco respondeu e disse não, ou a pergunta nem chegou?
+ *
+ * A diferença decide o que a fila faz. Rede que caiu volta, e esperar resolve.
+ * Regra violada não muda com o tempo: reenviar o mesmo registro dá a mesma
+ * recusa para sempre, e como a fila sobe em série, ele segurava todos os que
+ * vinham atrás.
+ *
+ * Recusa é o que o Postgres devolve nas classes 22 (dado inválido) e 23
+ * (restrição violada) e no 42501 (política de acesso). Falha de rede chega sem
+ * código nenhum; token vencido chega com código do PostgREST, e o cliente o
+ * renova sozinho — os dois continuam sendo "tente depois".
+ */
+function recusaDoBanco(codigo: string | undefined): boolean {
+  if (!codigo) return false
+  return codigo.startsWith('22') || codigo.startsWith('23') || codigo === '42501'
 }
 
 /** Aceita "12,90" e "12.90"; recusa o resto. */

@@ -24,6 +24,16 @@ const ESPERA_MAXIMA_MS = 5 * 60_000
 export function useEnvio() {
   const [naFila, setNaFila] = useState(0)
   const [enviando, setEnviando] = useState(false)
+  /**
+   * Registros que o banco recusou por regra nesta sessão.
+   *
+   * Ficam na fila — nada se perde em silêncio (RNF-06) — mas não são tentados
+   * de novo até o app reabrir, e não seguram os que vêm depois. Mora na memória
+   * e não no IndexedDB de propósito: reabrir o app é a única coisa que pode ter
+   * mudado a situação, e é exatamente quando este conjunto nasce vazio.
+   */
+  const recusados = useRef(new Set<string>())
+  const [quantosRecusados, setQuantosRecusados] = useState(0)
 
   /** Impede dois esvaziamentos simultâneos disputando a mesma fila. */
   const emCurso = useRef(false)
@@ -69,7 +79,7 @@ export function useEnvio() {
   const esvaziar = useCallback(async () => {
     if (emCurso.current || !navigator.onLine) return
 
-    const fila = await pendentes()
+    const fila = (await pendentes()).filter((r) => !recusados.current.has(r.id))
     if (fila.length === 0) {
       falhas.current = 0
       return
@@ -82,6 +92,10 @@ export function useEnvio() {
     try {
       for (const registro of fila) {
         const resultado = await enviarRegistro(registro)
+        if (!resultado.ok && resultado.recusado) {
+          recusados.current.add(registro.id)
+          continue // este não sobe nem esperando; os outros não têm culpa
+        }
         if (!resultado.ok) {
           falhou = true
           break // rede caiu de novo; o resto fica para a próxima tentativa
@@ -91,6 +105,7 @@ export function useEnvio() {
     } finally {
       emCurso.current = false
       setEnviando(false)
+      setQuantosRecusados(recusados.current.size)
     }
 
     await atualizarContagem()
@@ -135,5 +150,22 @@ export function useEnvio() {
     }
   }, [esvaziar, cancelarAgendamento])
 
-  return { naFila, enviando, registrar }
+  /** Tira da fila o que o banco recusou. É a pessoa que decide, não o app. */
+  const descartarRecusados = useCallback(async () => {
+    for (const id of recusados.current) await desenfileirar(id)
+    recusados.current.clear()
+    setQuantosRecusados(0)
+    await atualizarContagem()
+  }, [atualizarContagem])
+
+  return {
+    // Só o que ainda vai subir sozinho. Os recusados têm aviso próprio, e
+    // somá-los aqui prometeria "sobem quando a conexão voltar" sobre registros
+    // que não vão subir.
+    naFila: Math.max(0, naFila - quantosRecusados),
+    enviando,
+    registrar,
+    recusados: quantosRecusados,
+    descartarRecusados,
+  }
 }
