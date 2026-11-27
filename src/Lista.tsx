@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   acrescentar,
+  acrescentarTermo,
   carregarLista,
   concluirCompra,
   desfazerCompra,
+  fixarProduto,
   marcarPego,
   mudarQuantidade,
+  normalizarTermo,
   obterOuCriarLista,
+  recusarOpcao,
   type ItemDaLista,
 } from './lib/lista'
 import { buscarProduto, type ProdutoAchado } from './lib/consulta'
@@ -19,7 +23,11 @@ import {
   type Mercado,
   type Posicao,
 } from './lib/mercado'
-import type { Produto } from './lib/produto'
+import {
+  precoPorUnidade,
+  unidadeDeComparacao,
+  type Produto,
+} from './lib/produto'
 import { distanciaEmTexto, idadeEmTexto, precoEmTexto } from './lib/formato'
 import { Preco } from './Preco'
 import { ComoChegar } from './Mercado'
@@ -158,8 +166,9 @@ export function Lista({
     setRemovido(
       salvou && quantidade <= 0
         ? {
-            produtoId: item.produto.id,
-            nome: item.produto.nome,
+            produtoId: item.termo ? null : (item.produto?.id ?? null),
+            termo: item.termo,
+            nome: nomeDoItem(item),
             quantidade: item.quantidade,
           }
         : null,
@@ -192,7 +201,8 @@ export function Lista({
     setConcluida({
       compraId,
       itens: noCarrinho.map((i) => ({
-        produtoId: i.produto.id,
+        produtoId: i.termo ? null : (i.produto?.id ?? null),
+        termo: i.termo,
         quantidade: i.quantidade,
       })),
     })
@@ -226,8 +236,38 @@ export function Lista({
         className="min-h-12 rounded-xl border border-borda-forte bg-elevado px-3"
       />
 
-      {achados.length > 0 && (
+      {/*
+        A primeira linha é o termo como está, sem marca.
+
+        A busca devolve produtos exatos, e isso atende quem tem marca. Quem
+        compra o que estiver mais barato só quer dizer "arroz" — e escolher uma
+        entre trinta embalagens era adivinhar qual delas teria preço. As duas
+        respostas ficam na mesma lista, e a pessoa escolhe a que é a dela.
+      */}
+      {normalizarTermo(termo).length >= 2 && (
         <ul className="flex max-h-56 flex-col gap-1 overflow-y-auto rounded-xl border border-borda bg-elevado p-1">
+          <li>
+            <button
+              type="button"
+              onClick={async () => {
+                if (!listaId) return
+                const salvou = await salvar(() => acrescentarTermo(listaId, termo))
+                if (!salvou) return
+                setTermo('')
+                setAchados([])
+              }}
+              className="flex min-h-11 w-full items-center gap-3 rounded px-3 py-2 text-left hover:bg-sutil"
+            >
+              <span className="min-w-0 flex-1">
+                <span className="text-tinta">
+                  {nomeDeProduto(normalizarTermo(termo))}
+                </span>
+                <span className="block text-sm text-tinta-suave">
+                  qualquer marca
+                </span>
+              </span>
+            </button>
+          </li>
           {achados.map((p) => (
             <li key={p.id}>
               <button
@@ -282,12 +322,16 @@ export function Lista({
       {removido && (
         <Desfazer
           marca={removido}
-          texto={`${nomeDeProduto(removido.nome)} saiu da lista.`}
+          texto={`${removido.nome} saiu da lista.`}
           aoDesfazer={async () => {
             if (!listaId) return
-            const salvou = await salvar(() =>
-              acrescentar(listaId, removido.produtoId, removido.quantidade),
-            )
+            const salvou = await salvar(async () => {
+              if (removido.termo) {
+                await acrescentarTermo(listaId, removido.termo, removido.quantidade)
+              } else if (removido.produtoId) {
+                await acrescentar(listaId, removido.produtoId, removido.quantidade)
+              }
+            })
             if (salvou) setRemovido(null)
           }}
           aoDispensar={dispensar}
@@ -331,6 +375,12 @@ export function Lista({
             <ItemLinha
               key={i.itemId}
               item={i}
+              aoFixar={(produtoId) =>
+                void salvar(() => fixarProduto(listaId!, i, produtoId))
+              }
+              aoRecusar={(produtoId) =>
+                void salvar(() => recusarOpcao(i, produtoId))
+              }
               aoMudar={(q) => void mudar(i, q)}
               aoMarcar={(p) => void marcar(i, p)}
             />
@@ -346,7 +396,13 @@ export function Lista({
               <ItemLinha
                 key={i.itemId}
                 item={i}
-                aoRegistrar={() => aoRegistrar(i.produto)}
+                aoRegistrar={() =>
+                  // Item de qualquer marca sem preço não tem produto para
+                  // levar junto: o registro abre do começo, na câmera.
+                  i.termo || !i.produto
+                    ? aoIrPara('registrar')
+                    : aoRegistrar(i.produto)
+                }
                 aoMudar={(q) => void mudar(i, q)}
                 aoMarcar={(p) => void marcar(i, p)}
               />
@@ -455,12 +511,22 @@ function PrimeiraVez({
   )
 }
 
-type Removido = { produtoId: string; nome: string; quantidade: number }
+type Removido = {
+  produtoId: string | null
+  termo: string | null
+  nome: string
+  quantidade: number
+}
+
+/** Como o item se chama na tela: o termo, ou o nome do produto. */
+function nomeDoItem(item: ItemDaLista): string {
+  return nomeDeProduto(item.termo ?? item.produto?.nome ?? '')
+}
 
 /** A compra recém-concluída, com o que o desfazer precisa devolver à lista. */
 type Concluida = {
   compraId: string
-  itens: { produtoId: string; quantidade: number }[]
+  itens: { produtoId: string | null; termo: string | null; quantidade: number }[]
 }
 
 /** Sete segundos é o tempo de ler a frase e decidir. Depois some sozinha. */
@@ -524,14 +590,22 @@ function ItemLinha({
   aoMudar,
   aoMarcar,
   aoRegistrar,
+  aoFixar,
+  aoRecusar,
 }: {
   item: ItemDaLista
   aoMudar: (quantidade: number) => void
   aoMarcar: (pego: boolean) => void
   /** Só nos itens sem preço: leva ao registro com este produto. */
   aoRegistrar?: () => void
+  /** Só no item de qualquer marca: fica com este produto e mais nenhum. */
+  aoFixar?: (produtoId: string) => void
+  /** Só no item de qualquer marca: este produto não serve. */
+  aoRecusar?: (produtoId: string) => void
 }) {
-  const { melhor, vencido, produto, quantidade, pego } = item
+  const { melhor, vencido, produto, termo, opcoes, quantidade, pego } = item
+  const nome = nomeDoItem(item)
+  const [opcoesAbertas, setOpcoesAbertas] = useState(false)
 
   return (
     <li
@@ -549,7 +623,7 @@ function ItemLinha({
           role="checkbox"
           aria-checked={pego}
           onClick={() => aoMarcar(!pego)}
-          aria-label={`${pego ? 'Tirar do' : 'Pôr no'} carrinho: ${nomeDeProduto(produto.nome)}`}
+          aria-label={`${pego ? 'Tirar do' : 'Pôr no'} carrinho: ${nome}`}
           /* 44 px de toque (RNF-07) em volta de um círculo de 24. A margem
              negativa devolve ao layout o espaço que a área maior tomaria. */
           className="-mx-2.5 -mt-2 -mb-2.5 flex size-11 shrink-0 items-center justify-center rounded-full"
@@ -580,10 +654,16 @@ function ItemLinha({
 
         <div className="min-w-0 flex-1">
       <p className={`font-medium ${pego ? 'text-tinta-fraca line-through' : 'text-tinta'}`}>
-        {nomeDeProduto(produto.nome)}
+        {nome}
       </p>
+      {/* No item de qualquer marca, a segunda linha diz qual produto foi o
+          escolhido: é ele que a pessoa vai procurar na prateleira. */}
       <p className="mt-0.5 text-sm text-tinta-fraca">
-        {descricaoDoProduto(produto)}
+        {termo
+          ? produto
+            ? `${nomeDeProduto(produto.nome)} · ${descricaoDoProduto(produto)}`
+            : 'qualquer marca'
+          : produto && descricaoDoProduto(produto)}
       </p>
 
       <div className="mt-3 flex items-end justify-between gap-3">
@@ -646,7 +726,7 @@ function ItemLinha({
           <button
             type="button"
             onClick={() => aoMudar(quantidade - 1)}
-            aria-label={`Diminuir ${nomeDeProduto(produto.nome)}`}
+            aria-label={`Diminuir ${nome}`}
             className="min-h-11 w-11 rounded-lg border border-borda-forte text-lg text-tinta-suave"
           >
             −
@@ -655,13 +735,82 @@ function ItemLinha({
           <button
             type="button"
             onClick={() => aoMudar(quantidade + 1)}
-            aria-label={`Aumentar ${nomeDeProduto(produto.nome)}`}
+            aria-label={`Aumentar ${nome}`}
             className="min-h-11 w-11 rounded-lg border border-borda-forte text-lg text-tinta-suave"
           >
             +
           </button>
         </div>
       </div>
+
+      {/*
+        As alternativas do item de qualquer marca.
+
+        O casamento é só por nome, então erra: "arroz" também acha farinha de
+        arroz. As duas ações são as duas correções possíveis — "este não é o
+        que eu quero" e "é só este que eu quero" — e cada uma ensina o item a
+        acertar na próxima vez que a lista abrir.
+      */}
+      {termo && opcoes.length > 0 && !pego && (
+        <>
+          <button
+            type="button"
+            onClick={() => setOpcoesAbertas((v) => !v)}
+            aria-expanded={opcoesAbertas}
+            className="mt-2 min-h-11 rounded-lg text-sm font-medium text-marca-forte"
+          >
+            {opcoes.length === 1 ? '1 opção' : `${opcoes.length} opções`}
+          </button>
+          {opcoesAbertas && (
+            <ul className="anima-surgir flex flex-col divide-y divide-borda border-t border-borda">
+              {opcoes.map((o) => {
+                const porUnidade = precoPorUnidade(o.produto, o.valor)
+                return (
+                  <li
+                    key={`${o.produto.id}|${o.mercado.id}`}
+                    className="flex flex-col gap-1 py-3"
+                  >
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="min-w-0 truncate text-tinta">
+                        {nomeDeProduto(o.produto.nome)}
+                      </span>
+                      <span className="shrink-0 tabular-nums text-tinta">
+                        {precoEmTexto(o.valor)}
+                      </span>
+                    </div>
+                    <p className="flex justify-between gap-3 text-sm text-tinta-suave">
+                      <span className="min-w-0 truncate">
+                        {descricaoDoProduto(o.produto)} · {o.mercado.nome}
+                      </span>
+                      {porUnidade !== null && (
+                        <span className="shrink-0 tabular-nums">
+                          {precoEmTexto(porUnidade)}/{unidadeDeComparacao(o.produto)}
+                        </span>
+                      )}
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => aoFixar?.(o.produto.id)}
+                        className="min-h-11 rounded-lg border border-borda-forte px-3 text-sm font-medium text-tinta-suave"
+                      >
+                        Só este
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => aoRecusar?.(o.produto.id)}
+                        className="min-h-11 rounded-lg px-3 text-sm text-tinta-suave"
+                      >
+                        Não serve
+                      </button>
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </>
+      )}
         </div>
       </div>
     </li>

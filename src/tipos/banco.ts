@@ -142,20 +142,23 @@ export type Database = {
         Row: {
           compra_id: string
           id: string
-          produto_id: string
+          produto_id: string | null
           quantidade: number
+          termo: string | null
         }
         Insert: {
           compra_id: string
           id?: string
-          produto_id: string
+          produto_id?: string | null
           quantidade: number
+          termo?: string | null
         }
         Update: {
           compra_id?: string
           id?: string
-          produto_id?: string
+          produto_id?: string | null
           quantidade?: number
+          termo?: string | null
         }
         Relationships: [
           {
@@ -177,27 +180,33 @@ export type Database = {
       item_lista: {
         Row: {
           criado_em: string
+          excluidos: string[]
           id: string
           lista_id: string
           pego_em: string | null
-          produto_id: string
+          produto_id: string | null
           quantidade: number
+          termo: string | null
         }
         Insert: {
           criado_em?: string
+          excluidos?: string[]
           id?: string
           lista_id: string
           pego_em?: string | null
-          produto_id: string
+          produto_id?: string | null
           quantidade?: number
+          termo?: string | null
         }
         Update: {
           criado_em?: string
+          excluidos?: string[]
           id?: string
           lista_id?: string
           pego_em?: string | null
-          produto_id?: string
+          produto_id?: string | null
           quantidade?: number
+          termo?: string | null
         }
         Relationships: [
           {
@@ -553,6 +562,24 @@ export type Database = {
         Returns: string
       }
       e_mantenedor: { Args: never; Returns: boolean }
+      precos_por_termo: {
+        Args: { p_desde: string; p_termos: string[] }
+        Returns: {
+          dimensao: string
+          gtin: string
+          marca: string
+          mercado_id: string
+          nome: string
+          observado_em: string
+          produto_id: string
+          quantidade: number
+          quantidade_base: number
+          termo: string
+          unidade_medida: string
+          valor: number
+          visto_em: string
+        }[]
+      }
       sem_acento: { Args: { t: string }; Returns: string }
     }
     Enums: {

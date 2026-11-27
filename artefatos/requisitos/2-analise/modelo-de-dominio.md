@@ -206,7 +206,8 @@ triagem do brainstorm.
 | RD-12 | Lista de compras apagada pelo dono sai por exclusão lógica; exclusão de conta a remove de fato |
 | RD-13 | A coordenada do dispositivo nunca é persistida: dela restam apenas o mercado escolhido e o indicador de conferência |
 | RD-14 | Uma confirmação por pessoa, por registro, por dia. Renovar a idade mês a mês é permitido; clicar várias vezes no mesmo dia não conta duas |
-| RD-15 | Um produto aparece no máximo uma vez em cada lista de compras; repetir ajusta a quantidade |
+| RD-15 | Um produto aparece no máximo uma vez em cada lista de compras; repetir ajusta a quantidade. O mesmo vale para o termo do item de qualquer marca |
+| RD-16 | Item de lista aponta para um produto exato **ou** para um termo, nunca os dois. O termo casa, na leitura, com os produtos cujo nome contém todas as suas palavras; entre eles a comparação é por preço por unidade, dentro de uma única dimensão (RD-05, RD-06). O usuário corrige o casamento recusando produtos, e a recusa vale só para aquele item |
 
 ## Evolução prevista
 
@@ -220,7 +221,7 @@ Coisas deliberadamente **fora** do modelo agora, com a nota do que custam depois
 
 | Conceito | Quando entra | Custo de adiar |
 | -------- | ------------ | -------------- |
-| **Produto genérico** — agrupa marcas e tamanhos do mesmo item. Serve para recomendar alternativo mais barato e para detectar *shrinkflation* | Quando qualquer uma das duas funções sair do backlog | Baixo: tabela nova e chave estrangeira anulável em `produto` |
+| **Produto genérico** — agrupa marcas e tamanhos do mesmo item. Serve para recomendar alternativo mais barato e para detectar *shrinkflation* | Quando qualquer uma das duas funções sair do backlog. O item de qualquer marca (RD-16) **não** é isto: ele agrupa por nome, na leitura, sem curadoria. As recusas que os usuários gravam nos itens são a matéria-prima para curar o genérico de verdade quando houver volume | Baixo: tabela nova e chave estrangeira anulável em `produto` |
 | **Reputação e denúncia** | Se aparecer preço falso | Baixo: derivam de dados que os registros já contêm |
 | **Foto da etiqueta** | Se a evidência virar necessária | Baixo: coluna e bucket no storage |
 

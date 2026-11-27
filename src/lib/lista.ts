@@ -1,13 +1,35 @@
 import { supabase } from './supabase'
 import { corteDeValidade, maisRecentePor } from './consulta'
 import type { Mercado } from './mercado'
-import type { Produto } from './produto'
+import { precoPorUnidade, type Produto } from './produto'
+import { semAcento } from './texto'
 
 const NOME_PADRAO = 'Minha lista'
 
+/** Um produto que serve a um item de qualquer marca, num mercado, com preço válido. */
+export type Opcao = {
+  produto: Produto
+  mercado: Mercado
+  valor: number
+  /** Por kg, litro ou unidade. É por ele que embalagens diferentes se comparam. */
+  porUnidade: number | null
+  idadeEmDias: number
+}
+
 export type ItemDaLista = {
   itemId: string
-  produto: Produto
+  /**
+   * O produto do item. No item de produto exato, é ele. No de qualquer marca,
+   * é o mais barato por unidade entre os que servem — e nulo enquanto nenhum
+   * tiver preço válido.
+   */
+  produto: Produto | null
+  /** Preenchido só no item de qualquer marca (RF-52): o que a pessoa escreveu. */
+  termo: string | null
+  /** As alternativas do item de qualquer marca, da mais barata por unidade em diante. */
+  opcoes: Opcao[]
+  /** Produtos que a pessoa disse que não servem a este item. */
+  excluidos: string[]
   quantidade: number
   /** Já está no carrinho. Guarda o instante, para desmarcar sem inventar estado. */
   pego: boolean
@@ -110,6 +132,105 @@ export async function acrescentar(
   else if (error) throw new Error(error.message)
 }
 
+/**
+ * O termo como é guardado e mostrado: minúsculo, só letras e números, palavras
+ * separadas por um espaço — e com os acentos de quem escreveu.
+ *
+ * Pontuação sai porque não ajuda a achar nada e só serviria para o mesmo item
+ * entrar duas vezes. O acento fica: tirá-lo aqui fazia a lista devolver
+ * "Feijao Carioca" a quem tinha digitado certo.
+ */
+export function normalizarTermo(texto: string): string {
+  return texto
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim()
+}
+
+/**
+ * O termo como é comparado com `produto.nome_busca`: a mesma dobra sem acento
+ * que o banco aplica ao nome. Só existe na hora de casar; nunca é guardado.
+ */
+function termoDeBusca(termo: string): string {
+  return semAcento(termo)
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+}
+
+/**
+ * Acrescenta um item de qualquer marca (RF-52). Repetir o termo soma à
+ * quantidade, como no produto exato (RD-15).
+ */
+export async function acrescentarTermo(
+  listaId: string,
+  termo: string,
+  quantidade = 1,
+): Promise<void> {
+  const normalizado = normalizarTermo(termo)
+  if (normalizado.length < 2) return
+
+  const { error } = await supabase
+    .from('item_lista')
+    .insert({ lista_id: listaId, termo: normalizado, quantidade })
+  if (!error) return
+  if (error.code !== JA_EXISTE) throw new Error(error.message)
+
+  const { data: existente, error: aoLer } = await supabase
+    .from('item_lista')
+    .select('id, quantidade')
+    .eq('lista_id', listaId)
+    .eq('termo', normalizado)
+    .maybeSingle()
+  if (aoLer || !existente) throw new Error(aoLer?.message ?? 'Item não encontrado.')
+
+  const { error: aoSomar } = await supabase
+    .from('item_lista')
+    .update({ quantidade: Number(existente.quantidade) + quantidade })
+    .eq('id', existente.id)
+  if (aoSomar) throw new Error(aoSomar.message)
+}
+
+/**
+ * "Este não serve": o produto deixa de ser sugerido neste item.
+ *
+ * É a correção de quem usa sobre um casamento que é só por nome — "arroz"
+ * também acha farinha de arroz. Fica guardada no item, então vale enquanto ele
+ * existir e não contamina a lista de mais ninguém.
+ */
+export async function recusarOpcao(item: ItemDaLista, produtoId: string) {
+  const { error } = await supabase
+    .from('item_lista')
+    .update({ excluidos: [...new Set([...item.excluidos, produtoId])] })
+    .eq('id', item.itemId)
+  if (error) throw new Error(error.message)
+}
+
+/**
+ * "Só este": o item de qualquer marca vira item de produto exato.
+ *
+ * Se o produto já estava na lista, a linha não pode se repetir (RD-15): a
+ * quantidade vai para a que já existe, e esta sai.
+ */
+export async function fixarProduto(
+  listaId: string,
+  item: ItemDaLista,
+  produtoId: string,
+) {
+  const { error } = await supabase
+    .from('item_lista')
+    .update({ produto_id: produtoId, termo: null, excluidos: [] })
+    .eq('id', item.itemId)
+  if (!error) return
+  if (error.code !== JA_EXISTE) throw new Error(error.message)
+
+  await acrescentar(listaId, produtoId, item.quantidade)
+  const { error: aoTirar } = await supabase
+    .from('item_lista')
+    .delete()
+    .eq('id', item.itemId)
+  if (aoTirar) throw new Error(aoTirar.message)
+}
+
 /** Marca ou desmarca o item como já pego (RF-49). */
 export async function marcarPego(itemId: string, pego: boolean) {
   const { error } = await supabase
@@ -157,13 +278,14 @@ export async function concluirCompra(
 export async function desfazerCompra(
   compraId: string,
   listaId: string,
-  itens: { produtoId: string; quantidade: number }[],
+  itens: { produtoId: string | null; termo: string | null; quantidade: number }[],
 ): Promise<void> {
   const agora = new Date().toISOString()
   const { error: aoDevolver } = await supabase.from('item_lista').insert(
     itens.map((i) => ({
       lista_id: listaId,
       produto_id: i.produtoId,
+      termo: i.termo,
       quantidade: i.quantidade,
       pego_em: agora,
     })),
@@ -202,7 +324,9 @@ export async function carregarLista(
 ): Promise<ItemDaLista[]> {
   const { data: itens, error: aoLerItens } = await supabase
     .from('item_lista')
-    .select(`id, quantidade, pego_em, produto:produto_id (${COLUNAS_PRODUTO})`)
+    .select(
+      `id, quantidade, pego_em, termo, excluidos, produto:produto_id (${COLUNAS_PRODUTO})`,
+    )
     .eq('lista_id', listaId)
     // Ordem de inserção: é a ordem em que a pessoa pensou a compra.
     .order('criado_em')
@@ -295,18 +419,152 @@ export async function carregarLista(
     }
   }
 
-  return itens.flatMap((i) =>
-    i.produto
-      ? [
-          {
-            itemId: i.id,
-            produto: i.produto,
-            quantidade: Number(i.quantidade),
-            pego: i.pego_em !== null,
-            melhor: melhorPorProduto.get(i.produto.id) ?? null,
-            vencido: vencidoPorProduto.get(i.produto.id) ?? null,
-          },
-        ]
-      : [],
+  const genericos = await opcoesPorTermo(
+    itens.flatMap((i) =>
+      i.termo ? [{ termo: i.termo, excluidos: i.excluidos }] : [],
+    ),
+    porMercado,
   )
+
+  return itens.flatMap((i): ItemDaLista[] => {
+    const base = {
+      itemId: i.id,
+      quantidade: Number(i.quantidade),
+      pego: i.pego_em !== null,
+      excluidos: i.excluidos,
+    }
+
+    if (i.termo) {
+      const opcoes = genericos.get(i.termo) ?? []
+      const primeira = opcoes[0]
+      return [
+        {
+          ...base,
+          termo: i.termo,
+          produto: primeira?.produto ?? null,
+          opcoes,
+          melhor: primeira
+            ? {
+                mercado: primeira.mercado,
+                valor: primeira.valor,
+                idadeEmDias: primeira.idadeEmDias,
+                entreQuantos: new Set(opcoes.map((o) => o.mercado.id)).size,
+              }
+            : null,
+          vencido: null,
+        },
+      ]
+    }
+
+    if (!i.produto) return []
+    return [
+      {
+        ...base,
+        termo: null,
+        produto: i.produto,
+        opcoes: [],
+        melhor: melhorPorProduto.get(i.produto.id) ?? null,
+        vencido: vencidoPorProduto.get(i.produto.id) ?? null,
+      },
+    ]
+  })
+}
+
+/** Quantas alternativas mostrar por item. Além disso é catálogo, não escolha. */
+const OPCOES_POR_ITEM = 8
+
+/**
+ * As opções de cada item de qualquer marca (RF-52).
+ *
+ * Três decisões, todas sobre o que "mais barato" quer dizer quando os produtos
+ * não são o mesmo:
+ *
+ * **Por unidade, não por etiqueta.** Entre um pacote de 1 kg e um de 5 kg, o
+ * de 1 kg sempre custa menos. O que se compara é o quilo (RD-06).
+ *
+ * **Dentro de uma dimensão só.** "leite" casa com leite em litro e leite em pó
+ * em grama, e preço por litro não se compara com preço por quilo (RD-05). Fica
+ * a dimensão que mais aparece entre os candidatos; a outra a pessoa alcança
+ * adicionando o produto exato.
+ *
+ * **Um preço por produto e mercado, o vigente.** A mesma `maisRecentePor` da
+ * lista e da consulta — regra de leitura não se copia.
+ *
+ * Se a consulta falhar, os itens saem sem opção em vez de derrubar a lista: o
+ * produto exato, que é a maior parte dela, não depende disto.
+ */
+async function opcoesPorTermo(
+  itens: { termo: string; excluidos: string[] }[],
+  porMercado: Map<string, Mercado>,
+): Promise<Map<string, Opcao[]>> {
+  const resultado = new Map<string, Opcao[]>()
+  if (itens.length === 0) return resultado
+
+  const { data } = await supabase.rpc('precos_por_termo', {
+    p_termos: [...new Set(itens.map((i) => termoDeBusca(i.termo)))],
+    p_desde: corteDeValidade(),
+  })
+
+  for (const { termo, excluidos } of itens) {
+    const buscado = termoDeBusca(termo)
+    const candidatos = (data ?? []).flatMap((l) => {
+      const mercado = porMercado.get(l.mercado_id)
+      if (l.termo !== buscado || !mercado || excluidos.includes(l.produto_id)) {
+        return []
+      }
+      const produto: Produto = {
+        id: l.produto_id,
+        gtin: l.gtin,
+        nome: l.nome,
+        marca: l.marca,
+        quantidade: Number(l.quantidade),
+        unidade_medida: l.unidade_medida,
+        quantidade_base: Number(l.quantidade_base),
+        dimensao: l.dimensao,
+      }
+      const valor = Number(l.valor)
+      return [
+        {
+          produto,
+          mercado,
+          valor,
+          porUnidade: precoPorUnidade(produto, valor),
+          vistoEm: new Date(l.visto_em),
+          observadoEm: new Date(l.observado_em),
+        },
+      ]
+    })
+
+    const vigentes = maisRecentePor(
+      candidatos,
+      (c) => `${c.produto.id}|${c.mercado.id}`,
+    )
+
+    const contagem = new Map<string | null, number>()
+    for (const c of vigentes) {
+      contagem.set(c.produto.dimensao, (contagem.get(c.produto.dimensao) ?? 0) + 1)
+    }
+    const dimensao = [...contagem.entries()].sort((a, b) => b[1] - a[1])[0]?.[0]
+
+    resultado.set(
+      termo,
+      vigentes
+        .filter((c) => c.produto.dimensao === dimensao)
+        .sort(
+          (a, b) =>
+            (a.porUnidade ?? Infinity) - (b.porUnidade ?? Infinity) ||
+            a.valor - b.valor,
+        )
+        .slice(0, OPCOES_POR_ITEM)
+        .map((c) => ({
+          produto: c.produto,
+          mercado: c.mercado,
+          valor: c.valor,
+          porUnidade: c.porUnidade,
+          idadeEmDias: Math.floor((Date.now() - c.vistoEm.getTime()) / 86_400_000),
+        })),
+    )
+  }
+
+  return resultado
 }
