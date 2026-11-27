@@ -535,6 +535,17 @@ function Sobre() {
           Open Food Facts
         </a>
       </div>
+      <div className="flex min-h-14 items-center gap-3 px-4 py-3">
+        <span className="flex-1 text-tinta">Dados de mercados</span>
+        <a
+          href="https://www.openstreetmap.org/copyright"
+          target="_blank"
+          rel="noreferrer"
+          className="text-sm font-medium text-marca-forte"
+        >
+          OpenStreetMap
+        </a>
+      </div>
       <div className="px-4 py-3">
         <p className="text-tinta">Sua localização</p>
         {/* Um dos dois textos longos que ficam. É a única resposta a "por que
@@ -545,7 +556,7 @@ function Sobre() {
         </p>
       </div>
       <p className="px-4 py-3 text-xs text-tinta-fraca">
-        Catálogo de produtos sob licença ODbL.
+        Catálogos de produtos e de mercados sob licença ODbL.
       </p>
       <div className="flex min-h-14 items-center gap-3 px-4 py-3">
         <span className="flex-1 text-tinta">Versão</span>

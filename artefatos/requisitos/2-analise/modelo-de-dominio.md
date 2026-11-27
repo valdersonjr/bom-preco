@@ -201,7 +201,7 @@ triagem do brainstorm.
 | RD-07 | Preço promocional não substitui o preço de tabela: são registros distintos e coexistem |
 | RD-08 | Produto sem GTIN não é criado pelo usuário: provém de catálogo curado, mantido pelo autor |
 | RD-09 | Produto com GTIN ausente da base pública pode ser preenchido pelo usuário, pois o próprio GTIN garante a identidade |
-| RD-10 | Mercados são cadastrados pelo mantenedor; o usuário escolhe da lista e não cria |
+| RD-10 | O usuário não escreve mercado. Os mercados vêm de um catálogo importado do OpenStreetMap, em que cada lugar tem identificador único; o usuário **ativa** um mercado do catálogo, e só entre os que estão perto da posição dele. O mesmo lugar ativado por duas pessoas é um mercado só. O mantenedor ainda pode cadastrar à mão o que o catálogo não conhece |
 | RD-11 | Excluir a conta anonimiza a autoria dos registros de preço; os preços permanecem, sem dono |
 | RD-12 | Lista de compras apagada pelo dono sai por exclusão lógica; exclusão de conta a remove de fato |
 | RD-13 | A coordenada do dispositivo nunca é persistida: dela restam apenas o mercado escolhido e o indicador de conferência |

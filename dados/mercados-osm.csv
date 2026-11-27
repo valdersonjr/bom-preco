@@ -1,0 +1,990 @@
+osm_id,tipo,nome,endereco,latitude,longitude,cidade
+node/2768015755,supermarket,Supermercado couto 1,Avenida Goiás,-15.3149992,-49.1173720,Goianésia
+node/2768015756,supermarket,Supermercado couto 2,Rua 40 Leste,-15.3072936,-49.1166387,Goianésia
+node/2768015757,supermarket,Supermercado Brasil 3,Avenida Goiás,-15.3080532,-49.1173326,Goianésia
+node/2768015758,supermarket,Mercadinho mota,Avenida bahia,-15.3142937,-49.1115046,Goianésia
+node/2768015759,supermarket,Super Mercado Brasil 2,Avenida Brasil,-15.3261534,-49.1179890,Goianésia
+node/2768053743,supermarket,Supermercado Brasil 1,Avenida Brasil,-15.3264639,-49.1113798,Goianésia
+node/2768053752,supermarket,Supermercado Itapuã,"Rua Santos Dumont, 283",-15.3179544,-49.1360441,Goianésia
+node/2768053756,supermarket,Supermercado Condal,"Avenida Goiás, 365",-15.3250145,-49.1171827,Goianésia
+node/2797591381,butcher,Boi Gordo,,-15.3152727,-49.1130819,Goianésia
+node/3747813636,butcher,Churascao,,-15.3080722,-49.1240994,Goianésia
+node/8946269517,supermarket,Atacadao dia a dia,,-15.3455662,-49.1172363,Goianésia
+node/506288372,supermarket,Carrefour,,-15.8358680,-47.8345506,Brasília
+node/599435122,supermarket,Supermercado Veneza,,-15.7977651,-48.1244086,Brasília
+node/599435489,supermarket,Supermercado Serve Mais,,-15.7925535,-48.1261946,Brasília
+node/599894603,supermarket,Mercado Potiguá,,-15.7964965,-48.1212921,Brasília
+node/600471018,supermarket,Minas,,-15.7909428,-48.1223718,Brasília
+node/959853037,supermarket,Supermercado Supercei,,-15.8023003,-48.1186059,Brasília
+node/981837072,supermarket,Stock,,-15.8278920,-48.0117839,Brasília
+node/981837073,supermarket,Big Box,Avenida das Castanheiras — Águas Claras,-15.8339601,-48.0145543,Brasília
+node/1100954194,convenience,BR,,-15.7853210,-47.9396972,Brasília
+node/1114470036,supermarket,Oba Hortifruti,,-15.8569193,-47.8321478,Brasília
+node/1327070362,supermarket,Big Box,,-15.8575063,-47.8324425,Brasília
+node/1327076074,supermarket,Pra Você,,-15.7530702,-47.8902783,Brasília
+node/1464144162,convenience,A Despensa Mercearia,,-15.8512983,-47.8149588,Brasília
+node/1531954035,supermarket,Pão de Açúcar,,-15.8279913,-47.9272873,Brasília
+node/1602433222,greengrocer,Varejão do Tadeu,,-15.8726486,-47.9723311,Brasília
+node/1602433237,supermarket,Supermercado Candangão,,-15.8672327,-47.9619001,Brasília
+node/1602433250,greengrocer,Varejão da fartura,,-15.8702462,-47.9687262,Brasília
+node/1724361887,supermarket,Big Box,,-15.7334401,-47.8648730,Brasília
+node/1783882430,supermarket,Comercial Reis,CA 02,-15.7171895,-47.8808045,Brasília
+node/1783883771,supermarket,Big Box,,-15.7208610,-47.8830147,Brasília
+node/1846173712,supermarket,Supermercado Caíque,,-15.8867018,-48.0125464,Brasília
+node/1934208160,convenience,Ilha dos Pães,,-15.7536510,-47.8394326,Brasília
+node/1935204898,supermarket,Big Box,,-15.7442472,-47.8504743,Brasília
+node/1937524568,butcher,Carnes Triângulo,,-15.7444348,-47.8501367,Brasília
+node/1951955445,convenience,Pães e Vinhos,,-15.7253009,-47.8757494,Brasília
+node/2004797037,supermarket,Supermercado Itatiaia,,-15.8935050,-48.1162548,Brasília
+node/2005886823,supermarket,Supercei,,-15.8917985,-48.1062692,Brasília
+node/2038893667,convenience,Mercado Nossa Venda,,-15.7535892,-47.8810209,Brasília
+node/2163123239,greengrocer,Oba Hortifruti,"CLN 209 Bloco B, Loja 19",-15.7576640,-47.8831843,Brasília
+node/2167049683,supermarket,"DONA - Mercado, Hortifruti & Adega",,-15.8356277,-48.0180694,Brasília
+node/2249261057,supermarket,Supercei,,-15.8119721,-47.9951088,Brasília
+node/2399926138,supermarket,Comper,"Rua 36 Norte, 5",-15.8338876,-48.0369312,Brasília
+node/2430147410,butcher,Super Carnes,,-15.8321526,-47.9844310,Brasília
+node/2430333836,supermarket,Mercado Pantanal,,-15.8149726,-48.0122449,Brasília
+node/2431425253,supermarket,Superbom - Vicente Pires,,-15.8164903,-48.0162347,Brasília
+node/2435206553,supermarket,Cerramix,,-15.7913059,-47.9358798,Brasília
+node/2450053172,greengrocer,Coco Zero Grau,,-15.7995171,-47.9466274,Brasília
+node/2477035885,butcher,Ki-Carnes,,-15.8034265,-48.0700983,Brasília
+node/2524895685,supermarket,Oba Hortifruti,,-15.8266942,-47.9109289,Brasília
+node/2558819602,supermarket,Supermercado Ponto Alto,,-16.0239048,-48.0276805,Brasília
+node/2558873746,supermarket,Supermercado São Luis,,-16.0212767,-48.0209404,Brasília
+node/2561419312,supermarket,Tatico,,-16.0477719,-48.0335820,Brasília
+node/2579649235,butcher,Açougue Boi Gordo,,-16.0224361,-48.0557823,Brasília
+node/2579649236,butcher,Açougue Fran Carne,,-16.0228882,-48.0553093,Brasília
+node/2579649237,supermarket,Açougue Junior Carnes,,-16.0027889,-48.0601963,Brasília
+node/2579649238,butcher,Açougue Oeste Carnes,,-16.0080605,-48.0731277,Brasília
+node/2579649239,butcher,Açougue Senhora Santana,,-16.0294418,-48.0557823,Brasília
+node/2579649240,butcher,Açougue do Tião,,-16.0080509,-48.0731468,Brasília
+node/2579649357,supermarket,Central Supermercado,,-16.0196165,-48.0729059,Brasília
+node/2579649421,supermarket,Contigo Supermercado,,-16.0290952,-48.0606837,Brasília
+node/2579649446,supermarket,Diamante,,-16.0070066,-48.0518680,Brasília
+node/2579649870,supermarket,Mercadinho Dallas,,-16.0289135,-48.0707855,Brasília
+node/2579649871,supermarket,Mercadinho Iran,,-16.0115452,-48.0750046,Brasília
+node/2579649872,supermarket,Mercadinho Santo Expedito,,-16.0263314,-48.0782822,Brasília
+node/2579649873,supermarket,Mercadinho Super Forte,,-16.0314407,-48.0604668,Brasília
+node/2579649874,supermarket,Mercadinho Trigota,,-16.0214310,-48.0623278,Brasília
+node/2579649875,supermarket,Mercado K boco,,-16.0284067,-48.0609436,Brasília
+node/2579649876,supermarket,Mercado Luam,,-16.0250566,-48.0527610,Brasília
+node/2579649877,supermarket,Mercado Nossa Senhora de Fátima,,-16.0043462,-48.0745293,Brasília
+node/2579649878,supermarket,Mercado da Economia,,-16.0085850,-48.0721397,Brasília
+node/2579649880,supermarket,Mercado e Verdurão São José,,-16.0190130,-48.0809243,Brasília
+node/2579649881,supermarket,Mercadão Leste,,-16.0167520,-48.0567668,Brasília
+node/2579649883,supermarket,Mercearia e Sacolão,,-16.0030556,-48.0598984,Brasília
+node/2579649911,supermarket,Novo Nissei,,-16.0305729,-48.0684967,Brasília
+node/2579649918,supermarket,Olho D Água,,-16.0283801,-48.0819140,Brasília
+node/2579650005,convenience,Posto Iticar,,-16.0072613,-48.0596046,Brasília
+node/2579650220,supermarket,Santo Antônio,,-16.0269585,-48.0581284,Brasília
+node/2579650347,supermarket,Super Um,,-16.0305252,-48.0685616,Brasília
+node/2579650351,supermarket,Supercei,,-16.0215206,-48.0687866,Brasília
+node/2579650354,supermarket,Supercompras,,-16.0170822,-48.0524254,Brasília
+node/2579650361,supermarket,Supermercado Alicerce,,-16.0281620,-48.0818939,Brasília
+node/2579650364,supermarket,Supermercado Baiano,,-16.0334044,-48.0640157,Brasília
+node/2579650370,supermarket,Supermercado Vivendas,,-16.0182378,-48.0746949,Brasília
+node/2579650372,supermarket,Supermercado Comper Gama,,-16.0243925,-48.0639460,Brasília
+node/2579650375,supermarket,Supermercado Condor,,-16.0030213,-48.0601302,Brasília
+node/2579650379,supermarket,Supermercado Cor do Sol,,-16.0292740,-48.0555153,Brasília
+node/2579650382,supermarket,Supermercado da Casa,,-16.0284756,-48.0814757,Brasília
+node/2579650383,supermarket,Supermercado Di Sempre,,-16.0243607,-48.0732193,Brasília
+node/2579650384,supermarket,Supermercado Di Sempre,,-16.0342064,-48.0654449,Brasília
+node/2579650385,supermarket,Supermercado Econômico,,-16.0225983,-48.0557594,Brasília
+node/2579650388,supermarket,Supermercado Então,,-16.0316715,-48.0595665,Brasília
+node/2579650389,supermarket,Supermercado Epa,,-16.0120335,-48.0774078,Brasília
+node/2579650398,supermarket,Supermercado Escorpião,,-16.0075454,-48.0810544,Brasília
+node/2579650403,supermarket,Supermercado Minas,,-16.0089493,-48.0715561,Brasília
+node/2579650406,supermarket,Supermercado Ponto Alto,,-16.0176239,-48.0757675,Brasília
+node/2579650409,supermarket,Supermercado Quality,,-16.0193104,-48.0814024,Brasília
+node/2579650412,supermarket,Supermercado Serve Bem,,-16.0225067,-48.0556488,Brasília
+node/2579650415,supermarket,Supermercado Super Popular,,-16.0319616,-48.0600975,Brasília
+node/2579650418,supermarket,Supermercado Super um,,-16.0270897,-48.0690378,Brasília
+node/2579650422,supermarket,Supermercado Supresa,,-16.0110925,-48.0813683,Brasília
+node/2579650425,supermarket,Supermercado São José,,-16.0222416,-48.0560760,Brasília
+node/2579650428,supermarket,Supermercado São José,,-16.0380592,-48.0613174,Brasília
+node/2579650431,supermarket,Supermercado Tem Tem,,-16.0149847,-48.0750538,Brasília
+node/2579650434,supermarket,Supermercado tubarão,,-16.0104763,-48.0510715,Brasília
+node/2579650545,supermarket,Vivendas,,-16.0056386,-48.0768741,Brasília
+node/2579955852,supermarket,Bonamix,,-16.0486674,-48.0379050,Brasília
+node/2579955887,supermarket,Sup. Leão,,-16.0110604,-47.9937721,Brasília
+node/2579955914,supermarket,Mercadinho Bahianos,,-16.0039202,-47.9935985,Brasília
+node/2579955915,supermarket,Mercado Silva,,-16.0111904,-48.0080845,Brasília
+node/2579955918,supermarket,Nova Rede,,-16.0046645,-47.9908809,Brasília
+node/2579955932,supermarket,Ponto Alto,,-16.0111732,-47.9924698,Brasília
+node/2579955934,convenience,Posto Original,,-16.0039055,-47.9867985,Brasília
+node/2579955951,supermarket,Supermercado Cravos,,-16.0065524,-47.9967345,Brasília
+node/2579955952,supermarket,Supermercado Tradição,,-16.0148479,-47.9908723,Brasília
+node/2580043271,supermarket,Distribuidora Rei,,-15.8132615,-48.1131364,Brasília
+node/2580043703,supermarket,Supermercado Guarapari,,-15.8316520,-48.1010170,Brasília
+node/2580043968,supermarket,Supermercado Caprichoso,,-15.8066939,-48.1294409,Brasília
+node/2580043979,supermarket,Supermercado Espirito Santo,,-15.8128793,-48.1126708,Brasília
+node/2580043981,supermarket,Supermercado Super Giro,,-15.8074924,-48.1315290,Brasília
+node/2580043982,supermarket,Supermercado Supercei,,-15.8406188,-48.1149132,Brasília
+node/2580043984,supermarket,Supermercado Tradição,,-15.8132781,-48.1303003,Brasília
+node/2580043985,supermarket,Supermercado Veneza,,-15.8431018,-48.1185411,Brasília
+node/2585838764,supermarket,Supercei,,-15.6835918,-48.1954613,Brasília
+node/2585838765,supermarket,Supermercado JP,,-15.6731631,-48.2009367,Brasília
+node/2587338037,supermarket,Primor,,-15.8610764,-48.0730680,Brasília
+node/2587338070,supermarket,Euro Supermercado,,-15.9044086,-48.0678799,Brasília
+node/2587338107,butcher,Ki Carnes,,-15.9010563,-48.0559158,Brasília
+node/2587338129,supermarket,Mais Atacadista,,-15.8664287,-48.0560670,Brasília
+node/2587338134,supermarket,Mercadinho Pontão Norte,,-15.9544942,-48.0494413,Brasília
+node/2587338203,supermarket,Supermercado Caíque,,-15.8556242,-48.0775644,Brasília
+node/2587338205,supermarket,Supermercado Superbom,,-15.8748425,-48.0779946,Brasília
+node/2587338207,supermarket,Supermercado o Penta,,-15.8747901,-48.0777035,Brasília
+node/2587338210,supermarket,Tatico,,-15.9062120,-48.0808320,Brasília
+node/2587338213,supermarket,Tático,,-15.8735232,-48.0709987,Brasília
+node/2587338216,supermarket,Belavia,,-15.9026940,-48.0593110,Brasília
+node/2587338222,supermarket,mercado Engenho das Lages,BR060,-16.0438385,-48.2562637,Brasília
+node/2587338243,convenience,BR,,-15.9014688,-48.0576022,Brasília
+node/2633884815,supermarket,Supermercado Santos Dumont,,-15.9944474,-47.9954719,Brasília
+node/2691204484,butcher,Sobradinho Carnes,Crs 506 Bloco C,-15.8101504,-47.9023646,Brasília
+node/2691215085,supermarket,Candangão,,-15.8494444,-47.9505556,Brasília
+node/2691215237,supermarket,Supermercado Gourmet,,-15.8563582,-47.9527419,Brasília
+node/2691215238,supermarket,Supermercado Dona de Casa,QR 05-07,-15.8494668,-47.9501584,Brasília
+node/2691215239,supermarket,Supermix,,-15.8677367,-47.9628525,Brasília
+node/2699063503,butcher,Araguaia Carnes,,-15.8401603,-48.0570351,Brasília
+node/2700692364,supermarket,Mix Mercado Conte,,-15.7977048,-48.0245185,Brasília
+node/2700695075,supermarket,Mercado Super 10,,-15.7987665,-48.0534261,Brasília
+node/2710236370,supermarket,Supermercado Super Bom,,-15.8807565,-48.0114803,Brasília
+node/2710850470,supermarket,Du Lar,,-15.8372093,-48.0509244,Brasília
+node/2711431653,supermarket,Supermercado Master,,-15.8874255,-48.0158297,Brasília
+node/2727096155,supermarket,Sacolão Safra,"Brasília, Qn 7F Conjunto 7",-15.8999603,-48.0467832,Brasília
+node/2732090462,supermarket,Big Box,CLSW 301 Bloco B,-15.7975364,-47.9202526,Brasília
+node/2732090572,supermarket,Dona,CLSW 104 Bloco C — Setor Sudoeste,-15.8035292,-47.9291619,Brasília
+node/2732090624,supermarket,Mercado de Artesanato de Brasília,SIA,-15.7971724,-47.9463287,Brasília
+node/2732090634,greengrocer,Oba Hortifruti,CLSW 302,-15.7987106,-47.9222873,Brasília
+node/2732090697,supermarket,Big Box,"CLSW 105, Bloco A — Setor Sudoeste",-15.8072927,-47.9333161,Brasília
+node/2732090703,convenience,Tanaka Mercearia,CLSW 303,-15.8003778,-47.9251294,Brasília
+node/2776073514,supermarket,Comercial 14,,-15.5997078,-47.9703196,Brasília
+node/2776091548,supermarket,Comercial 13,,-15.6042850,-47.9691516,Brasília
+node/2906538321,butcher,Thiago's Show de Carnes,,-15.7966982,-48.1103906,Brasília
+node/3021289679,supermarket,Supermercado Renascer,,-15.7948678,-47.8480068,Brasília
+node/3041667396,butcher,Só Frango,,-15.7504039,-47.8930372,Brasília
+node/3095008558,butcher,T-Bone Açougue Cultural,,-15.7502551,-47.8926072,Brasília
+node/3104852103,supermarket,Rural,,-15.9193997,-48.0548847,Brasília
+node/3138453364,supermarket,Supermercado Caíque,,-15.7873613,-48.1283667,Brasília
+node/3139340375,supermarket,Carrefour Bairro,,-15.7506016,-47.8942624,Brasília
+node/3190988127,supermarket,Big Box,,-15.8317488,-47.9109984,Brasília
+node/3200842309,greengrocer,Mais Você Hortifruti,,-15.7536198,-47.8821852,Brasília
+node/3202311438,supermarket,Mercado Paula,,-15.7721959,-48.0333189,Brasília
+node/3221990574,supermarket,Supermex,,-15.8203184,-47.9960916,Brasília
+node/3226293514,butcher,Casa de Carnes 115 Norte,,-15.7404245,-47.8938038,Brasília
+node/3252625220,supermarket,Horti Mais,"CLS 203 Bloco D, Loja 35 — Asa Sul",-15.8103200,-47.8889402,Brasília
+node/3337664866,convenience,Bioon Ecomercado,,-15.7805623,-47.8851530,Brasília
+node/3343045416,convenience,Naturalle,,-15.7708976,-47.8837513,Brasília
+node/3353648437,supermarket,Comper,,-15.6108327,-47.6537299,Brasília
+node/3372601497,convenience,La Palma,,-15.7734064,-47.8762104,Brasília
+node/3373384216,butcher,Morro Branco,,-15.7733251,-47.8758428,Brasília
+node/3413501739,supermarket,Bom de Preço,,-15.8049331,-48.0937748,Brasília
+node/3413501741,supermarket,Martinez,,-15.8017865,-48.0985210,Brasília
+node/3420005657,supermarket,Supermercado Guarapari,,-15.9408501,-48.2367880,Brasília
+node/3439334200,supermarket,Carrefour,,-15.7333674,-47.8991253,Brasília
+node/3531113160,supermarket,Mercado Guará Nobre,QI 23 Comércio Local — Guará II,-15.8267782,-47.9819943,Brasília
+node/3676427124,supermarket,Oba,,-15.7688978,-47.8874939,Brasília
+node/3676427405,supermarket,Dona de Casa,,-15.7688023,-47.8866733,Brasília
+node/3864796095,supermarket,Nova Rede,,-15.8668398,-47.9611432,Brasília
+node/4076759502,supermarket,Pedra Bonita Supermercado,,-15.8062118,-48.0185681,Brasília
+node/4081269535,convenience,Deli Conveniências,,-15.7900358,-47.8849872,Brasília
+node/4098330911,supermarket,BigBox,,-15.8137671,-47.9072196,Brasília
+node/4137222289,convenience,Lojas Americanas Express,"Rua 36 Norte, 5",-15.8337356,-48.0372689,Brasília
+node/4158226591,supermarket,Big Box,,-15.7710917,-47.8847909,Brasília
+node/4164080789,convenience,Déborah Bazar e Papelaria,,-15.8048132,-48.0941676,Brasília
+node/4195658367,greengrocer,Verdurão e Mercearia MA,,-15.8348622,-48.0866602,Brasília
+node/4224561927,convenience,Empório Serrana,"Avenida do Sol - Km 5,7 — Jardim Botânico",-15.8674497,-47.7823603,Brasília
+node/4227532863,convenience,Mundo Verde,,-15.8389815,-48.0274486,Brasília
+node/4307827464,greengrocer,Sacolão Cheiro Verde,,-15.7984232,-47.9442849,Brasília
+node/4312655708,butcher,Estação da Carne,,-15.6698942,-47.8458198,Brasília
+node/4318988543,convenience,Vendinha do Lago,Avenida Principal,-15.7143437,-47.8727690,Brasília
+node/4321177008,supermarket,Sacolão do DI,,-15.8270832,-48.0581572,Brasília
+node/4331462138,supermarket,Supermercado Nordestão,,-16.0129763,-48.0516997,Brasília
+node/4340318989,supermarket,Sacolão Fernandez,,-15.8177860,-47.9876553,Brasília
+node/4348835390,supermarket,Rota de Casa,,-15.8456981,-48.0237618,Brasília
+node/4382633591,convenience,Tende Tudo,,-15.6996348,-48.1051665,Brasília
+node/4385405437,butcher,Espaço da Carne,CLN 216 BL. D,-15.7385275,-47.8885360,Brasília
+node/4404218607,greengrocer,Sacolao,,-15.8951206,-47.7765725,Brasília
+node/4404446391,supermarket,Uniao,,-15.8973628,-47.7823679,Brasília
+node/4428601464,convenience,BR Mania,SHIS QI 25 — Lago Sul,-15.8385011,-47.8372957,Brasília
+node/4428667376,convenience,Americanas Express - Blockbuster,SHIS QI 17 - Edifício Fashion Park — Lago Sul,-15.8603948,-47.8722654,Brasília
+node/4484670921,supermarket,Supermercado Gourmet,,-15.8681180,-47.9635568,Brasília
+node/4494844790,supermarket,Base Atacado,Smpw Trecho 3 Conjunto 31 — Ade,-15.8753607,-47.9961507,Brasília
+node/4531527589,supermarket,Quadra 03 conj.3M PLANALTINA DF,,-15.6014297,-47.6484498,Brasília
+node/4547947817,convenience,Mercearia Colaborativa,,-15.7473495,-47.8829947,Brasília
+node/4587796046,butcher,Le Mouton,,-15.8232454,-47.9176955,Brasília
+node/4605911861,supermarket,Oba Hortifruti,,-15.8109238,-47.8980128,Brasília
+node/4636379792,wholesale,Sam's Club,Rua Copaíba,-15.8331325,-48.0401866,Brasília
+node/4642671990,supermarket,Sempre Bom,,-15.8720793,-47.8221736,Brasília
+node/4673881880,supermarket,SuperMercado Pra Você,,-15.6793530,-48.1945450,Brasília
+node/4708553490,supermarket,Ed rocha,,-15.8259768,-48.0957363,Brasília
+node/4726167024,supermarket,Café Com Leite,,-15.8876458,-48.0211978,Brasília
+node/4726517649,supermarket,SuperMercado Rabelo,Riacho Fundo I,-15.8787187,-48.0200585,Brasília
+node/4731289024,supermarket,Mercadinho sena,,-15.8987395,-48.0513263,Brasília
+node/4781714279,convenience,Empório Naturalle,,-15.7564584,-47.8906120,Brasília
+node/4837396768,convenience,La Palma,,-15.8306408,-47.9120209,Brasília
+node/4849839893,supermarket,Supermercado São Jorge,,-15.8798344,-48.1123115,Brasília
+node/4849841268,supermarket,Supermercado Universe,,-15.8788694,-48.1135679,Brasília
+node/4919088572,greengrocer,Sacolão Saheki,,-15.7443522,-47.8956001,Brasília
+node/4947123194,greengrocer,Da Terra Hortomercado,,-15.8351234,-47.9211346,Brasília
+node/4956076231,supermarket,Supermercado Mineirao,Avenida Primeira Sul,-15.8829954,-48.0974311,Brasília
+node/4956076232,convenience,Verdurao e Frutaria,Avenida Primeira Sul,-15.8830163,-48.0975405,Brasília
+node/4956076236,supermarket,Supermercado,Avenida Segunda Sul,-15.8875143,-48.1006306,Brasília
+node/4962738321,supermarket,Dona de casa,,-15.8596617,-47.9997441,Brasília
+node/4966191102,convenience,Murakami,,-15.8102646,-47.8893476,Brasília
+node/4978619721,supermarket,Supermercado Santa Felicidade,"Avenida Comercial, 2221/2231",-15.9052428,-47.7732542,Brasília
+node/4988702323,supermarket,Oba,,-15.8407210,-48.0226178,Brasília
+node/5003665426,supermarket,Atacadao espirito santo,,-15.8346718,-48.1122426,Brasília
+node/5005760526,butcher,Atalaia,,-15.7911251,-48.1231178,Brasília
+node/5035645894,convenience,Eleve Mercado Saudável,,-15.7641244,-47.8931395,Brasília
+node/5042049523,supermarket,Pães e Vinhos,,-15.8005783,-47.9255076,Brasília
+node/5062126160,supermarket,Dona de Casa,,-15.7450515,-47.8863465,Brasília
+node/5074576122,supermarket,Supermeecado carioca,,-15.9446920,-47.8250279,Brasília
+node/5076407795,wholesale,Malharia Santa Catarina,,-15.7808902,-47.8903048,Brasília
+node/5107931821,supermarket,Supermercado Cândido,,-15.6173806,-47.6403629,Brasília
+node/5107931921,supermarket,Supermercado Dois Irmãos,,-15.6181724,-47.6432443,Brasília
+node/5133032327,convenience,Bio Mundo,,-15.7334766,-47.8990147,Brasília
+node/5133032329,convenience,Bio Mundo,,-15.7867165,-47.8888527,Brasília
+node/5133032330,convenience,Bio Mundo,,-15.7959034,-47.8847119,Brasília
+node/5133032331,convenience,Bio Mundo,,-15.7359255,-47.8998278,Brasília
+node/5133032335,convenience,Bio Mundo,,-15.7938691,-47.9463467,Brasília
+node/5133032336,convenience,Bio Mundo,,-15.8457232,-47.8949902,Brasília
+node/5154330423,supermarket,Superbom,,-15.8320574,-48.0172402,Brasília
+node/5189126547,supermarket,Mercado Veneza,Rua 01 — Café Sem Troco,-15.9357731,-47.6004902,Brasília
+node/5194169453,supermarket,Mercado Cerrado,Café Sem Troco,-15.9350953,-47.6009130,Brasília
+node/5225067826,greengrocer,Fartura,,-15.8032215,-47.8927212,Brasília
+node/5225539404,convenience,Mel & Mel Produtos Naturais,,-15.8023649,-47.8933449,Brasília
+node/5240813823,convenience,Casa útil,"Rua 4, 27",-15.6811634,-48.1939920,Brasília
+node/5262667876,supermarket,Dona De Casa,CLN 216 Bloco C Loja 46 — Asa Norte,-15.7384196,-47.8889558,Brasília
+node/5318812222,supermarket,Bem melhor,,-15.8286540,-48.0318769,Brasília
+node/5320911821,supermarket,Pra você,,-15.8308534,-48.0524996,Brasília
+node/5353051521,convenience,Posto 6,,-15.8492656,-47.9068920,Brasília
+node/5404040340,supermarket,Big Box,,-15.7566281,-47.8908254,Brasília
+node/5437913623,convenience,BioMundo,,-15.8111999,-47.8977444,Brasília
+node/5451936398,butcher,Ki Carnes,,-15.8841750,-48.0167598,Brasília
+node/5471565536,supermarket,Bellavia,,-15.8385784,-48.0192562,Brasília
+node/5473229521,supermarket,Veneza,QE 15 Conjunto A,-15.8294231,-47.9747565,Brasília
+node/5473752194,supermarket,Mercado Central,,-15.8823039,-48.0180477,Brasília
+node/5473752197,supermarket,Mercado Oliveira,,-15.8820110,-48.0179207,Brasília
+node/5486741223,supermarket,Bellavia Supermercados,,-15.7500759,-47.8948270,Brasília
+node/5499701035,supermarket,DONA,,-15.7946018,-48.0509019,Brasília
+node/5609452521,convenience,Mercadinho Lobão,,-15.8357333,-47.9768120,Brasília
+node/5661359771,supermarket,Mercado Familia,,-15.8469323,-47.9224625,Brasília
+node/5661360529,supermarket,Mercado São Francisco,,-15.8464616,-47.9207337,Brasília
+node/5661407724,supermarket,Mercado São Jorge,,-15.8466381,-47.9212819,Brasília
+node/5754214221,wholesale,Sam's Club,SIA Trecho 16 — Zona Industrial (Guará),-15.7886585,-47.9453954,Brasília
+node/5766574999,supermarket,Korin,Bloco G Loja 5,-15.7449010,-47.8989131,Brasília
+node/5805710172,supermarket,Ditribuidora Delcho,,-15.8183949,-48.0208597,Brasília
+node/5962988385,supermarket,Armazém São José,,-15.8757858,-48.0081209,Brasília
+node/5984262765,supermarket,Shizen,,-15.7393064,-47.9009842,Brasília
+node/6179652746,butcher,Açougue 411 Sul,,-15.8270763,-47.9063399,Brasília
+node/6197905695,butcher,710 Norte,,-15.7591588,-47.8927551,Brasília
+node/6204328805,supermarket,Armazém,,-15.7452945,-47.8874409,Brasília
+node/6236570811,supermarket,Biomundo,,-15.7952148,-47.8841045,Brasília
+node/6285056286,supermarket,Doce Lar do Chocolate,,-15.8771431,-48.0077064,Brasília
+node/6376721106,supermarket,Bellavia,Quadra 8 Conjunto A,-15.6448575,-47.8014306,Brasília
+node/6384527736,supermarket,Supermercado Universe,,-15.8808657,-48.0755360,Brasília
+node/6445669881,supermarket,Big Box,,-15.7632475,-47.8805299,Brasília
+node/6456334013,supermarket,Supermercado Superbom,Avenida Alagado,-16.0097102,-48.0061894,Brasília
+node/6456358028,supermarket,Vivendas,,-16.0127397,-47.9967457,Brasília
+node/6456363934,supermarket,Mercado Judith,,-15.8534623,-47.9510271,Brasília
+node/6456363936,supermarket,Supermercado do Castelo,,-15.8540633,-47.9519788,Brasília
+node/6456375397,supermarket,Mercadona,,-16.0102445,-48.0017976,Brasília
+node/6456379917,supermarket,Super Sampaio,,-15.6484731,-47.7850452,Brasília
+node/6456379925,supermarket,Caíque Supermercado,,-15.6445029,-47.7964169,Brasília
+node/6456379937,butcher,3R Karnes e Frios,,-15.6518059,-47.7897473,Brasília
+node/6456398143,supermarket,Supermercado Dias,"Quadra 1, CL",-15.6561411,-47.8080326,Brasília
+node/6456410011,supermarket,Mercado Conquista,,-15.8090417,-48.1468373,Brasília
+node/6465365935,supermarket,Mercado e Panificadora São Francisco,,-15.8460329,-48.1233007,Brasília
+node/6465365938,supermarket,Supercei,,-15.8458413,-48.1219388,Brasília
+node/6465365940,butcher,Potiguar Carnes,,-15.8456472,-48.1220998,Brasília
+node/6466678186,supermarket,Leão do Norte,,-15.6388135,-47.8451873,Brasília
+node/6466824534,butcher,Melhor Carnes,,-15.8727305,-48.0687753,Brasília
+node/6466824562,butcher,D'graça,,-15.8711557,-48.0635066,Brasília
+node/6466859170,supermarket,Sacolão Qualidade,,-15.8711433,-48.0654675,Brasília
+node/6473694901,greengrocer,Farturão Hortifruti,,-15.6523613,-47.8013680,Brasília
+node/6474232414,supermarket,Mercado São Luiz,"Ar 7, 5 — Sobradinho II",-15.6403217,-47.8245487,Brasília
+node/6474232420,supermarket,Casa Alves,,-15.6398288,-47.8238655,Brasília
+node/6487823485,supermarket,Empório Vitália,SHIS QI 05 Bloco A,-15.8499187,-47.9033675,Brasília
+node/6507231985,supermarket,Mikami,,-15.8351403,-47.9166392,Brasília
+node/6516244971,convenience,107 Express,,-15.7667457,-47.8832026,Brasília
+node/6516277777,butcher,Ready Beef,,-15.7651650,-47.8855082,Brasília
+node/6627352087,supermarket,Top Atacarejo,"Avenida Primeira Sul, Lote 01",-15.8838928,-48.1036762,Brasília
+node/6658399027,convenience,Officina conveniência,,-15.7447126,-47.8982960,Brasília
+node/6795823926,supermarket,Egon's Supermercado,,-16.0001593,-47.5596911,Brasília
+node/6873210185,supermarket,Americanas Express,,-15.8777913,-48.0202039,Brasília
+node/6883159981,supermarket,Supermercado Então,,-16.0373045,-48.0267208,Brasília
+node/6883312985,supermarket,Supermercado Frotão,,-16.0345110,-48.0300474,Brasília
+node/6883329526,convenience,Pinheiro,,-15.8315191,-48.0879167,Brasília
+node/6883363225,supermarket,Supermercado Supercei,,-15.8306430,-48.0873557,Brasília
+node/6883417292,supermarket,Supermercado Dois Irmãos,,-15.6556556,-47.8080205,Brasília
+node/6897126166,supermarket,Mineirão,,-15.7936084,-47.9980220,Brasília
+node/6902620383,butcher,Primus Boutique de Carnes,,-15.7945866,-48.0513078,Brasília
+node/6905521025,supermarket,Mercado Bom Vizinho (Ramos),Avenida entre a 310/312,-15.8749061,-48.0715465,Brasília
+node/6906880747,supermarket,Mercado Barroso,,-15.8434754,-48.1279047,Brasília
+node/6906880748,supermarket,Mercearia Shopping das frutas,,-15.8438900,-48.1241807,Brasília
+node/6906909545,butcher,Texas Carnes,,-15.8171992,-48.1094006,Brasília
+node/6906921685,convenience,Compre bem,Paranoá,-15.7708710,-47.7820210,Brasília
+node/6906921693,convenience,Shirley,,-15.7671480,-47.7795838,Brasília
+node/6906921694,supermarket,Supermercado Reis,,-15.7644945,-47.7804542,Brasília
+node/6906992194,supermarket,Garcia,,-15.9022976,-48.0460385,Brasília
+node/6906992200,greengrocer,Verdurao,,-15.8996163,-48.0465569,Brasília
+node/6906992207,supermarket,Da Familia,,-15.9036360,-48.0456369,Brasília
+node/6970030033,supermarket,Casa de carnes união,,-15.8975180,-48.1225398,Brasília
+node/6970030036,supermarket,supermercado Dgraça,,-15.8973729,-48.1221021,Brasília
+node/6970135046,supermarket,Mercado OK,,-15.8970417,-48.1188994,Brasília
+node/6985835164,supermarket,Ponto Certo,,-15.8165018,-48.0526247,Brasília
+node/6988564227,supermarket,ULTRABOX EPTG,,-15.8157100,-48.0106264,Brasília
+node/6988564228,supermarket,Tatico,,-15.8142790,-48.0085893,Brasília
+node/6988564241,supermarket,Supermercado Vizinhança,,-15.8258744,-48.0373564,Brasília
+node/6990853241,supermarket,Mercado da Tia,,-15.8471676,-48.0676772,Brasília
+node/7148911139,supermarket,Big Box,,-15.8372479,-48.0324440,Brasília
+node/7544918100,supermarket,PagPouco,,-15.7986875,-48.0504853,Brasília
+node/7820714565,butcher,Açougue 61,,-15.8086446,-47.8861307,Brasília
+node/7906913982,supermarket,Swift,Avenida das Araucárias — Águas Claras,-15.8409819,-48.0231570,Brasília
+node/7943202421,supermarket,Supermercado Atend Lar,Avenida do Sol,-15.8684229,-47.7735914,Brasília
+node/7943202423,convenience,Henke,,-15.8686404,-47.7736251,Brasília
+node/7948559733,supermarket,Sacolão Mohon indiano,,-15.8812722,-48.0189447,Brasília
+node/7948590953,convenience,RL revenda de ovos e variedades,,-15.8819376,-48.0183366,Brasília
+node/8322493547,convenience,Tem de tudo,,-15.7440366,-47.8979280,Brasília
+node/8685579678,butcher,Mercado da Carne,,-15.7440147,-47.8944924,Brasília
+node/8873737582,supermarket,"DONA - Mercado, Hortifruti & Adega",,-15.8364578,-48.0128451,Brasília
+node/8884016380,supermarket,Fogos Skyshow,"CND 6 LOTE 09 LOJA, 01 — TAGUATINGA NORTE",-15.8073624,-48.0639646,Brasília
+node/9322243989,supermarket,Atacadão,,-15.9975451,-48.0518281,Brasília
+node/9338521152,supermarket,Atacadão Costa,"SHTQ Trecho, Av. Comercial, 1 - Lt. 21 — Taquari",-15.6941482,-47.8699925,Brasília
+node/9431241588,supermarket,Dia a Dia - Planaltina,,-15.6091321,-47.6540852,Brasília
+node/9625243385,butcher,Angus Bull,Estação Marina da Rocha — Jardim Botânico,-15.8187188,-47.7707495,Brasília
+node/9719771643,convenience,Ampm,,-15.8335633,-48.0825773,Brasília
+node/9844488812,greengrocer,Frutaria Tropical,"SCLN 116  Bloco C, Loja 60 — Plano Piloto",-15.7399766,-47.8941024,Brasília
+node/9865799536,supermarket,Vitória Atacadão,Marginal Estrutural,-15.7895207,-48.0174120,Brasília
+node/9912875173,supermarket,Super Mercado Cruzeiro,,-15.7945226,-47.9354650,Brasília
+node/9916164869,supermarket,BIG BOX,,-15.8202752,-47.9164656,Brasília
+node/10034296802,convenience,Jaguar Utilidades,,-15.8680325,-47.9644767,Brasília
+node/10052143044,convenience,Mercado e açougue Mello,,-15.6031904,-47.6863152,Brasília
+node/10242412289,supermarket,Mercearia Indío,,-16.0126870,-48.0481385,Brasília
+node/10293513349,supermarket,Pitayas Dacapital,"NRCT Trecho 01, Ch 54, 54 — Lago Norte",-15.7148498,-47.8970415,Brasília
+node/10303106346,supermarket,Mercadinho Everest,Terceira Avenida,-15.8777545,-47.9768684,Brasília
+node/10303572533,supermarket,Açougue,,-15.6031766,-47.6856425,Brasília
+node/10303572543,supermarket,Supermercado Trem Bâo,,-15.6038963,-47.6934855,Brasília
+node/10303572549,supermarket,Varejão do Piso,,-15.6002402,-47.6805910,Brasília
+node/10309179672,butcher,Swift,,-15.7943226,-48.0522468,Brasília
+node/10309285296,supermarket,Mineiro Supermercado,,-15.7946134,-48.0435234,Brasília
+node/10309409689,supermarket,Supermercado Ligeirinho,,-15.7944623,-48.0347325,Brasília
+node/10309409703,convenience,Casa das Etiquetas,,-15.7943238,-48.0284746,Brasília
+node/10309423315,supermarket,Supermercado Meu Querido,,-15.7935378,-48.0236800,Brasília
+node/10312263045,supermarket,Supermercardo Supercei,,-15.8350705,-48.0956866,Brasília
+node/10313491031,supermarket,Supermercado Villa,,-15.6579483,-48.1948369,Brasília
+node/10313491045,convenience,MERCADO AVENIDA,,-15.6577485,-48.1963371,Brasília
+node/10313491047,convenience,FRIOS E CIA,,-15.6578643,-48.1972606,Brasília
+node/10313491054,convenience,MERCEARIA FERNANDES,,-15.6551510,-48.1947607,Brasília
+node/10313491056,convenience,BAR DO PARAÍBA,,-15.6549493,-48.1948481,Brasília
+node/10537673184,supermarket,Mercearia Rocha,Rua B,-15.8032787,-47.8070643,Brasília
+node/10623205425,supermarket,GRAN CERRADO PRODUTOS NATURAIS E SUPLEMENTAÇÃO ESPORTIVA,CLN 7 BLOCO B LOTE 5 LOJA 01 — RIACHO FUNDO 1,-15.8836426,-48.0188026,Brasília
+node/10674451740,supermarket,Dona,,-15.7805737,-47.8849736,Brasília
+node/10749758598,convenience,Grazi Bomboniere,,-15.7512828,-47.7780135,Brasília
+node/10749758599,convenience,Casa Barbosa,,-15.7512554,-47.7779323,Brasília
+node/10777869381,supermarket,Casa dos Frios,,-15.8065263,-48.0186764,Brasília
+node/10789946379,convenience,Conveniência,,-15.7492510,-47.8921632,Brasília
+node/10789956374,supermarket,Hortifruti,,-15.7501020,-47.8930193,Brasília
+node/10897702590,supermarket,Macêdo Supermecado,,-15.7490246,-47.7651697,Brasília
+node/11012857756,supermarket,Ultrabox 24h,,-15.7871548,-47.9870317,Brasília
+node/11063655819,supermarket,Comercial Reis,,-15.7407327,-47.7631899,Brasília
+node/11114801630,supermarket,Quim Bom Supermercado,,-15.7458886,-47.7612223,Brasília
+node/11165196995,supermarket,Mercado Malunga,CLSW 104 Bloco A — Setor Sudoeste,-15.8026718,-47.9277479,Brasília
+node/11175387637,supermarket,Fartura express,,-15.7640443,-47.7804575,Brasília
+node/11175387638,convenience,Bambolê,,-15.7647071,-47.7803381,Brasília
+node/11175508139,butcher,Atacadão das carnes,,-15.7643182,-47.7800599,Brasília
+node/11175508437,convenience,Verdurão economia,,-15.7132101,-47.8745735,Brasília
+node/11184644946,supermarket,Comercio,,-15.9094164,-48.0665997,Brasília
+node/11218979038,supermarket,JL Supermercado,,-15.7722650,-47.7794930,Brasília
+node/11223215242,grocery,Mercearia Cosmo,,-15.7611383,-47.7796645,Brasília
+node/11223231738,grocery,Open Frios,,-15.7604995,-47.7806585,Brasília
+node/11257695803,supermarket,Ultrabox,Quadra 08 — Sobradinho,-15.6480175,-47.7994071,Brasília
+node/11331581269,grocery,Mercearia Anorim,,-15.7726065,-47.7820813,Brasília
+node/11331674616,supermarket,Mercado Goiás,,-15.7826146,-48.1398820,Brasília
+node/11331850885,supermarket,Atacadão,"St. de Expansão Econômica AE 2e, AE 2e — Sobradinho, Brasília",-15.6637485,-47.8020821,Brasília
+node/11336906574,supermarket,Supermercado Rende +,,-15.7486221,-47.7709236,Brasília
+node/11336906578,supermarket,Supermercado Severino,,-15.7489545,-47.7720639,Brasília
+node/11336906669,supermarket,QuiBom,,-15.7485738,-47.7701961,Brasília
+node/11336906670,supermarket,Mega Bom,,-15.7484861,-47.7704076,Brasília
+node/11367038869,supermarket,Ultrabox Atacado e Varejista,,-15.7689045,-47.7856483,Brasília
+node/11845199207,butcher,Açougue Carne Fresca,,-15.9295794,-48.0463781,Brasília
+node/11848742352,butcher,Açougue Carne Fresca,,-15.8087760,-48.0889358,Brasília
+node/11850403234,butcher,Açougue Carne Fresca,,-15.8085164,-48.1449361,Brasília
+node/11898819569,grocery,Casa Vieira,CLS 404,-15.8144665,-47.8895500,Brasília
+node/11913506369,grocery,Mini mercado,,-15.7931787,-47.9190091,Brasília
+node/11920580369,convenience,Bom Vizinho,,-15.8234273,-47.9882004,Brasília
+node/11934851769,supermarket,Ideal - Veredão,,-15.8758019,-48.0080834,Brasília
+node/12432121638,convenience,Super Quality,,-15.7537875,-47.8817034,Brasília
+node/12501329116,supermarket,Mercado da Gleyce,Fazenda Velha,-15.7313745,-47.7012640,Brasília
+node/12501369384,supermarket,Agro Abadia,,-15.8158379,-48.1571695,Brasília
+node/12501369387,supermarket,Mercado Dantas,,-15.8149560,-48.1568962,Brasília
+node/12501678706,supermarket,Mercado Gardel,,-15.8188862,-48.1543425,Brasília
+node/12502233748,supermarket,Supermercado Hollywood,,-15.8801678,-48.0643299,Brasília
+node/12511367613,supermarket,Skyna 7,,-15.9678147,-48.0453828,Brasília
+node/12566050801,supermarket,Atacadão Dia a Dia,,-15.6114660,-47.6974395,Brasília
+node/12629386852,supermarket,Big Box,,-15.7512647,-47.8843048,Brasília
+node/12744679524,supermarket,Varejão da Fartura - Unidade Vicente Pires,"SHVP - Rua 10 - Chácara 118, 22 — Setor Habitacional Vicente Pires",-15.7974591,-48.0173161,Brasília
+node/12803065121,supermarket,Guerobeer Distribuidora de bebidas,"EQNN 2/4 bloco d loja 01, 01 — ceilândia sul",-15.8237135,-48.1104767,Brasília
+node/12869218126,supermarket,Mercado Coelho,,-15.8366809,-48.0980963,Brasília
+node/12869218133,supermarket,Supermercado Nossa Casa,,-15.8369272,-48.0991716,Brasília
+node/12882543614,supermarket,Supermercado Fama,QL 1 Conjunto H — Av. Itapoã 2,-15.7517416,-47.7792488,Brasília
+node/12960565969,supermarket,Piauí Supermercado,St. Res. Leste | Buritís I Q 4 a 40,-15.6241674,-47.6481785,Brasília
+node/12960565970,supermarket,Supermercado São Luiz - Vila Buritis,St. Res. Leste | Buritís I Quadra 05 Conjunto C Lotes 39 e 40,-15.6248618,-47.6482274,Brasília
+node/12960565981,supermarket,Supermercado Opção,"Rua Pernambuco Q 83 Lote, St. Tradicional Q 19, Brasília",-15.6283127,-47.6596470,Brasília
+node/13017224015,supermarket,Superbom Supermercado,Lote A Comercial — Santa Maria,-16.0283400,-47.9852447,Brasília
+node/13158298586,convenience,Mercado Novo Horizonte,,-15.5132532,-47.9229716,Brasília
+node/13207807604,wholesale,"ULTRABOX Ceilândia Norte: Atacado, Adega, Açougue, Hortifruti, Brasília DF","QNN 25 — Setor ""O""",-15.8019145,-48.1238720,Brasília
+node/13228375590,convenience,Conveniência da Ana,,-15.8313071,-48.1412356,Brasília
+node/13271089526,supermarket,Atacadão,Zona Industrial (Guará),-15.7908010,-47.9460072,Brasília
+node/13317122702,supermarket,Empório Hortifruti,,-15.9551785,-48.0510369,Brasília
+node/13317122703,supermarket,Nossa Kaza,,-15.9549825,-48.0507875,Brasília
+node/13317122704,supermarket,Hortifruti do Bairro,,-15.9678972,-48.0454110,Brasília
+node/13322796280,supermarket,Dona,Guará,-15.8250534,-47.9524782,Brasília
+node/13438002740,supermarket,Mercado da 26,,-15.8315217,-47.8138984,Brasília
+node/13438082686,supermarket,DONA Lago Sul,,-15.8508610,-47.8771485,Brasília
+node/13438752407,supermarket,DONA,,-15.8353156,-47.8034528,Brasília
+node/13441686280,supermarket,Supermercaddo Maravilha,,-15.8227982,-47.8046376,Brasília
+node/13441686288,convenience,Conveniência Posto Melhor,,-15.8206448,-47.8051662,Brasília
+node/13441686289,convenience,BR Mania,,-15.8313247,-47.8129983,Brasília
+node/13473967139,supermarket,Super Adega,,-15.8479638,-47.9757929,Brasília
+node/13619158089,convenience,Mercearia Gomes,,-15.9729131,-48.1220115,Brasília
+node/13620271979,supermarket,Mercearia Lobo,Rua 02 — Residencial Nova Jerusalém,-15.9142223,-48.1650001,Brasília
+node/13622322683,supermarket,Suinocop,,-16.0038092,-48.1136476,Brasília
+node/13622979940,supermarket,Mercadinho do Cardoso,,-15.9484428,-48.1694160,Brasília
+node/13694230801,greengrocer,Oba Hortifruti,,-15.8160262,-48.0114756,Brasília
+node/13801120100,butcher,Oliveira Boutique de Carnes,,-15.8354917,-47.8342171,Brasília
+node/13801422641,supermarket,Big Box,,-15.8360941,-47.8682125,Brasília
+node/13801422647,supermarket,Pão de Açúcar,,-15.8457231,-47.8951523,Brasília
+node/13801422650,butcher,Swift,,-15.8461479,-47.8957869,Brasília
+node/13863616364,wholesale,Super Adega Atacadista,,-15.8508850,-47.8178018,Brasília
+node/13863616367,supermarket,Emporio Botanico,,-15.8736335,-47.8020778,Brasília
+node/13979289960,supermarket,Mercado Super Avenida,,-15.8272994,-48.1435155,Brasília
+node/13979289962,supermarket,Supermercado União,,-15.8286008,-48.1409432,Brasília
+node/14028930855,convenience,Koni Store Sushi,Via Central 1,-15.8212843,-47.9815761,Brasília
+node/14029619568,butcher,Casa da Carne Bom Bandido,,-15.8128950,-48.0154332,Brasília
+node/14032007976,supermarket,Trem da Roça,"QSA 10, 7 — Taguatinga Sul",-15.8351453,-48.0523007,Brasília
+node/14059804923,supermarket,Primor,Avenida Primeira Sul — Samambaia Sul,-15.8699004,-48.0618130,Brasília
+node/14307329694,supermarket,Mercadinho,,-15.6278108,-47.8338285,Brasília
+way/41573439,supermarket,Pão de Açúcar,,-15.7731070,-47.8751400,Brasília
+way/41659372,supermarket,Big Box,Asa Norte,-15.7799020,-47.8744535,Brasília
+way/41663347,supermarket,Carrefour,EQN 504/505,-15.7747290,-47.8876085,Brasília
+way/41663350,supermarket,Pão de Açúcar,508/509 Norte,-15.7631155,-47.8905965,Brasília
+way/43334482,supermarket,Carrefour,,-15.8098630,-47.8844885,Brasília
+way/43334502,supermarket,Pão de Açúcar,,-15.8198595,-47.8946105,Brasília
+way/43339364,supermarket,Comper,,-15.8183110,-47.9129835,Brasília
+way/43339380,supermarket,Pão de Açúcar,CLS 308/309,-15.8144590,-47.9075695,Brasília
+way/43375154,supermarket,Big Box,,-15.8279385,-47.9055635,Brasília
+way/43376765,supermarket,Comper,,-15.8106475,-47.9025610,Brasília
+way/43376768,supermarket,Pão de Açúcar,,-15.8067315,-47.8980915,Brasília
+way/47158549,supermarket,Atacadão,Avenida Elmo Serejo — Taguatinga - DF,-15.8327090,-48.0808580,Brasília
+way/61832213,supermarket,Big Box,,-15.7594840,-47.8784700,Brasília
+way/105461451,supermarket,Pão de Açúcar,,-15.7234026,-47.8869814,Brasília
+way/124194360,supermarket,Assaí Atacadista,"Sia SUL, S/Nº Trecho 12 Lote 15, 15 — SIA",-15.7937575,-47.9467175,Brasília
+way/124194365,supermarket,Super Adega,"SIA Trecho 12, 5 — SIA",-15.7935640,-47.9476550,Brasília
+way/124343054,supermarket,Super Veneza,SHCES Quadra 1101 — Cruzeiro Novo,-15.7998620,-47.9380125,Brasília
+way/149235799,supermarket,Carrefour Bairro,,-15.8425800,-47.8762475,Brasília
+way/152294841,supermarket,Supermercado ÊTA,,-15.8099762,-47.9900152,Brasília
+way/192356577,supermarket,Caprichoso Supermercados,,-15.8572660,-47.8577685,Brasília
+way/202708971,supermarket,Assaí Atacadista,QNM 11,-15.8208640,-48.1011190,Brasília
+way/207608907,supermarket,Pão de Açúcar,,-15.8162389,-47.9810176,Brasília
+way/208868386,supermarket,Atacadão,,-15.7350885,-47.9048560,Brasília
+way/209749529,wholesale,Sam's Club,,-15.7338620,-47.9006500,Brasília
+way/216675298,supermarket,Carrefour,,-15.8305364,-47.9553708,Brasília
+way/216679172,supermarket,Atacadão Dia a Dia,QE 13 Bloco A — Guará,-15.8256687,-47.9791119,Brasília
+way/217031538,supermarket,Armazém do Geraldo,"Rua da Praça, 07",-15.7936180,-47.8499630,Brasília
+way/221207492,supermarket,Assaí Atacadista,,-15.8341265,-47.9504760,Brasília
+way/221919891,supermarket,Assaí Atacadista,,-15.8428510,-48.0424540,Brasília
+way/222236063,supermarket,Pão de Açúcar,"3ª Avenida, CCSW 6",-15.7956608,-47.9303200,Brasília
+way/224740559,supermarket,Super Maia,,-15.8348855,-47.9771693,Brasília
+way/225354234,supermarket,Big Box,,-15.8157274,-48.0106047,Brasília
+way/225792924,supermarket,Veneza,"R1-S5, QI 7 — Guará I",-15.8161289,-47.9778067,Brasília
+way/226021249,supermarket,Dona de Casa - Vicente Pires,,-15.7948189,-48.0509175,Brasília
+way/230451633,supermarket,Da Terra Hortomercado,"QI 8 Bloco A, 4 e 10 — Guará 1",-15.8123440,-47.9893069,Brasília
+way/231711221,supermarket,Pão de Açúcar,"Quadra 206, 2",-15.8420595,-48.0231250,Brasília
+way/231712516,supermarket,Carrefour,,-15.8324570,-48.0402640,Brasília
+way/234579093,supermarket,Atacadão Extra,,-15.8456395,-48.0408020,Brasília
+way/235466996,supermarket,Super Veneza,,-15.7913945,-47.9371240,Brasília
+way/240208992,supermarket,Comper,,-15.6527380,-47.7823045,Brasília
+way/242761904,supermarket,Supercei,,-15.6955967,-47.8719184,Brasília
+way/248138198,supermarket,Du'Lar,,-15.7852110,-47.9958680,Brasília
+way/251559509,supermarket,Ultrabox,,-15.9654053,-48.0228856,Brasília
+way/261988267,supermarket,Super Adega,,-15.8742478,-48.0305163,Brasília
+way/264237302,supermarket,Dona de Casa Supermercado,,-15.8098420,-48.0692845,Brasília
+way/266737645,supermarket,Atacadão Dia a Dia,,-15.7837075,-48.1215945,Brasília
+way/267805450,supermarket,Ceasa,,-15.7915740,-47.9486995,Brasília
+way/279278190,supermarket,Supermercado Tókio,,-15.8945098,-47.8016882,Brasília
+way/281430822,supermarket,Oba,,-15.8352835,-47.8812045,Brasília
+way/282833017,supermarket,Ultrabox,,-15.6024915,-47.6814340,Brasília
+way/286983430,supermarket,Costa Atacadão,Qi 2 — Taguatinga Norte,-15.8080713,-48.0820707,Brasília
+way/286983433,wholesale,Fort Atacadista,Avenida Hélio Prates,-15.8089045,-48.0891785,Brasília
+way/287207713,supermarket,Melhor Atacadista,,-15.8483461,-47.9647047,Brasília
+way/297785794,supermarket,Tatico,,-15.8718000,-48.0914085,Brasília
+way/298881834,supermarket,ULTRABOX - Ceilândia Sul,,-15.8369324,-48.1109450,Brasília
+way/298881835,supermarket,Supercei,,-15.8483351,-48.1158554,Brasília
+way/298959394,supermarket,Supermercado ETA,,-15.8076363,-48.1510654,Brasília
+way/301604241,supermarket,Caíque,,-15.8557335,-48.0783114,Brasília
+way/307984702,wholesale,Base Atacadista Santa Maria,,-15.9983966,-47.9863496,Brasília
+way/317988112,supermarket,Vivendas Atacadista,Avenida Alagado,-16.0309463,-48.0340260,Brasília
+way/322454419,supermarket,STO Atacadista,,-15.7886937,-48.1607931,Brasília
+way/328537905,supermarket,Ultrabox,,-15.6397503,-47.6518350,Brasília
+way/356072571,supermarket,Supermercado Superbom,,-15.8622475,-48.0887725,Brasília
+way/356073060,supermarket,Mercado Veras,,-15.8619335,-48.0889355,Brasília
+way/356378466,supermarket,Supermercado Caique,,-15.8628345,-48.0763670,Brasília
+way/385772422,supermarket,DonaDeCasa,,-15.8408676,-47.9808789,Brasília
+way/416888185,convenience,Mercado Itaipú,"Condomínio Chácaras Itaipu, Ch. 20 — Setor Habitacional Estrada do Sol",-15.8793600,-47.7789995,Brasília
+way/442878781,convenience,Bem ti vi,Condomínio Verde — Setor Habitacional Estrada do Sol,-15.8738091,-47.7531935,Brasília
+way/445433231,convenience,Open Shop 21,SHIS QI 21 Conjunto 10 — Lago Sul,-15.8494265,-47.8559535,Brasília
+way/447679247,supermarket,Santa Felicidade,Avenida Comercial — Jardim Botânico,-15.8695973,-47.8212611,Brasília
+way/447699563,supermarket,Bellavia,Avenida Dom Bosco — Jardim Botânico,-15.8804491,-47.8207010,Brasília
+way/449234155,supermarket,Big Box,"SHC 503 Bloco C, Loja 70 — Asa Sul",-15.8037435,-47.8960515,Brasília
+way/506455275,supermarket,Ultrabox,,-16.0481022,-47.9700880,Brasília
+way/507843832,supermarket,Base Atacadista,,-15.8754589,-47.9961204,Brasília
+way/545126719,greengrocer,Feira de Hortifrutigranjeiros de Planaltina/DF,,-15.6210940,-47.6496810,Brasília
+way/548786323,convenience,Casas Brasileiras,,-15.8607500,-48.0739715,Brasília
+way/551272567,supermarket,Caíque,,-15.8642995,-48.0790400,Brasília
+way/552612949,supermarket,Supercei,SCDN,-15.6836405,-48.1954075,Brasília
+way/565536769,supermarket,Supercei,,-15.8824440,-48.0160610,Brasília
+way/566193126,supermarket,Ouro Verde Supermercado,,-15.8836275,-48.0151825,Brasília
+way/567596486,supermarket,Atacadão Dia a Dia,QS 03 — Taguatinga Sul,-15.8483310,-48.0399900,Brasília
+way/576122396,convenience,São Pedro,,-15.8809870,-48.0676290,Brasília
+way/582234716,supermarket,Melhor Atacadista,,-15.9072042,-48.0501668,Brasília
+way/615470668,supermarket,Pantanal,,-15.8149555,-48.0122519,Brasília
+way/626223259,supermarket,Atacadão Dia a Dia,,-15.6554730,-47.7811070,Brasília
+way/666551400,supermarket,Mercado MM,Avenida Israel Pinheiro — Vila Planalto,-15.7934477,-47.8508317,Brasília
+way/681286568,supermarket,Superbom,QC 4,-15.9124130,-48.0485600,Brasília
+way/689953345,butcher,Center Carnes,,-15.6625041,-48.1953598,Brasília
+way/689953353,supermarket,Pra Voce,"EQ 35/36 Bloco C, Lojas 02/04 — Vila São José",-15.6632098,-48.1951463,Brasília
+way/689953354,supermarket,Verdi Bairro,"Vila São José Eq 35/36 Q 35 Bl B D, 1 — Vila São José",-15.6630868,-48.1949700,Brasília
+way/696668118,supermarket,Dona de Casa,,-16.0117423,-48.0487607,Brasília
+way/706102106,convenience,Miami Festas,Taguatinga Centro - DF,-15.8339925,-48.0565760,Brasília
+way/734988231,supermarket,Supercei,,-15.8306255,-48.0873475,Brasília
+way/739668055,supermarket,Vivendas Express,Avenida Alagados,-16.0388987,-48.0336767,Brasília
+way/746499362,supermarket,Supermercado Vizinhança,,-15.8258849,-48.0373271,Brasília
+way/746499364,supermarket,Ponto Certo,,-15.8164346,-48.0526251,Brasília
+way/777388562,supermarket,Supermercado União,,-15.8913654,-47.8071714,Brasília
+way/778745600,supermarket,Ponto Certo,Conjunto C — Residencial Nova Esperança,-15.6039759,-47.6811788,Brasília
+way/799262108,supermarket,Super Maia,,-15.8718571,-47.9658724,Brasília
+way/856958831,supermarket,Atacadão Dia a Dia,Avenida das Castanheiras — Águas Claras,-15.8334690,-48.0094485,Brasília
+way/963238583,supermarket,Supermercado Fox,"QMS 34 Loja 01, 2 — Sobradinho II",-15.6351451,-47.8300206,Brasília
+way/963239925,supermarket,Dona de Casa,Quadra 6 Comércio Local 5 — Sobradinho,-15.6520505,-47.8021470,Brasília
+way/981329665,supermarket,SuperBom,,-15.8780531,-48.1030615,Brasília
+way/1033555684,greengrocer,Verdurão do Davi,"Via P1, 14/18 — P Sul",-15.8433265,-48.1087235,Brasília
+way/1057802803,wholesale,Super Adega Atacadista,Via Centro-norte,-15.8340148,-48.0734675,Brasília
+way/1061444026,butcher,Frios Sul,"Avenida Comercial Sul / QSA 1, Lote 20 Loja 1 — Taguatinga Sul - DF",-15.8363345,-48.0555490,Brasília
+way/1061444037,supermarket,Bellavia,CSB 5/6 — Taguatinga Sul - DF,-15.8384300,-48.0542800,Brasília
+way/1072748878,supermarket,Carrefour,,-15.7506840,-47.8945290,Brasília
+way/1079831950,supermarket,Bevia Atacadista,,-15.7511597,-47.7629486,Brasília
+way/1081609917,supermarket,mercadinho Compre Bem,,-15.6303513,-47.8375855,Brasília
+way/1081651612,supermarket,Ponto Alto,Avenida Alagado,-16.0349087,-48.0338574,Brasília
+way/1082309792,supermarket,Ultrabox,,-15.6597010,-47.8438275,Brasília
+way/1090872771,supermarket,Fort Atacadista,,-15.9298819,-48.0464548,Brasília
+way/1127565922,supermarket,Supermercado Tatico,,-15.7957200,-48.0489814,Brasília
+way/1143765390,supermarket,Oba Farm Hortifruti,,-15.8840564,-47.8213734,Brasília
+way/1149981259,supermarket,ULTRABOX,,-15.7546448,-47.7708280,Brasília
+way/1156480314,convenience,Hortifruti,,-15.7767470,-47.7793985,Brasília
+way/1158214039,supermarket,Bellavia,,-15.8023290,-48.0168753,Brasília
+way/1168600578,supermarket,Mil Delicias,,-15.6401163,-47.6460254,Brasília
+way/1168600583,supermarket,Bem Bom,,-15.6396860,-47.6442034,Brasília
+way/1177673376,supermarket,Supermercados Super Sampaio,Q 13 CL — Sobradinho,-15.6484220,-47.7850640,Brasília
+way/1177675410,supermarket,Bellavia Supermercados,Quadra 8 — Sobradinho,-15.6448380,-47.8013950,Brasília
+way/1211805098,supermarket,Atacadão Ultrabox,,-15.6838522,-48.1970948,Brasília
+way/1272578912,wholesale,UltraBox,,-15.8402212,-48.0510101,Brasília
+way/1297400688,supermarket,Atacadão Dia Dia,,-15.8553832,-47.8188112,Brasília
+way/1301590225,wholesale,Atacadão Dia a Dia - Vicente Pires,,-15.7951077,-48.0518648,Brasília
+way/1301916630,wholesale,Melhor Atacadista - Vicente Pires,,-15.8151139,-48.0100420,Brasília
+way/1301916631,wholesale,Atacadão Dia a Dia,,-15.8139538,-48.0165472,Brasília
+way/1314382714,supermarket,Mercearia da Luciana,Rua Sl 28 qudra 35 lote — Santa Luzia,-15.7762520,-47.9875750,Brasília
+way/1314382716,supermarket,Mercearia da Zita,Rua SL 01 quadra 21 — Santa Luzia,-15.7767735,-47.9888405,Brasília
+way/1314382717,supermarket,Verdurão da Domigas,,-15.7767382,-47.9887405,Brasília
+way/1315409356,supermarket,Mercado WF,,-15.7808820,-47.9815690,Brasília
+way/1315728301,butcher,Açougue,,-15.7784785,-47.9868525,Brasília
+way/1315728302,butcher,Açougue,,-15.7780965,-47.9900475,Brasília
+way/1316000914,supermarket,Tend Tudo,,-15.7803040,-47.9885735,Brasília
+way/1363753682,wholesale,Ultrabox Atacado e Varejo,,-15.8284882,-48.1363344,Brasília
+way/1366638821,supermarket,Primor,,-15.8320830,-48.0897099,Brasília
+way/1367434812,wholesale,Atacadão Dia a Dia,,-15.8201569,-48.1013225,Brasília
+way/1391834429,supermarket,Atacadista Super Adega,Avenida Bela Vista,-15.8893396,-47.7974942,Brasília
+way/1429841113,supermarket,Assaí Atacadista,STN,-15.7361480,-47.9002170,Brasília
+way/1434494324,supermarket,Atacadao Dia a Dia,"QNN 9 — Setor ""O""",-15.8010582,-48.1228249,Brasília
+way/1454916893,greengrocer,Varejão,,-15.8133929,-48.0157765,Brasília
+way/1472517331,supermarket,Mercado 7 Maçãs,,-15.8142645,-48.0270032,Brasília
+way/1476659222,greengrocer,Varejão Abrantes,,-15.8034582,-48.0160949,Brasília
+way/1487274019,convenience,BR Mania,,-15.7881262,-47.9152721,Brasília
+way/1497554285,supermarket,Assaí Atacadista,"Rua 100, Lote 10 — Qs 9",-15.8748036,-48.0253765,Brasília
+way/1499493286,wholesale,Atacadão Dia a Dia - Ceilândia Sul,,-15.8340168,-48.1131957,Brasília
+way/1503226364,convenience,Conveniência,ADE Águas Claras Conjunto 23 — Ade,-15.8763573,-47.9996383,Brasília
+way/1508687457,supermarket,Alianz supermercado,,-15.9183183,-48.0544405,Brasília
+way/1508688311,convenience,ED+ Distribuidora,,-15.9181663,-48.0538364,Brasília
+way/1509358564,supermarket,Bistecão Supermercado,,-15.8549112,-48.1187927,Brasília
+way/1510155307,butcher,Ki Carnes PSul,,-15.8450155,-48.1111940,Brasília
+way/1510660457,supermarket,Vitória,,-15.8589715,-48.0762195,Brasília
+way/1516730977,supermarket,Macedo Supermercado,,-15.7706515,-47.7798550,Brasília
+way/1516731055,greengrocer,Sacolão Folha Verde,,-15.7691490,-47.7819560,Brasília
+way/1516732478,supermarket,Kipreço,,-15.7687810,-47.7819690,Brasília
+way/1549449519,wholesale,Fort Atacadista,Avenida Hélio Prates — Taguatinga Norte,-15.8217598,-48.1150134,Brasília
+way/1549450019,wholesale,Fort Atacadista,,-15.8086565,-48.1451539,Brasília
+relation/19602883,supermarket,Assaí Atacadista,STN,-15.7361480,-47.9002170,Brasília
+relation/20644066,supermarket,Tatico,QNN 28 — Área Especial L,-15.8290765,-48.1169620,Brasília
+relation/20654969,supermarket,SG Supermercado,,-15.8449490,-48.1116965,Brasília
+relation/20730959,supermarket,Supermercado Galenos,,-15.8880300,-48.0156900,Brasília
+node/760456006,supermarket,Mercadona,,41.6597200,-4.7312378,Valladolid
+node/760676643,supermarket,Froiz,,41.6543109,-4.7421386,Valladolid
+node/760676652,supermarket,Dia,"Calle de Pío del Río Hortega, 8",41.6519354,-4.7409182,Valladolid
+node/794297186,supermarket,Froiz,,41.6134258,-4.6866468,Valladolid
+node/794297232,supermarket,Lupa,,41.6118756,-4.6836035,Valladolid
+node/794297370,supermarket,Dia,,41.6121864,-4.6864602,Valladolid
+node/794297387,butcher,P. Martinez,,41.6123000,-4.6858918,Valladolid
+node/1014747706,supermarket,Carrefour,Paseo de Zorrilla,41.6231834,-4.7497544,Valladolid
+node/1165805555,supermarket,Carrefour Market,,41.6502328,-4.7287008,Valladolid
+node/1168462195,convenience,Alimentación Amalú,,41.6496733,-4.7366449,Valladolid
+node/1172376364,supermarket,Primaprix,"Paseo de Zorrilla, 6",41.6472274,-4.7314141,Valladolid
+node/1186240202,supermarket,Dia,"Avenida de Soria, 21",41.6130425,-4.6892478,Valladolid
+node/1328420871,supermarket,Froiz,"Paseo de Zorrilla, 348",41.6188817,-4.7485228,Valladolid
+node/1454875072,butcher,C. Calle,Calle del Arado,41.6516957,-4.7453417,Valladolid
+node/1454875095,greengrocer,Mundofruta,,41.6517358,-4.7453086,Valladolid
+node/1542343645,convenience,Cárnicas Poniente,,41.6695972,-4.7305174,Valladolid
+node/1613316467,supermarket,Gadis,"Calle del Doctor Moreno, 16",41.6269774,-4.7405604,Valladolid
+node/1659517038,supermarket,Lupa,,41.6487893,-4.7166564,Valladolid
+node/1696897770,supermarket,Dia,"Calle del León, 6",41.6557316,-4.7261139,Valladolid
+node/1707703596,supermarket,Alimerka,,41.6516723,-4.7125670,Valladolid
+node/1886683865,supermarket,Lupa,,41.6358568,-4.7199489,Valladolid
+node/1886683871,supermarket,Alcampo,,41.6415296,-4.7199811,Valladolid
+node/1886683875,supermarket,Lupa,,41.6364913,-4.7196343,Valladolid
+node/1886723199,supermarket,Gadis,,41.6457986,-4.7104121,Valladolid
+node/1886723201,butcher,Hermanos González,,41.6465427,-4.7134909,Valladolid
+node/1886723202,supermarket,Dia,"Calle de la Cigüeña, 3-5",41.6447414,-4.7127888,Valladolid
+node/1886723204,supermarket,Alimerka,,41.6356242,-4.7241868,Valladolid
+node/1887554910,supermarket,Dia,"Paseo de Farnesio, 43",41.6384947,-4.7260280,Valladolid
+node/1943457918,supermarket,Alimerka,,41.6470668,-4.7462988,Valladolid
+node/1943457920,greengrocer,La Huerta de la Villa,,41.6467382,-4.7463978,Valladolid
+node/2092674938,supermarket,La Plaza de DIA,,41.6294652,-4.7844772,Valladolid
+node/2334616072,supermarket,Dia,"Calle de la Aurora, 7",41.6350464,-4.7381634,Valladolid
+node/2429185053,supermarket,Dia,"Calle de Sevilla, 30-32",41.6426457,-4.7180237,Valladolid
+node/2585387683,supermarket,Gadis,"Avenida de la Libertad, 31",41.5889495,-4.7232590,Valladolid
+node/2586501986,supermarket,Mercadona,Calle de Miguel de Unamuno,41.6114024,-4.7518184,Valladolid
+node/2634448630,supermarket,Dia,"Calle de Joaquín María Jalón, 11",41.6285816,-4.7409307,Valladolid
+node/2634448646,supermarket,Lupa,"Carretera de Rueda, 21",41.6279020,-4.7417220,Valladolid
+node/2703425180,greengrocer,Fruterías Agropal,"Calle del Monasterio San Millán de la Cogolla, 11",41.6464559,-4.7456197,Valladolid
+node/2913513952,butcher,A. San José,,41.6455845,-4.7477117,Valladolid
+node/2995898229,supermarket,Gadis,"Calle del General Ruiz, 1",41.6466812,-4.7246108,Valladolid
+node/3048087027,butcher,Charcutería José Miguel,,41.5811137,-4.7197856,Valladolid
+node/3048087134,supermarket,Froiz,,41.5807806,-4.7200430,Valladolid
+node/3156322869,supermarket,Dia,"Calle de Gabilondo, 3",41.6431687,-4.7345839,Valladolid
+node/3156322873,supermarket,Alcampo,,41.6410481,-4.7379548,Valladolid
+node/3211150496,convenience,Pescadería Puente Mayor,,41.6608112,-4.7333666,Valladolid
+node/3211203905,supermarket,Dia,"Calle de las Monjas, 7",41.6619108,-4.7344708,Valladolid
+node/3220376512,greengrocer,Frutas Puri,,41.6631548,-4.7328559,Valladolid
+node/3333757299,supermarket,Gadis,,41.6268837,-4.7412575,Valladolid
+node/3342283259,convenience,Supermercado Gama,,41.6328358,-4.7388257,Valladolid
+node/3342283270,supermarket,Dia,"Calle de Goya, 1",41.6333154,-4.7394051,Valladolid
+node/3342283285,supermarket,Froiz,,41.6341874,-4.7378709,Valladolid
+node/3342283289,greengrocer,Don Sabor,,41.6331354,-4.7387071,Valladolid
+node/3342283290,greengrocer,Conchi,,41.6343349,-4.7384937,Valladolid
+node/3342286194,butcher,El Buen Sabor,,41.6350794,-4.7383732,Valladolid
+node/3764201860,supermarket,Dia,"Avenida de Segovia, 91",41.6396904,-4.7206654,Valladolid
+node/4077071689,convenience,Alimentación Casa Luis,,41.5872997,-4.7541944,Valladolid
+node/4144543896,greengrocer,Frutas VIllanueva,,41.6382326,-4.7625647,Valladolid
+node/4361447425,supermarket,Gadis,"Calle de Hernando de Acuña, 27",41.6378782,-4.7608521,Valladolid
+node/4433221389,supermarket,Gadis,"Calle de la Esgueva, 15",41.6547662,-4.7226066,Valladolid
+node/4435039090,butcher,Cárnicas Alejandro,Calle de Neptuno,41.6619943,-4.7363850,Valladolid
+node/4435067190,greengrocer,Alimentacion Hermanos Fraile,Calle de Júpiter,41.6622447,-4.7365194,Valladolid
+node/4440589142,greengrocer,De Fruta Madre,,41.6378932,-4.7606765,Valladolid
+node/4510503104,supermarket,Gadis,,41.6618818,-4.7329959,Valladolid
+node/4510503105,supermarket,Gadis,,41.6618868,-4.7338490,Valladolid
+node/4523606720,butcher,Corte Sano,,41.6340709,-4.7371271,Valladolid
+node/4719095882,supermarket,Dia,"Calle de Panaderos, 10",41.6477514,-4.7239829,Valladolid
+node/4802142736,supermarket,Lupa,"Calle de los Alamillos, 6",41.6543623,-4.7158768,Valladolid
+node/4827545522,convenience,El Mercado Oriental,,41.6610120,-4.7375874,Valladolid
+node/4838037722,butcher,Fm,,41.6546060,-4.7221311,Valladolid
+node/4844372142,convenience,Mundo Supermercado,,41.6524319,-4.7167275,Valladolid
+node/4856352813,butcher,Embutidos Ballesteros,"Calle del Puente Colgante, 4",41.6412647,-4.7321342,Valladolid
+node/4868146947,greengrocer,Valleblanco,,41.6434154,-4.7353305,Valladolid
+node/4868147699,butcher,T. Marcos,,41.6436556,-4.7350290,Valladolid
+node/4868155687,greengrocer,Fruterías Agropal,"Paseo de Zorrilla, 55",41.6378011,-4.7385275,Valladolid
+node/4868158054,butcher,T. Marcos,,41.6399904,-4.7386358,Valladolid
+node/4876578006,greengrocer,Frutas Serrano,,41.6414272,-4.7294831,Valladolid
+node/4880034598,greengrocer,Fruterías Agropal,"Calle de la Esgueva, 6",41.6547022,-4.7229730,Valladolid
+node/4881346836,greengrocer,Escar,,41.6596092,-4.7366635,Valladolid
+node/4881365900,supermarket,Lupa,,41.6621483,-4.7373168,Valladolid
+node/4908729412,butcher,Hnos. Cuadrillero,"Calle de Villabáñez, 9",41.6496493,-4.7097954,Valladolid
+node/4908741010,convenience,Clara,Calle del Martín Pescador,41.6483144,-4.7114017,Valladolid
+node/4908742710,greengrocer,Serrano,Calle del Martín Pescador,41.6480513,-4.7116179,Valladolid
+node/4908744711,butcher,Domingo,Calle Pavo Real,41.6475469,-4.7110568,Valladolid
+node/4908747856,greengrocer,Don Barato,"Calle del Pelícano, 11",41.6473421,-4.7106218,Valladolid
+node/4935168622,butcher,Cárnicas Circular,Plaza Circular,41.6478522,-4.7168735,Valladolid
+node/4935174380,convenience,Carrefour Express,Plaza Circular,41.6472185,-4.7163442,Valladolid
+node/4935184398,convenience,Frutos Secos Carlos,Plaza Circular,41.6476123,-4.7178059,Valladolid
+node/5110854521,supermarket,Froiz,,41.6365282,-4.7610668,Valladolid
+node/5111729324,convenience,Supermercado Trady´s Bazar,,41.6495775,-4.7377090,Valladolid
+node/5132761323,supermarket,Dia,"Calle del Monasterio de Santo Domingo de Silos, 5",41.6454092,-4.7463059,Valladolid
+node/5176131451,grocery,Tu Fruta tu Pan,,41.6554040,-4.7352250,Valladolid
+node/5176140913,greengrocer,Frutería Loli,"Calle del Rastrojo, 3",41.6506056,-4.7448545,Valladolid
+node/5176146777,convenience,Alimentación El Palacio,,41.6526102,-4.7353087,Valladolid
+node/5208566175,butcher,Salchichería Zugasa,,41.6491201,-4.7242392,Valladolid
+node/5269915537,greengrocer,Frutería Rebollo,,41.6500350,-4.7349919,Valladolid
+node/5269953821,supermarket,Dia,,41.6503399,-4.7308542,Valladolid
+node/5270120724,greengrocer,Arancha,,41.6558449,-4.7259506,Valladolid
+node/5270121724,greengrocer,Altaf,,41.6507247,-4.7204815,Valladolid
+node/5271024522,greengrocer,Frutas Serrano,,41.6478465,-4.7192047,Valladolid
+node/5273490625,greengrocer,Pan y Mantequilla,"Calle del Barbecho, 31",41.6501169,-4.7470399,Valladolid
+node/5277156627,greengrocer,Altaf,,41.6409501,-4.7202452,Valladolid
+node/5290005821,convenience,Carrefour Express,"Plaza de la Libertad, 3",41.6532150,-4.7244715,Valladolid
+node/5301224721,supermarket,Alcampo,Calle de Sandoval,41.6537381,-4.7286009,Valladolid
+node/5508967349,butcher,Carnicería O Lorenzo & J Millán,,41.6602738,-4.7205372,Valladolid
+node/5508967358,supermarket,Primaprix,,41.6596092,-4.7198279,Valladolid
+node/5508967360,supermarket,Dia,"Calle Cerrada, 4",41.6597248,-4.7199942,Valladolid
+node/5514925929,supermarket,Froiz,,41.6549639,-4.7213796,Valladolid
+node/5515198821,greengrocer,El Naranjo,,41.6571953,-4.7213952,Valladolid
+node/5515202324,convenience,Absolem,,41.6529828,-4.7275617,Valladolid
+node/5518777516,greengrocer,La Picota,,41.6417033,-4.7317616,Valladolid
+node/5518778054,convenience,Carrefour Express,,41.6447425,-4.7357249,Valladolid
+node/5599686052,greengrocer,Luna,"Calle del Doctor Cazalla, 7",41.6547899,-4.7289527,Valladolid
+node/5599762889,greengrocer,Buen gusto,,41.6549401,-4.7265565,Valladolid
+node/5800474617,supermarket,Alcampo,"Avenida del Estadio, 1",41.5839705,-4.7257367,Valladolid
+node/5811036218,supermarket,Gadis,,41.6570580,-4.7280036,Valladolid
+node/6140100997,convenience,Come Sano-Come Justo,,41.6528659,-4.7206731,Valladolid
+node/6421383502,convenience,Dulcinea,,41.6503003,-4.7208863,Valladolid
+node/6447350589,convenience,La tienda de abajo,"Calle de Panaderos, 67",41.6448950,-4.7222911,Valladolid
+node/6649943975,greengrocer,Rosa Mari,,41.6623155,-4.7346568,Valladolid
+node/6649943979,greengrocer,Isaac,,41.6619741,-4.7352632,Valladolid
+node/6657496903,greengrocer,El elefante verde,,41.6625514,-4.7351337,Valladolid
+node/6741884260,supermarket,Lupa,"Calle de Teresa Gil, 16",41.6507962,-4.7259373,Valladolid
+node/6813719064,convenience,Mercasia,,41.6472460,-4.7232282,Valladolid
+node/6853626183,greengrocer,Fruterías Agropal,"Calle de Juan de Juni, 7",41.6474602,-4.7337768,Valladolid
+node/6853626186,butcher,Sahagún,"Calle de Juan de Juni, 7",41.6473280,-4.7335880,Valladolid
+node/6853698040,supermarket,Dia,"Paseo de Zorrilla, 12",41.6469318,-4.7318084,Valladolid
+node/6853698063,greengrocer,Frutería Arancha,"Calle de Gregorio Fernández, 1",41.6458719,-4.7333231,Valladolid
+node/7102356306,butcher,Cárnicas Parquesol,,41.6363826,-4.7636032,Valladolid
+node/7102357196,greengrocer,Javier,,41.6378601,-4.7556101,Valladolid
+node/7102357201,greengrocer,Fruterías Agropal,"Calle de Manuel Azaña, 56",41.6360955,-4.7627509,Valladolid
+node/7167517776,greengrocer,Fruterías Yoli - 2,Avenida José Luis Lasa,41.6148314,-4.7847140,Valladolid
+node/7176092731,greengrocer,Frutería Charo,,41.6255489,-4.7721528,Valladolid
+node/7176092733,butcher,Cristina,Calle los Picones,41.6252927,-4.7742058,Valladolid
+node/7176092736,greengrocer,La Huerta de Juani,Calle los Picones,41.6252493,-4.7746873,Valladolid
+node/7276617296,butcher,Cárnicas la Flecha,Calle Segura,41.6289741,-4.7721712,Valladolid
+node/7433880804,greengrocer,Alimentación Ángeles,,41.6569985,-4.7278393,Valladolid
+node/7498226018,supermarket,Gadis,Calle del Carmelo,41.6405326,-4.7196234,Valladolid
+node/7523257810,butcher,Carnicería David,,41.6596669,-4.7813143,Valladolid
+node/7526498168,butcher,Telefilete,,41.6162814,-4.7472182,Valladolid
+node/7526498169,butcher,Carnicería Raúl,,41.6165363,-4.7487227,Valladolid
+node/7528711225,butcher,Carnicería David A.,,41.6608337,-4.7421173,Valladolid
+node/7564334685,supermarket,Dia,"Calle de las Moradas, 20",41.6606778,-4.7222482,Valladolid
+node/7577912478,butcher,Carnicería Rincón,,41.6413085,-4.7348195,Valladolid
+node/7577912479,butcher,J. Hevia,,41.6387339,-4.7370476,Valladolid
+node/7577912480,butcher,D'Carnes Meat&Shop,,41.6283915,-4.7426286,Valladolid
+node/7577912481,butcher,Paco,,41.6248398,-4.7408876,Valladolid
+node/7577912482,butcher,José Antonio,,41.6243847,-4.7416413,Valladolid
+node/7577912483,butcher,M. Castro,,41.6191101,-4.7474859,Valladolid
+node/7577912484,butcher,El Adobo,,41.6193965,-4.7505280,Valladolid
+node/7577987785,butcher,Prado,,41.6108303,-4.7531893,Valladolid
+node/7596245509,convenience,Autoservicio Bolivia,,41.6320704,-4.7498766,Valladolid
+node/7596245511,butcher,Carnicería J.A.,Calle de Núñez de Guzmán,41.6345691,-4.7549506,Valladolid
+node/7596245512,butcher,Carnicería Javier Martín,,41.6339403,-4.7568768,Valladolid
+node/7596245513,butcher,Carnicería J. Márquez,,41.6348995,-4.7584533,Valladolid
+node/7596245514,butcher,Carnicería A. Hernández,,41.6354507,-4.7580654,Valladolid
+node/7596245515,butcher,Carnicería José Carlos,,41.6370091,-4.7642807,Valladolid
+node/7596245516,butcher,Carnicería Estrella,"Calle de Juan Martínez Villergas, 10",41.6363337,-4.7577473,Valladolid
+node/7596245519,butcher,Carnicería Tito,,41.6460001,-4.7390659,Valladolid
+node/7596245520,convenience,Sonata Gastronómica,,41.6536860,-4.7398367,Valladolid
+node/7608956190,supermarket,Minymas,,41.6468117,-4.7207732,Valladolid
+node/7617920821,butcher,El Pobre Enrique,,41.6439959,-4.7370925,Valladolid
+node/7661828735,wholesale,GMcash,,41.6191480,-4.6996272,Valladolid
+node/7703866428,supermarket,Froiz,"Calle Águeda, 1",41.5864930,-4.7269707,Valladolid
+node/8060702879,greengrocer,Disfruta,,41.6596609,-4.7202515,Valladolid
+node/8060718790,greengrocer,Frutas Linares,,41.6603886,-4.7190093,Valladolid
+node/8064122929,butcher,Espinosa,,41.6584026,-4.7209850,Valladolid
+node/8064122944,supermarket,Alcampo,"Calle del Portillo de Balboa, 4",41.6586908,-4.7220788,Valladolid
+node/8073135024,convenience,La Despensa,,41.6607956,-4.7193039,Valladolid
+node/8073135025,butcher,Carnicería Fernando,,41.6606789,-4.7191395,Valladolid
+node/8073135135,greengrocer,Frutas Leo,,41.6623089,-4.7188554,Valladolid
+node/8089844030,supermarket,Alcampo,"Avenida de Palencia, 14",41.6600398,-4.7180583,Valladolid
+node/8089844034,butcher,Cárnicas González,,41.6597956,-4.7183653,Valladolid
+node/8094238043,greengrocer,Frutas Borja,,41.6424319,-4.7211667,Valladolid
+node/8098916069,butcher,Charcutería Rosa,,41.6618402,-4.7209888,Valladolid
+node/8098916074,butcher,Carnicería Goyo,,41.6620117,-4.7194277,Valladolid
+node/8109902299,supermarket,Dia,"Calle de las Moradas, 28",41.6615387,-4.7213043,Valladolid
+node/8113304402,butcher,Carnicería Muñoz,,41.6570277,-4.7212033,Valladolid
+node/8197796278,greengrocer,La Huerta de Juani,"Calle de Santa Clara, 14",41.6583495,-4.7205971,Valladolid
+node/8197796280,butcher,Charcutería Matblas,"Calle de Santa Clara, 12",41.6582322,-4.7207952,Valladolid
+node/8242484172,supermarket,Mercadona,,41.5929426,-4.7247318,Valladolid
+node/8243979470,convenience,Carrefour Express,"Calle de Tirso de Molina, 18",41.6601384,-4.7233960,Valladolid
+node/8243979477,convenience,Carrefour Express,"Calle del Portillo de Balboa, 49",41.6626331,-4.7192132,Valladolid
+node/8309185010,butcher,Félix Sanz Gómez,,41.6484768,-4.7037319,Valladolid
+node/8335678679,convenience,Alimentación Abid,"Calle de Labradores, 32",41.6455195,-4.7209147,Valladolid
+node/8569872887,supermarket,Dia,"Avenida de la Estación, 10",41.5809889,-4.7190106,Valladolid
+node/8691215536,greengrocer,Frutas Belinda,,41.6516316,-4.7222886,Valladolid
+node/9023244628,greengrocer,Fruitiland 2,,41.6471693,-4.7333613,Valladolid
+node/9029904419,supermarket,Lupa,,41.6477276,-4.7189913,Valladolid
+node/9035714283,greengrocer,Doña Fruta,"Calle Imperial, 6",41.6582937,-4.7282776,Valladolid
+node/9043912783,butcher,Carnicería Anta,,41.6420727,-4.7136103,Valladolid
+node/9075063160,supermarket,Dia,"Calle Imperial, 4-6",41.6580420,-4.7280349,Valladolid
+node/9181496345,supermarket,Lupa,,41.6586963,-4.7199465,Valladolid
+node/9222563584,supermarket,Dia,Calle de Silió,41.6499473,-4.7147118,Valladolid
+node/9222563585,supermarket,Alcampo,"Calle del Doctor Montero, 5",41.6505976,-4.7147588,Valladolid
+node/9416594382,butcher,Carnicería Nina,,41.6466922,-4.7227029,Valladolid
+node/9416594390,greengrocer,Frutas Paula,,41.6445015,-4.7237430,Valladolid
+node/9438391406,greengrocer,Mazidi,,41.6595914,-4.7186154,Valladolid
+node/9438401817,butcher,Trimiño,,41.6599839,-4.7186757,Valladolid
+node/9473008119,supermarket,Dia,"Calle del Doctor Esquerdo, 5",41.6596404,-4.7165957,Valladolid
+node/9473008125,butcher,Redondo,,41.6594435,-4.7159711,Valladolid
+node/9473008126,butcher,Martínez Pereda,,41.6595492,-4.7157285,Valladolid
+node/9473008134,greengrocer,Fruterías Agropal,"Calle Portillo del Prado, 13",41.6593090,-4.7167409,Valladolid
+node/9473008149,convenience,Titos,,41.6590553,-4.7175667,Valladolid
+node/9473008150,butcher,María Jesús,,41.6590659,-4.7174570,Valladolid
+node/9501766888,butcher,Manolo,,41.6580544,-4.7198479,Valladolid
+node/9525673865,butcher,Cárnicas Poniente,,41.6526131,-4.7315754,Valladolid
+node/9525673866,butcher,Cárnicas Poniente,,41.6510339,-4.7173414,Valladolid
+node/9584841109,convenience,Alimentación Ángel,,41.6553637,-4.7084505,Valladolid
+node/9733196767,supermarket,Dia,"Calle de Gabriel y Galán, 7",41.6525727,-4.7123827,Valladolid
+node/9815779147,butcher,La Venta Tabanera,,41.6490794,-4.7256577,Valladolid
+node/9831696990,convenience,La Overuela,,41.6910342,-4.7077609,Valladolid
+node/10052083697,supermarket,Lupa,"Calle de la Cigüeña, 19",41.6454546,-4.7113526,Valladolid
+node/10054722741,butcher,Rosario,,41.6382074,-4.7230571,Valladolid
+node/10075912042,butcher,Ortega Cabello,,41.6374419,-4.7225182,Valladolid
+node/10087622164,convenience,Carrefour Express,,41.6434325,-4.7158565,Valladolid
+node/10087931677,supermarket,Gadis,,41.6363622,-4.7217365,Valladolid
+node/10087931678,supermarket,Primaprix,,41.6406827,-4.7200621,Valladolid
+node/10087931679,supermarket,Primaprix,,41.6355214,-4.7224665,Valladolid
+node/10087931680,supermarket,Primaprix,,41.6411810,-4.7378960,Valladolid
+node/10127185652,convenience,Los Manjares,"Calle Santa María de la Cabeza, 19",41.6436960,-4.7028770,Valladolid
+node/10127185654,butcher,Hermanos Cano,"Calle Santa María de la Cabeza, 19",41.6436334,-4.7029415,Valladolid
+node/10158164183,greengrocer,Frutas Marcos,,41.6630413,-4.7218346,Valladolid
+node/10158185059,butcher,Carnicería Tito,,41.6628991,-4.7223140,Valladolid
+node/10197970697,greengrocer,Frutería Cherries,,41.6602702,-4.7830646,Valladolid
+node/10197970701,butcher,Carnicería Robert,"Calle Nueva, 1",41.6604118,-4.7833238,Valladolid
+node/10726525792,supermarket,Alcampo,"Plaza de San Juan, 3",41.6514727,-4.7178074,Valladolid
+node/10735959283,supermarket,Gadis,,41.6410424,-4.7192837,Valladolid
+node/10751806620,supermarket,Minymas,,41.6606226,-4.7248061,Valladolid
+node/10751806622,butcher,Jesús Santos,,41.6608355,-4.7252645,Valladolid
+node/10982184192,greengrocer,Frutería Álvaro,,41.6481711,-4.7220808,Valladolid
+node/10985292737,convenience,Carrefour Express,,41.6548731,-4.7197627,Valladolid
+node/11013052230,butcher,San Román,,41.6522330,-4.7131199,Valladolid
+node/11013052232,greengrocer,El Elefante Verde,,41.6524127,-4.7131679,Valladolid
+node/11036374890,greengrocer,Fruterías Agropal,"Calle Profesor Adolfo Miaja de la Muela, 30",41.6355640,-4.7550644,Valladolid
+node/11036374891,greengrocer,Fruterías Agropal,"Paseo de Isabel la Católica, 30",41.6587118,-4.7312709,Valladolid
+node/11036374892,greengrocer,Fruterías Agropal,"Paseo de Zorrilla, 352",41.6182946,-4.7485539,Valladolid
+node/11226640236,supermarket,Dia,"Calle Lope de Vega, 5-7",41.6556004,-4.6281606,Valladolid
+node/11226655142,supermarket,Dia,"Calle Real, 36",41.6937708,-4.6886419,Valladolid
+node/11226670053,supermarket,Dia,"Calle del Prado, 1",41.5892496,-4.7273177,Valladolid
+node/11226675760,supermarket,Dia,"Calle de Juan Martínez Villergas, 4",41.6358881,-4.7568127,Valladolid
+node/11230621386,supermarket,Dia,"Paseo de Juan Carlos I, 55",41.6408800,-4.7149487,Valladolid
+node/11230626278,supermarket,Dia,"Calle del Águila, 13",41.6476441,-4.7102760,Valladolid
+node/11263156032,convenience,Alimentación Abid,,41.6465238,-4.7161872,Valladolid
+node/11297976490,butcher,Dar Salam,,41.6605610,-4.7226848,Valladolid
+node/11306017424,convenience,Alimentación Poniente,,41.6526497,-4.7319363,Valladolid
+node/11328863155,supermarket,Alimerka,,41.6523304,-4.7127357,Valladolid
+node/11332995664,supermarket,Panadería Peter Pan,"Calle de Núñez de Guzmán, 2",41.6347338,-4.7551627,Valladolid
+node/11398412258,grocery,Severo Fraile,,41.6493218,-4.7250343,Valladolid
+node/11541334812,convenience,Alimentación Mozo,,41.6340430,-4.7552879,Valladolid
+node/11583785969,greengrocer,Frutería Yoli Covaresa,"Calle de Miguel Delibes, 19C",41.6108709,-4.7533017,Valladolid
+node/11584491423,supermarket,Alimerka,,41.6449080,-4.7124630,Valladolid
+node/11584491424,supermarket,Alimerka,,41.6455333,-4.7128518,Valladolid
+node/11584491432,greengrocer,El Elefante Verde,,41.6445967,-4.7131001,Valladolid
+node/11584491434,greengrocer,Frutería Cigüeña,,41.6442399,-4.7132943,Valladolid
+node/11584491442,supermarket,Gadis,,41.6362524,-4.7221346,Valladolid
+node/11584491444,butcher,Ángel Rodríguez,,41.6359036,-4.7197393,Valladolid
+node/11584491446,greengrocer,Marina,,41.6356614,-4.7199024,Valladolid
+node/11584491448,butcher,Espinosa,,41.6371834,-4.7229537,Valladolid
+node/11584491449,butcher,Rico,,41.6330778,-4.7228013,Valladolid
+node/11584491450,butcher,Jose Luis Rodríguez,,41.6314210,-4.7232650,Valladolid
+node/11584491451,butcher,Luis Miguel Arranz,,41.6311920,-4.7241149,Valladolid
+node/11584491452,butcher,Los Segovianos,,41.6314629,-4.7242793,Valladolid
+node/11584491454,butcher,Delicias,,41.6321359,-4.7252974,Valladolid
+node/11780726419,supermarket,Súper Agropal,"Paseo de Zorrilla, 55",41.6377722,-4.7385431,Valladolid
+node/11877517250,convenience,Flor y Nata,,41.5774092,-4.7166818,Valladolid
+node/12044010413,supermarket,Lupa,"Calle Real, 48",41.6919758,-4.6886276,Valladolid
+node/12308794150,convenience,Carrefour Express,"Calle de la Epifanía, 6",41.6568976,-4.7094055,Valladolid
+node/12345010620,convenience,Carrefour Express,"Calle de Amadeo Arias, 27",41.6357781,-4.7595594,Valladolid
+node/12439670009,greengrocer,Valladolid 2,,41.6612942,-4.7200337,Valladolid
+node/12459072519,butcher,Carnicería Teo y Carlos,,41.6404146,-4.7173280,Valladolid
+node/12459072520,butcher,Carnicería Javier Santos,,41.6412070,-4.7192071,Valladolid
+node/12495846491,convenience,Alimentación Asiática Yongcheng,"Calle Abierta, 2",41.6393219,-4.7211744,Valladolid
+node/12516695667,convenience,Alimentación Abdul,,41.6613656,-4.7236593,Valladolid
+node/12516710501,convenience,One Stop Food,,41.6607545,-4.7177313,Valladolid
+node/12648084500,greengrocer,Fruitopía,"Calle del Monasterio de Santo Domingo de Silos, 11",41.6456586,-4.7470482,Valladolid
+node/12768491367,supermarket,Dia,,41.6357028,-4.7616821,Valladolid
+node/12898192776,butcher,Rosario,,41.6474390,-4.7079740,Valladolid
+node/12898192778,butcher,Heraclio,,41.6471845,-4.7098260,Valladolid
+node/12898192780,greengrocer,Frutas Don Antonio,,41.6457717,-4.7110865,Valladolid
+node/12898192793,convenience,Adrián y María,,41.6521467,-4.7087434,Valladolid
+node/12898199901,greengrocer,Frutas Pil-Car,,41.6545246,-4.7101976,Valladolid
+node/12898199904,convenience,Alimentación Ir´is,,41.6540800,-4.7111863,Valladolid
+node/12898199905,butcher,J. Pinilla,,41.6541558,-4.7111837,Valladolid
+node/12898199914,greengrocer,Covadonga 14,,41.6553993,-4.7129770,Valladolid
+node/12898199940,convenience,Alimentación Alí,,41.6510202,-4.7124916,Valladolid
+node/12898199945,greengrocer,Frutas Félix,,41.6514981,-4.7124476,Valladolid
+node/12900522085,convenience,Abdul,,41.6507300,-4.7128121,Valladolid
+node/12922039066,supermarket,Dia,"Plaza Circular, 10",41.6466893,-4.7171319,Valladolid
+node/13109959756,supermarket,Mercadona,"Calle de José Cantalapiedra, 3",41.6485277,-4.7379655,Valladolid
+node/13175667320,supermarket,Gadis,,41.6433517,-4.7363835,Valladolid
+node/13307782201,butcher,Charcutería-Carnicería José Ignacio,,41.6458820,-4.7150507,Valladolid
+node/13334606784,convenience,Alimentación La Rondilla,,41.6621477,-4.7185986,Valladolid
+node/13387645095,supermarket,Súper Agropal,"Avenida de las Salinas, 2",41.5886098,-4.7210637,Valladolid
+node/13410784828,supermarket,Dia,,41.6405410,-4.7400379,Valladolid
+node/13410784829,supermarket,Dia,,41.6572337,-4.7434658,Valladolid
+node/13480937435,supermarket,Froiz,,41.5938312,-4.7246899,Valladolid
+node/13480937481,supermarket,Lupa,,41.5923625,-4.7241318,Valladolid
+node/13482784152,supermarket,Alimerka,,41.5859132,-4.7183153,Valladolid
+node/13502457943,convenience,One Stop Food,,41.6410980,-4.7305436,Valladolid
+node/13668908469,butcher,Jamón Jamón,,41.6350465,-4.7395253,Valladolid
+node/13682304316,convenience,Carrefour Express,,41.6440782,-4.7221686,Valladolid
+node/13740148029,convenience,Alimentación Abid,,41.6499492,-4.7153474,Valladolid
+node/13828527875,convenience,Carrefour Express,,41.6554070,-4.7043457,Valladolid
+node/13869032060,butcher,Carnicería Nico,,41.6543674,-4.7036734,Valladolid
+node/14003092334,convenience,Alimentación y Locutorio,,41.6324441,-4.7399882,Valladolid
+node/14089897945,supermarket,Gadis,,41.6505775,-4.7131412,Valladolid
+node/14089897947,butcher,Teo y Carlos,,41.6507651,-4.7144147,Valladolid
+node/14105753839,convenience,One Stop Food,,41.6607850,-4.7177006,Valladolid
+node/14113712985,butcher,Mariángeles,,41.6600595,-4.7224590,Valladolid
+node/14113722010,greengrocer,Frutería Los Niños,,41.6602564,-4.7226222,Valladolid
+node/14339344499,convenience,Rayyan,,41.6427597,-4.7039500,Valladolid
+node/14373725396,supermarket,Agropal,,41.6595983,-4.7427928,Valladolid
+node/14401579701,butcher,La tradicional,,41.6470811,-4.7230682,Valladolid
+way/26947304,supermarket,Carrefour,Avenida del Real Valladolid,41.6418699,-4.7613857,Valladolid
+way/26947403,supermarket,Carrefour,"Calle Costa Brava, 2",41.6692147,-4.7093649,Valladolid
+way/39274291,supermarket,Mercadona,Calle del Padre Llanos,41.6415622,-4.7643147,Valladolid
+way/92118528,supermarket,Hipercor,Avenida de Salamanca,41.6224934,-4.7690183,Valladolid
+way/191037342,supermarket,Alimerka,,41.6674764,-4.7356749,Valladolid
+way/192247263,supermarket,Mercadona,,41.6666486,-4.7307054,Valladolid
+way/222645944,supermarket,Lidl,,41.6190191,-4.7197926,Valladolid
+way/253590957,supermarket,Froiz,,41.6119128,-4.7933469,Valladolid
+way/315915228,supermarket,Alcampo,"Calle del Bálago, 5",41.6573754,-4.7387384,Valladolid
+way/660244932,supermarket,Mercadona,,41.6152836,-4.7611893,Valladolid
+way/690218024,supermarket,Aldi,,41.6669631,-4.7300365,Valladolid
+way/760159727,supermarket,Gadis,,41.6190987,-4.7364396,Valladolid
+way/764677537,wholesale,Cash Ifa,,41.6242933,-4.7703618,Valladolid
+way/766297485,wholesale,Makro,,41.6281422,-4.7368450,Valladolid
+way/793639540,supermarket,Mercadona,"Paseo del Cauce, 45",41.6609454,-4.7127864,Valladolid
+way/803434850,supermarket,Gadis,,41.6322581,-4.7671360,Valladolid
+way/804319711,supermarket,Lupa,,41.6583853,-4.7768793,Valladolid
+way/804657072,wholesale,Supercash,,41.6194924,-4.7187467,Valladolid
+way/804669471,wholesale,TopCash,,41.6295411,-4.7317504,Valladolid
+way/804853550,supermarket,Aldi,"Calle de Villabáñez, 90",41.6460908,-4.6963022,Valladolid
+way/804857329,supermarket,Gadis,,41.6492549,-4.7199970,Valladolid
+way/804857331,supermarket,Mercadona,,41.6486445,-4.7198311,Valladolid
+way/810196649,supermarket,Lidl,,41.6278826,-4.7611395,Valladolid
+way/815835702,supermarket,Alimerka,,41.6396199,-4.7348353,Valladolid
+way/815835706,supermarket,Mercadona,,41.6390267,-4.7337499,Valladolid
+way/826105698,supermarket,Dia,"Camino Viejo de Simancas, 14",41.6267979,-4.7478195,Valladolid
+way/834286621,supermarket,Mercadona,,41.6453432,-4.7081452,Valladolid
+way/946068950,supermarket,Gadis,,41.6384237,-4.7379088,Valladolid
+way/975641572,supermarket,Tifer,"Avenida de Soria, 22",41.6330248,-4.7062172,Valladolid
+way/975816374,supermarket,Mercadona,,41.6457700,-4.6945300,Valladolid
+way/975816397,supermarket,Aldi,"Avenida de Santander, 6",41.6638310,-4.7127944,Valladolid
+way/996055548,supermarket,Lidl,,41.6469568,-4.6938065,Valladolid
+way/1098107433,supermarket,Gadis,,41.6359224,-4.7550897,Valladolid
+way/1099952867,convenience,Carrefour Express,,41.6518661,-4.7045829,Valladolid
+way/1124969070,supermarket,Tifer,Calle Frambuesa,41.6724730,-4.7266142,Valladolid
+way/1133780660,convenience,Carrefour Express,,41.6226665,-4.7717779,Valladolid
+way/1133780664,supermarket,Mercadona,,41.6217617,-4.7730822,Valladolid
+way/1153286745,supermarket,Aldi,,41.6211751,-4.7808871,Valladolid
+way/1204318926,supermarket,Alimerka,,41.6268132,-4.7297728,Valladolid
+way/1215874593,supermarket,Alimerka,"Avenida de Salamanca, 48",41.6210939,-4.7794508,Valladolid
+way/1223980300,supermarket,Lidl,"Avenida de Santander, 4",41.6633170,-4.7134015,Valladolid
+way/1285795152,supermarket,Mercadona,"Calle Arca Real, 101",41.6297432,-4.7261003,Valladolid
+way/1288547822,supermarket,Lidl,,41.6723208,-4.7256911,Valladolid
+way/1289229289,convenience,Covirán,,41.6351017,-4.7841399,Valladolid
+way/1303366715,supermarket,Gadis,"Avenida de Burgos, 78",41.6705444,-4.7250080,Valladolid
+way/1358368780,supermarket,Lupa,,41.6190037,-4.7606306,Valladolid
+way/1415958638,supermarket,Alcampo,"Calle Carromajada, 9",41.6253051,-4.7771362,Valladolid
+way/1445734584,supermarket,Tifer,,41.6282163,-4.7605610,Valladolid
+way/1450945024,supermarket,Lupa,,41.6186187,-4.7883639,Valladolid

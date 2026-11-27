@@ -6,6 +6,7 @@ import { EscolhaDeMercado } from './EscolhaDeMercado'
 import { EscolhaDoCatalogo } from './EscolhaDoCatalogo'
 import {
   conferidoNoLocal,
+  distanciaAte,
   escolhaRecente,
   lembrarMercado,
   naCidade,
@@ -14,6 +15,9 @@ import {
 } from './lib/mercado'
 import { RegistroDePreco } from './RegistroDePreco'
 import type { useEnvio } from './lib/envio'
+
+/** Até onde o mercado ativo mais próximo ainda é sugerido sem perguntar. */
+const SUGESTAO_ATE_M = 500
 
 type Resultado =
   | { tipo: 'nenhum' }
@@ -64,7 +68,8 @@ export function Escaneamento({
       ? { tipo: 'achado', produto: produtoInicial }
       : { tipo: 'nenhum' },
   )
-  const { carregando, localizando, mercados, sugerido, posicao, cidade } = locais
+  const { carregando, localizando, mercados, sugerido, posicao, cidade, incluir } =
+    locais
   const [escolhaManual, setEscolhaManual] = useState<Mercado | null>(null)
   const [modo, setModo] = useState<'codigo' | 'catalogo'>('codigo')
   const [salvos, setSalvos] = useState(0)
@@ -78,9 +83,25 @@ export function Escaneamento({
   // um palpite de ontem. Aqui ele não serve: o registro abriria numa loja e
   // trocaria para outra com a pessoa no meio do preço. Então espera-se a
   // posição, a menos que haja escolha feita à mão nas últimas horas.
-  const escolhido = escolhaManual ?? escolhaRecente(mercados)
+  //
+  // A escolha de horas atrás só vale na mesma cidade. Quem escolheu um mercado
+  // em Goianésia de manhã e abre o app em Brasília à tarde não está mais lá, e
+  // a posição sabe disso mesmo quando o mercado não tem coordenada.
+  const recente = escolhaRecente(mercados)
+  const recenteVale = recente && (!cidade || recente.cidade === cidade)
+  const escolhido = escolhaManual ?? (recenteVale ? recente : null)
   const esperandoPosicao = localizando && !escolhido
-  const mercado = escolhido ?? (localizando ? null : sugerido)
+  //
+  // E a sugestão do GPS só vale de perto. O mais próximo dos mercados ativos
+  // pode estar a quilômetros — na cidade onde ninguém ativou nada ainda, está
+  // em outra cidade — e registrar nele em silêncio gravaria o preço na loja
+  // errada. Longe de todos, a escolha abre, com os mercados do catálogo que
+  // estão perto no alto.
+  const distanciaDoSugerido = sugerido ? distanciaAte(sugerido, posicao) : null
+  const sugeridoVale =
+    distanciaDoSugerido === null || distanciaDoSugerido <= SUGESTAO_ATE_M
+  const mercado =
+    escolhido ?? (localizando || !sugeridoVale ? null : sugerido)
   const conferido = mercado ? conferidoNoLocal(mercado, posicao, mercados) : false
   // Memorizado porque é dependência do efeito que busca os preços conhecidos:
   // array novo a cada render refaria a consulta a cada tecla do preço.
@@ -146,6 +167,7 @@ export function Escaneamento({
           lembrarMercado(m.id)
           setEscolhaManual(m)
         }}
+        aoIncluir={incluir}
       />
 
       {/*

@@ -62,6 +62,7 @@ referenciam o `RF-xx` de origem.
 | RF-05 | O sistema deve impedir que o usuário crie produto que não possua código de barras — esses vêm apenas do catálogo curado | ✅ | `Dom` RD-08 |
 | RF-06 | O sistema deve sugerir o mercado mais próximo a partir da localização do usuário | ✅ | `Elic` |
 | RF-07 | O sistema deve permitir corrigir o mercado sugerido, escolhendo outro da lista | ✅ | `Der` |
+| RF-54 | O sistema deve oferecer, na escolha do mercado, os mercados do catálogo importado que estão a até 300 m do usuário e ainda não estão em uso, e permitir ativá-los com um toque. Sem localização não há ativação | ✅ | `Elic` · RD-10 |
 | RF-46 | O sistema deve permitir filtrar a lista de mercados por nome, rede ou endereço, ignorando acentuação | ✅ | `Der` |
 | RF-08 | O sistema deve registrar o preço observado de um produto em um mercado | ✅ | `Elic` |
 | RF-09 | O sistema deve permitir anexar foto da etiqueta ao registro | ❌ | `Elic` |
@@ -136,7 +137,7 @@ referenciam o `RF-xx` de origem.
 | RF-30 | O sistema deve importar carga inicial de preços de base pública | ❌ | `Elic` |
 | RF-31 | O sistema deve atribuir pontos e distintivos a contribuidores | ❌ | `Elic` |
 
-**Resumo:** 53 requisitos funcionais, 37 no MVP.
+**Resumo:** 54 requisitos funcionais, 38 no MVP.
 
 ---
 
@@ -180,7 +181,7 @@ método de verificação, o requisito não é verificável e portanto não é um
 | RNF-11 | Só devem ser coletados os dados pessoais necessários à função | Item de *definition of done* | Revisar o modelo de dados contra a lista de finalidades da §6 |
 | RNF-13 | A coordenada do dispositivo não deve ser persistida; só o mercado escolhido e o indicador de conferência | Modelagem | Inspecionar o esquema: nenhuma coluna de latitude ou longitude em `registro_preco` |
 | RNF-12 | A identidade de quem cadastrou um preço não deve ser exposta a outros usuários | Modelagem e critério de aceitação em UC-03 | Inspecionar a resposta da API de consulta |
-| RNF-14 | A aplicação deve exibir atribuição ao Open Food Facts, como exige a licença ODbL dos dados reutilizados | Item de *definition of done* | Conferir a presença da atribuição na tela de produto e na tela sobre |
+| RNF-14 | A aplicação deve exibir atribuição ao Open Food Facts e ao OpenStreetMap, como exige a licença ODbL dos dados reutilizados — produtos de um, mercados do outro | Item de *definition of done* | Conferir a presença das duas atribuições na tela de conta |
 
 ---
 
@@ -248,6 +249,7 @@ coletado, para que serve e por quanto tempo fica.
 | Identificador do usuário | Atribuir autoria, aplicar o limite diário por produto e mercado, distinguir auto-confirmação de confirmação de terceiro | Até a exclusão da conta, quando a autoria é anonimizada e o preço permanece (RD-11) |
 | Apelido | Identificar a pessoa na interface para ela mesma | Idem |
 | E-mail ou identidade Google | Recuperar a conta em outro aparelho. Só existe se a pessoa optar por vincular | Até a exclusão da conta |
+| Autoria da ativação de um mercado | Aplicar o limite diário de ativações e tratar abuso. Nunca é exibida | Até a exclusão da conta, quando é anonimizada e o mercado permanece |
 | Lista de compras | Montar a comparação por item | Até a pessoa apagar, por exclusão lógica, ou excluir a conta, quando é removida de fato (RD-12) |
 | Compras concluídas: produto, quantidade, instante e, quando conhecido, o mercado | Lembrar o que a pessoa costuma comprar, para sugerir na montagem da lista seguinte (RF-50) | Até a pessoa desfazer a compra ou excluir a conta, quando é removida de fato. Nunca é lida por outro usuário |
 

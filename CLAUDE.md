@@ -22,6 +22,7 @@ Projeto individual. Aplicativo web instalável, sem publicação em loja.
 | `artefatos/requisitos/` | Requisitos, modelo de domínio, casos de uso, validação |
 | `artefatos/design/design.md` | Decisões de persistência, acesso e tolerância a falhas |
 | `supabase/migrations/` | Esquema do banco. É o artefato de design da camada de dados |
+| `dados/mercados-osm.csv` | Catálogo de mercados baixado do OpenStreetMap. Atualizar com `scripts/baixar-mercados-osm.mjs` e carregar com `scripts/carregar-candidatos.mjs` |
 | `src/tipos/banco.ts` | Tipos gerados do esquema — **não editar à mão**, rodar `npm run tipos` |
 | `src/lib/supabase.ts` | Cliente único do Supabase |
 
@@ -55,8 +56,14 @@ dispositivo, comparando com a coordenada do mercado que já veio do catálogo. S
 As tabelas `registro_preco`, `confirmacao` e a visão `registro_vigente` não são legíveis
 pelo cliente — a revogação é de privilégio, não só de política.
 
-**O usuário não cria produto sem código de barras nem mercado (RD-08, RD-10).** Esses vêm de
-catálogo curado. Com GTIN, criar é permitido, porque o código garante a identidade (RD-09).
+**O usuário não cria produto sem código de barras nem escreve mercado (RD-08, RD-10).** Com
+GTIN, criar produto é permitido, porque o código garante a identidade (RD-09). Mercado vem
+de catálogo importado do OpenStreetMap: o usuário só **ativa** um lugar que já existe lá,
+pelo identificador, estando perto dele — nunca digita nome ou endereço.
+
+**A proximidade do mercado é conferida no aparelho, nunca no servidor.** É consequência da
+RD-13: o app baixa o catálogo da cidade e compara localmente. Não criar consulta do tipo
+"mercados perto deste ponto", porque ela mandaria a posição do usuário.
 
 **Tabela nova nasce sem privilégio.** O padrão do schema foi invertido de propósito: toda
 tabela criada daqui em diante é inacessível até receber `grant` explícito. Isso vai

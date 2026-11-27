@@ -1,5 +1,12 @@
-import { useState } from 'react'
-import { distanciaAte, type Mercado, type Posicao } from './lib/mercado'
+import { useEffect, useState } from 'react'
+import {
+  ativarMercado,
+  candidatosPerto,
+  distanciaAte,
+  type Candidato,
+  type Mercado,
+  type Posicao,
+} from './lib/mercado'
 import { distanciaEmTexto } from './lib/formato'
 import { semAcento } from './lib/texto'
 
@@ -13,6 +20,8 @@ type Props = {
   cidade: string | null
   carregando: boolean
   aoEscolher: (mercado: Mercado) => void
+  /** O mercado recém-ativado entra no catálogo do app inteiro. */
+  aoIncluir: (mercado: Mercado) => void
 }
 
 /**
@@ -29,9 +38,56 @@ export function EscolhaDeMercado({
   cidade,
   carregando,
   aoEscolher,
+  aoIncluir,
 }: Props) {
   const [trocando, setTrocando] = useState(false)
   const [filtro, setFiltro] = useState('')
+
+  /*
+    Mercados do catálogo que estão perto e que ninguém usou ainda (RF-54).
+
+    É por aqui que um mercado passa a existir no app: não por alguém digitar o
+    nome dele, mas por alguém estar perto de um lugar que o OpenStreetMap já
+    conhece e tocar nele. Sem localização a lista não aparece — a proximidade é
+    a única barreira que existe, e sem ela não há o que oferecer.
+
+    Só busca quando a escolha está aberta: quem já tem o mercado certo
+    sugerido não paga pela consulta.
+  */
+  const [novos, setNovos] = useState<{ candidato: Candidato; distancia: number }[]>([])
+  const [ativando, setAtivando] = useState<string | null>(null)
+  const [falhou, setFalhou] = useState(false)
+  const escolhendo = !carregando && (!escolhido || trocando)
+
+  useEffect(() => {
+    if (!escolhendo || !posicao || !cidade) return
+    let ativo = true
+    candidatosPerto(posicao, cidade, mercados)
+      .then((r) => {
+        if (ativo) setNovos(r)
+      })
+      .catch(() => {
+        if (ativo) setNovos([])
+      })
+    return () => {
+      ativo = false
+    }
+  }, [escolhendo, posicao, cidade, mercados])
+
+  async function ativar(candidato: Candidato) {
+    setAtivando(candidato.osmId)
+    setFalhou(false)
+    try {
+      const mercado = await ativarMercado(candidato)
+      aoIncluir(mercado)
+      aoEscolher(mercado)
+      setTrocando(false)
+    } catch {
+      setFalhou(true)
+    } finally {
+      setAtivando(null)
+    }
+  }
 
   if (carregando) {
     return <p className="text-tinta-fraca">Vendo onde você está…</p>
@@ -127,10 +183,16 @@ export function EscolhaDeMercado({
     return a.m.nome.localeCompare(b.m.nome, 'pt-BR')
   }
 
+  // Com a cidade conhecida, só os dela. Os de outras cidades aparecem quando a
+  // pessoa filtra pelo nome: quem está em Valladolid não quer rolar por vinte
+  // mercados de Goianésia a oito mil quilômetros, mas quem digita o nome de um
+  // deles sabe o que procura.
   const visiveis = cidade
     ? [
         ...comDistancia.filter((x) => x.m.cidade === cidade).sort(ordenar),
-        ...comDistancia.filter((x) => x.m.cidade !== cidade).sort(ordenar),
+        ...(alvo
+          ? comDistancia.filter((x) => x.m.cidade !== cidade).sort(ordenar)
+          : []),
       ]
     : [...comDistancia].sort(ordenar)
 
@@ -150,7 +212,48 @@ export function EscolhaDeMercado({
         className="min-h-11 rounded-xl border border-borda-forte bg-elevado px-3"
       />
 
-      {visiveis.length === 0 && (
+      {/*
+        Os novos vêm antes, e somem quando há filtro: quem está digitando o
+        nome procura um mercado que já conhece, não um para ativar.
+      */}
+      {novos.length > 0 && !alvo && (
+        <div className="flex flex-col gap-1 rounded-xl border border-marca-borda bg-marca-fraca p-2">
+          <p className="px-2 pt-1 text-xs font-medium tracking-wide text-marca-forte uppercase">
+            Perto de você
+          </p>
+          <ul className="flex flex-col gap-1">
+            {novos.map(({ candidato: c, distancia }) => (
+              <li key={c.osmId}>
+                <button
+                  type="button"
+                  disabled={ativando !== null}
+                  onClick={() => void ativar(c)}
+                  className="flex min-h-11 w-full items-start justify-between gap-3 rounded-lg px-2 py-2 text-left disabled:opacity-60"
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="text-tinta">{c.nome}</span>
+                    {c.endereco && (
+                      <span className="block text-sm text-tinta-suave">
+                        {c.endereco}
+                      </span>
+                    )}
+                  </span>
+                  <span className="shrink-0 pt-0.5 text-sm tabular-nums text-tinta-suave">
+                    {ativando === c.osmId ? 'Abrindo…' : distanciaEmTexto(distancia)}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+          {falhou && (
+            <p role="alert" className="px-2 pb-1 text-sm text-alerta-tinta">
+              Não consegui abrir esse mercado. Tente de novo.
+            </p>
+          )}
+        </div>
+      )}
+
+      {visiveis.length === 0 && alvo && (
         <p className="rounded-xl bg-sutil p-3 text-sm text-tinta-suave">
           Nenhum mercado com esse nome ou nessa rua.
         </p>

@@ -301,6 +301,8 @@ export type Database = {
       }
       mercado: {
         Row: {
+          ativado_em: string | null
+          ativado_por: string | null
           cidade: string
           endereco: string
           id: string
@@ -308,9 +310,12 @@ export type Database = {
           localizacao: unknown
           longitude: number | null
           nome: string
+          osm_id: string | null
           rede_id: string | null
         }
         Insert: {
+          ativado_em?: string | null
+          ativado_por?: string | null
           cidade: string
           endereco: string
           id?: string
@@ -318,9 +323,12 @@ export type Database = {
           localizacao?: unknown
           longitude?: number | null
           nome: string
+          osm_id?: string | null
           rede_id?: string | null
         }
         Update: {
+          ativado_em?: string | null
+          ativado_por?: string | null
           cidade?: string
           endereco?: string
           id?: string
@@ -328,9 +336,17 @@ export type Database = {
           localizacao?: unknown
           longitude?: number | null
           nome?: string
+          osm_id?: string | null
           rede_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "mercado_ativado_por_fkey"
+            columns: ["ativado_por"]
+            isOneToOne: false
+            referencedRelation: "perfil"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "mercado_rede_id_fkey"
             columns: ["rede_id"]
@@ -339,6 +355,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      mercado_candidato: {
+        Row: {
+          cidade: string
+          endereco: string
+          latitude: number
+          longitude: number
+          nome: string
+          osm_id: string
+          tipo: string
+        }
+        Insert: {
+          cidade: string
+          endereco?: string
+          latitude: number
+          longitude: number
+          nome: string
+          osm_id: string
+          tipo: string
+        }
+        Update: {
+          cidade?: string
+          endereco?: string
+          latitude?: number
+          longitude?: number
+          nome?: string
+          osm_id?: string
+          tipo?: string
+        }
+        Relationships: []
       }
       perfil: {
         Row: {
@@ -484,6 +530,15 @@ export type Database = {
       }
     }
     Views: {
+      cidade_atendida: {
+        Row: {
+          candidatos: number | null
+          cidade: string | null
+          latitude: number | null
+          longitude: number | null
+        }
+        Relationships: []
+      }
       meus_registros: {
         Row: {
           id: string | null
@@ -599,6 +654,7 @@ export type Database = {
       }
     }
     Functions: {
+      ativar_mercado: { Args: { p_osm_id: string }; Returns: string }
       concluir_compra: {
         Args: { p_lista: string; p_mercado?: string }
         Returns: string

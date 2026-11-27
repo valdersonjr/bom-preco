@@ -75,7 +75,8 @@ primeira abertura, `anon` não precisa alcançar tabela alguma, e não alcança.
 | Tabela | Ler | Inserir | Alterar | Apagar |
 | ------ | --- | ------- | ------- | ------ |
 | `perfil` | só o próprio | só o próprio | só o próprio | por função de servidor |
-| `rede`, `mercado` | todos | **mantenedor** | **mantenedor** | **mantenedor** |
+| `rede`, `mercado` | todos | **mantenedor**, ou ativação pelo usuário | **mantenedor** | **mantenedor** |
+| `mercado_candidato`, `cidade_atendida` | todos | — | — | — |
 | `produto` | todos | só com GTIN | **mantenedor** | **mantenedor** |
 | `registro_preco` | **não** | só como autor | **ninguém** | **ninguém** |
 | `confirmacao` | **não** | só como autor | não | não |
@@ -85,6 +86,19 @@ primeira abertura, `anon` não precisa alcançar tabela alguma, e não alcança.
 | `lista`, `item_lista` | só o dono | só o dono | só o dono | só o dono |
 | `compra`, `item_compra` | só o dono | só o dono | **ninguém** | só o dono |
 | `evento` | **não** | só como autor, ou sem autor | **ninguém** | **ninguém** |
+
+**O usuário ativa mercado, mas não insere em `mercado`.** A política de inserção continua
+sendo só do mantenedor. A ativação (RF-54) passa por `ativar_mercado`, uma função com
+privilégio do dono que aceita um único argumento — o identificador de um lugar do catálogo
+importado — e copia de lá nome, endereço e coordenada. O usuário não fornece texto nenhum, e
+a unicidade do identificador faz de duas ativações do mesmo lugar uma linha só. Há um teto
+de cinco ativações por pessoa por dia.
+
+O banco não verifica a proximidade: para isso a posição teria de trafegar, e a RD-13 proíbe.
+Quem filtra "só os que estão perto" é o aparelho, que baixa o catálogo da cidade inteira e
+compara localmente. Em que cidade ele está, descobre do mesmo jeito, contra o centro de cada
+cidade em `cidade_atendida`. O que alguém mal-intencionado consegue é ativar de longe um
+mercado que existe — nunca inventar um.
 
 Quatro linhas merecem atenção:
 

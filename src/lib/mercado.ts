@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { supabase } from './supabase'
 
 export type Mercado = {
@@ -8,6 +8,18 @@ export type Mercado = {
   latitude: number | null
   longitude: number | null
   rede: string | null
+  cidade: string
+  /** Identificador no OpenStreetMap. Nulo nos mercados cadastrados à mão. */
+  osmId: string | null
+}
+
+/** Um mercado do catálogo importado que ainda ninguém ativou (RF-54). */
+export type Candidato = {
+  osmId: string
+  nome: string
+  endereco: string
+  latitude: number
+  longitude: number
   cidade: string
 }
 
@@ -153,6 +165,132 @@ export function escolhaRecente(mercados: Mercado[]): Mercado | null {
   return mercados.find((m) => m.id === lembrado.id) ?? null
 }
 
+/**
+ * A que distância um candidato pode ser ativado.
+ *
+ * É a "barreira" do RF-54: a pessoa só libera o mercado perto do qual está.
+ * Trezentos metros, e não os duzentos do "conferido no local", porque aqui o
+ * erro do GPS só custa uma linha a mais numa lista curta — e apertar demais
+ * esconderia o mercado de quem está dentro dele, com o sinal ruim de sempre.
+ */
+export const RAIO_DE_ATIVACAO_M = 300
+
+/** Abaixo disto, candidato e mercado ativo são o mesmo lugar. */
+const MESMO_LUGAR_M = 40
+
+/** Até onde uma cidade atendida ainda é "a cidade onde a pessoa está". */
+const RAIO_DA_CIDADE_M = 80_000
+
+/** Candidatos já baixados, por cidade. Vale enquanto o app estiver aberto. */
+const candidatosPorCidade = new Map<string, Promise<Candidato[]>>()
+
+/**
+ * O catálogo inteiro de uma cidade, em páginas.
+ *
+ * Vem a cidade toda, e não "os vizinhos deste ponto", porque pedir vizinhos
+ * mandaria a posição do usuário ao servidor (RD-13). Brasília são umas
+ * seiscentas linhas curtas; cabe, e só é pedido por quem abre a escolha de
+ * mercado com a localização ligada.
+ */
+function candidatosDaCidade(cidade: string): Promise<Candidato[]> {
+  let pedido = candidatosPorCidade.get(cidade)
+  if (!pedido) {
+    pedido = (async () => {
+      const todos: Candidato[] = []
+      for (let de = 0; ; de += 1000) {
+        const { data, error } = await supabase
+          .from('mercado_candidato')
+          .select('osm_id, nome, endereco, latitude, longitude, cidade')
+          .eq('cidade', cidade)
+          .order('osm_id')
+          .range(de, de + 999)
+        if (error) throw new Error(error.message)
+        todos.push(
+          ...data.map((c) => ({
+            osmId: c.osm_id,
+            nome: c.nome,
+            endereco: c.endereco,
+            latitude: c.latitude,
+            longitude: c.longitude,
+            cidade: c.cidade,
+          })),
+        )
+        if (data.length < 1000) return todos
+      }
+    })()
+    // Falhou: a próxima abertura tenta de novo, em vez de herdar o erro.
+    pedido.catch(() => candidatosPorCidade.delete(cidade))
+    candidatosPorCidade.set(cidade, pedido)
+  }
+  return pedido
+}
+
+/**
+ * Os candidatos que a pessoa pode ativar agora: os do catálogo que estão perto
+ * dela e que ainda não são mercado ativo (RF-54).
+ *
+ * "Já é ativo" tem duas formas: o mesmo identificador do OpenStreetMap, ou um
+ * mercado cadastrado à mão no mesmo ponto. A segunda cobre os mercados antigos
+ * que ninguém ligou ao catálogo.
+ *
+ * Tudo aqui roda no aparelho. A posição entra como argumento e não sai.
+ */
+export async function candidatosPerto(
+  posicao: Posicao,
+  cidade: string,
+  ativos: Mercado[],
+): Promise<{ candidato: Candidato; distancia: number }[]> {
+  const doCatalogo = await candidatosDaCidade(cidade)
+  const ativosPorOsm = new Set(ativos.map((m) => m.osmId).filter(Boolean))
+  const comPonto = comCoordenada(ativos)
+
+  return doCatalogo
+    .filter((c) => !ativosPorOsm.has(c.osmId))
+    .map((candidato) => ({
+      candidato,
+      distancia: distanciaM(
+        posicao.lat,
+        posicao.lon,
+        candidato.latitude,
+        candidato.longitude,
+      ),
+    }))
+    .filter(({ distancia }) => distancia <= RAIO_DE_ATIVACAO_M)
+    .filter(
+      ({ candidato: c }) =>
+        !comPonto.some(
+          (m) =>
+            distanciaM(c.latitude, c.longitude, m.latitude!, m.longitude!) <=
+            MESMO_LUGAR_M,
+        ),
+    )
+    .sort((a, b) => a.distancia - b.distancia)
+    .slice(0, 8)
+}
+
+/**
+ * Ativa o candidato e devolve o mercado pronto para uso.
+ *
+ * O banco decide se cria ou se devolve o que outra pessoa já criou — é o
+ * identificador do OpenStreetMap, único, que faz dos dois o mesmo.
+ */
+export async function ativarMercado(c: Candidato): Promise<Mercado> {
+  const { data, error } = await supabase.rpc('ativar_mercado', {
+    p_osm_id: c.osmId,
+  })
+  if (error || !data) throw new Error(error?.message ?? 'Não consegui ativar.')
+  return {
+    id: data,
+    nome: c.nome,
+    endereco: c.endereco,
+    latitude: c.latitude,
+    longitude: c.longitude,
+    rede: null,
+    cidade: c.cidade,
+    osmId: c.osmId,
+  }
+}
+
 export type EstadoMercados = {
   /** O catálogo ainda não chegou. */
   carregando: boolean
@@ -166,8 +304,33 @@ export type EstadoMercados = {
   /** O mais próximo quando há posição; o último escolhido quando não há. */
   sugerido: Mercado | null
   posicao: Posicao | null
-  /** Cidade do mercado sugerido. Nula sem localização nem escolha anterior. */
+  /**
+   * A cidade onde a pessoa está: a cidade atendida mais próxima da posição
+   * dela, ou, sem posição, a do último mercado escolhido. Nula se nenhuma.
+   */
   cidade: string | null
+  /** Acrescenta ao catálogo em memória o mercado que a pessoa acabou de ativar. */
+  incluir: (mercado: Mercado) => void
+}
+
+type Cidade = { cidade: string; latitude: number; longitude: number }
+
+/**
+ * Em que cidade atendida a pessoa está.
+ *
+ * Antes a cidade era a do mercado ativo mais próximo, e isso só funcionava
+ * enquanto toda cidade tinha mercado ativo: quem abrisse o app em Valladolid
+ * recebia "Goianésia", a oito mil quilômetros. Agora compara-se com o centro
+ * das cidades do catálogo, no aparelho.
+ */
+function cidadeDaPosicao(cidades: Cidade[], posicao: Posicao): string | null {
+  const perto = cidades
+    .map((c) => ({
+      c,
+      d: distanciaM(posicao.lat, posicao.lon, c.latitude, c.longitude),
+    }))
+    .sort((a, b) => a.d - b.d)[0]
+  return perto && perto.d <= RAIO_DA_CIDADE_M ? perto.c.cidade : null
 }
 
 /** O mercado com coordenada mais perto da posição. */
@@ -196,7 +359,7 @@ function maisProximo(mercados: Mercado[], posicao: Posicao): Mercado | null {
  * preço — olha `localizando` e espera; quem só precisa do catálogo, não.
  */
 export function useMercados(): EstadoMercados {
-  const [estado, setEstado] = useState<EstadoMercados>({
+  const [estado, setEstado] = useState<Omit<EstadoMercados, 'incluir'>>({
     carregando: true,
     localizando: true,
     mercados: [],
@@ -205,16 +368,33 @@ export function useMercados(): EstadoMercados {
     cidade: null,
   })
 
+  const incluir = useCallback((mercado: Mercado) => {
+    setEstado((e) =>
+      e.mercados.some((m) => m.id === mercado.id)
+        ? e
+        : { ...e, mercados: [...e.mercados, mercado] },
+    )
+  }, [])
+
   useEffect(() => {
     let ativo = true
     const aPosicao = obterPosicao()
 
     async function carregar() {
-      const { data } = await supabase
-        .from('mercado')
-        .select('id, nome, endereco, latitude, longitude, cidade, rede(nome)')
-        .order('nome')
+      const [{ data }, { data: atendidas }] = await Promise.all([
+        supabase
+          .from('mercado')
+          .select('id, nome, endereco, latitude, longitude, cidade, osm_id, rede(nome)')
+          .order('nome'),
+        supabase.from('cidade_atendida').select('cidade, latitude, longitude'),
+      ])
       if (!ativo) return
+
+      const cidades: Cidade[] = (atendidas ?? []).flatMap((c) =>
+        c.cidade && c.latitude !== null && c.longitude !== null
+          ? [{ cidade: c.cidade, latitude: c.latitude, longitude: c.longitude }]
+          : [],
+      )
 
       const mercados: Mercado[] = (data ?? []).map((m) => ({
         id: m.id,
@@ -224,6 +404,7 @@ export function useMercados(): EstadoMercados {
         longitude: m.longitude,
         rede: m.rede?.nome ?? null,
         cidade: m.cidade,
+        osmId: m.osm_id,
       }))
 
       // Sem posição, o último mercado escolhido é o melhor palpite que existe,
@@ -245,14 +426,19 @@ export function useMercados(): EstadoMercados {
       if (!ativo) return
 
       const sugerido = posicao ? maisProximo(mercados, posicao) : lembrado
-      setEstado({
+      // `e.mercados`, e não `mercados`: a pessoa pode ter ativado um mercado
+      // enquanto o GPS respondia, e a lista de então não o teria.
+      setEstado((e) => ({
         carregando: false,
         localizando: false,
-        mercados,
+        mercados: e.mercados,
         sugerido,
         posicao,
-        cidade: sugerido?.cidade ?? null,
-      })
+        cidade:
+          (posicao && cidadeDaPosicao(cidades, posicao)) ??
+          sugerido?.cidade ??
+          null,
+      }))
     }
 
     void carregar()
@@ -261,7 +447,7 @@ export function useMercados(): EstadoMercados {
     }
   }, [])
 
-  return estado
+  return { ...estado, incluir }
 }
 
 /**

@@ -97,6 +97,7 @@ describe('escolherOpcoes (RD-16)', () => {
     longitude: null,
     rede: null,
     cidade: 'Goianésia',
+    osmId: null,
   })
 
   const produto = (id: string, kg: number, dimensao = 'massa'): Produto => ({
