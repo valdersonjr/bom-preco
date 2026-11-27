@@ -16,7 +16,7 @@ import {
   type Posicao,
 } from './lib/mercado'
 import type { Produto } from './lib/produto'
-import { distanciaEmTexto, precoEmTexto } from './lib/formato'
+import { distanciaEmTexto, idadeEmTexto, precoEmTexto } from './lib/formato'
 import { Preco } from './Preco'
 import { ComoChegar } from './Mercado'
 import { MapaDeMercados } from './MapaDeMercados'
@@ -437,6 +437,18 @@ function ItemLinha({
                     {precoEmTexto(melhor.valor * quantidade)} no total
                   </>
                 )}
+              </p>
+              {/*
+                De quando é o preço, e contra quantos ele ganhou. Sem a segunda
+                parte, o único preço conhecido de um produto aparecia igual ao
+                que venceu três concorrentes.
+              */}
+              <p className="mt-0.5 truncate text-sm text-tinta-fraca">
+                {melhor.entreQuantos === 1
+                  ? 'único preço'
+                  : `menor de ${melhor.entreQuantos}`}
+                {' · '}
+                {idadeEmTexto(melhor.idadeEmDias)}
               </p>
             </>
           ) : (

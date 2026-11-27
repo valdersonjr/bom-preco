@@ -12,7 +12,17 @@ export type ItemDaLista = {
   /** Já está no carrinho. Guarda o instante, para desmarcar sem inventar estado. */
   pego: boolean
   /** Nulo quando ninguém cadastrou preço válido para este produto. */
-  melhor: { mercado: Mercado; valor: number; idadeEmDias: number } | null
+  melhor: {
+    mercado: Mercado
+    valor: number
+    idadeEmDias: number
+    /**
+     * Quantos mercados tinham preço vigente para este produto. Com um só, o
+     * "melhor" não venceu ninguém — e a tela precisa dizer isso, ou o único
+     * preço conhecido passa por resultado de comparação.
+     */
+    entreQuantos: number
+  } | null
 }
 
 const COLUNAS_PRODUTO =
@@ -164,9 +174,10 @@ export async function carregarLista(
   )
 
   /** Menor preço vigente de cada produto, entre os mercados. */
-  const melhorPorProduto = new Map<string, ItemDaLista['melhor']>()
+  const melhorPorProduto = new Map<string, NonNullable<ItemDaLista['melhor']>>()
   for (const p of vigentes) {
     const atual = melhorPorProduto.get(p.produtoId)
+    const entreQuantos = (atual?.entreQuantos ?? 0) + 1
     if (!atual || p.valor < atual.valor) {
       melhorPorProduto.set(p.produtoId, {
         mercado: p.mercado,
@@ -174,7 +185,10 @@ export async function carregarLista(
         idadeEmDias: Math.floor(
           (Date.now() - p.vistoEm.getTime()) / 86_400_000,
         ),
+        entreQuantos,
       })
+    } else {
+      atual.entreQuantos = entreQuantos
     }
   }
 

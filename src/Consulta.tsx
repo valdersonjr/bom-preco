@@ -7,7 +7,7 @@ import {
   type Posicao,
 } from './lib/consulta'
 import { Preco } from './Preco'
-import { distanciaEmTexto, precoEmTexto } from './lib/formato'
+import { distanciaEmTexto, idadeEmTexto, precoEmTexto } from './lib/formato'
 import {
   conferidoNoLocal,
   naCidade,
@@ -540,7 +540,7 @@ function Linha({
             </p>
           )}
           <p className="mt-0.5 text-sm text-tinta-fraca">
-            {descreverIdade(preco.idadeEmDias)}
+            {idadeEmTexto(preco.idadeEmDias)}
             {preco.distanciaM !== null && (
               <> · {distanciaEmTexto(preco.distanciaM)}</>
             )}
@@ -790,28 +790,4 @@ function Correcao({
       </div>
     </form>
   )
-}
-
-/**
- * A idade do preço, em palavras.
- *
- * Este texto não conhece a fronteira dos trinta dias, e é isso que conserta o
- * defeito. Antes ela estava escrita duas vezes: o filtro tratava trinta dias
- * como recente, porque RF-16 diz "mais de 30", e aqui `dias < 30` tratava como
- * velho. O preço de exatamente trinta dias aparecia entre os atuais anunciando
- * ter mais de um mês, e chegou a ser o mais barato da lista.
- *
- * Duas cópias de uma regra sempre acabam discordando. Agora só o filtro decide
- * o que é recente; aqui só se conta o tempo.
- *
- * Conta em dias até dois meses, e não até trinta: quem abriu a seção dos
- * vencidos quer saber se o preço é de trinta e cinco dias ou de seis meses, e
- * "mais de um mês" calava as duas coisas.
- */
-function descreverIdade(dias: number): string {
-  if (dias === 0) return 'visto hoje'
-  if (dias === 1) return 'visto ontem'
-  if (dias <= 60) return `visto há ${dias} dias`
-  const meses = Math.floor(dias / 30)
-  return `visto há ${meses} meses`
 }
