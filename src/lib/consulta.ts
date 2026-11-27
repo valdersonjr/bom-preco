@@ -1,6 +1,16 @@
 import { supabase } from './supabase'
 import { distanciaM, type Mercado } from './mercado'
 import { semAcento } from './texto'
+import type { Produto } from './produto'
+
+/**
+ * Produto como a busca devolve: com a marca de ter preço dentro da validade.
+ *
+ * A marca já era calculada para ordenar e jogada fora na última linha. Num
+ * catálogo de doze mil produtos com poucas dezenas de preços, é ela que separa
+ * o resultado que responde do que só existe.
+ */
+export type ProdutoAchado = Produto & { temPreco: boolean }
 
 /** RF-16: preço com mais de 30 dias sai da comparação por padrão. */
 export const DIAS_ATE_DESATUALIZAR = 30
@@ -202,7 +212,7 @@ const MOSTRADOS = 30
  * Desempate final pelo nome mais curto. Não é arbitrário: no catálogo aberto o
  * nome curto costuma ser o produto genérico e o longo, o item específico e raro.
  */
-export async function buscarProduto(termo: string) {
+export async function buscarProduto(termo: string): Promise<ProdutoAchado[]> {
   const t = termo.trim()
   if (t.length < 2) return []
 
@@ -212,7 +222,10 @@ export async function buscarProduto(termo: string) {
       .select(COLUNAS_PRODUTO)
       .eq('gtin', t)
       .limit(MOSTRADOS)
-    return data ?? []
+    const achados = data ?? []
+    if (achados.length === 0) return []
+    const comPreco = await quaisTemPrecoRecente(achados.map((p) => p.id))
+    return achados.map((p) => ({ ...p, temPreco: comPreco.has(p.id) }))
   }
 
   /*
@@ -262,7 +275,7 @@ export async function buscarProduto(termo: string) {
         a.p.nome.localeCompare(b.p.nome, 'pt-BR'),
     )
     .slice(0, MOSTRADOS)
-    .map((x) => x.p)
+    .map((x) => ({ ...x.p, temPreco: x.temPreco }))
 }
 
 /** Quais destes produtos têm preço dentro da janela de validade (RF-16). */

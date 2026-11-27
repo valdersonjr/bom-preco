@@ -7,7 +7,7 @@ import {
   obterOuCriarLista,
   type ItemDaLista,
 } from './lib/lista'
-import { buscarProduto } from './lib/consulta'
+import { buscarProduto, type ProdutoAchado } from './lib/consulta'
 import {
   distanciaAte,
   naCidade,
@@ -39,7 +39,7 @@ export function Lista({
   const [listaId, setListaId] = useState<string | null>(null)
   const [itens, setItens] = useState<ItemDaLista[] | null>(null)
   const [termo, setTermo] = useState('')
-  const [achados, setAchados] = useState<Produto[]>([])
+  const [achados, setAchados] = useState<ProdutoAchado[]>([])
   const [removido, setRemovido] = useState<Removido | null>(null)
   const [carrinhoAberto, setCarrinhoAberto] = useState(false)
   /*
@@ -203,12 +203,19 @@ export function Lista({
                   setTermo('')
                   setAchados([])
                 }}
-                className="min-h-11 w-full rounded px-3 py-2 text-left hover:bg-sutil"
+                className="flex min-h-11 w-full items-center gap-3 rounded px-3 py-2 text-left hover:bg-sutil"
               >
-                <span className="text-tinta">{nomeDeProduto(p.nome)}</span>
-                <span className="block text-sm text-tinta-suave">
-                  {descricaoDoProduto(p)}
+                <span className="min-w-0 flex-1">
+                  <span className="text-tinta">{nomeDeProduto(p.nome)}</span>
+                  <span className="block text-sm text-tinta-suave">
+                    {descricaoDoProduto(p)}
+                  </span>
                 </span>
+                {p.temPreco && (
+                  <span className="shrink-0 rounded-full bg-marca-fraca px-2 py-0.5 text-xs font-medium text-marca-forte">
+                    com preço
+                  </span>
+                )}
               </button>
             </li>
           ))}

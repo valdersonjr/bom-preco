@@ -5,6 +5,7 @@ import {
   precosDoProduto,
   type PrecoNoMercado,
   type Posicao,
+  type ProdutoAchado,
 } from './lib/consulta'
 import { Preco } from './Preco'
 import { distanciaEmTexto, idadeEmTexto, precoEmTexto } from './lib/formato'
@@ -52,7 +53,7 @@ export function Consulta({
   // cada render faria os preços serem buscados de novo a cada tecla digitada.
   const daCidade = useMemo(() => naCidade(mercados, cidade), [mercados, cidade])
   const [termo, setTermo] = useState('')
-  const [achados, setAchados] = useState<Produto[]>([])
+  const [achados, setAchados] = useState<ProdutoAchado[]>([])
   const [produto, setProduto] = useState<Produto | null>(null)
   const [raioKm, setRaioKm] = useState<number | null>(null)
   const [buscando, setBuscando] = useState(false)
@@ -242,6 +243,11 @@ export function Consulta({
                       {descricaoDoProduto(p)}
                     </span>
                   </span>
+                  {p.temPreco && (
+                    <span className="shrink-0 rounded-full bg-marca-fraca px-2 py-0.5 text-xs font-medium text-marca-forte">
+                      com preço
+                    </span>
+                  )}
                   <svg
                     viewBox="0 0 24 24"
                     aria-hidden="true"
