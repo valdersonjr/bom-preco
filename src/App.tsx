@@ -9,6 +9,7 @@ import { Navegacao, type Aba } from './Navegacao'
 import { useEnvio } from './lib/envio'
 import { useConexao } from './lib/conexao'
 import { useMercados } from './lib/mercado'
+import type { Produto } from './lib/produto'
 
 export default function App() {
   const sessao = useSessao()
@@ -28,9 +29,21 @@ export default function App() {
   */
   const [abrirVinculo, setAbrirVinculo] = useState(false)
 
+  /*
+    Produto que a lista mandou registrar.
+
+    Item sem preço era beco sem saída: a pessoa sabia qual produto faltava, e o
+    app a fazia trocar de aba e achá-lo de novo pela câmera ou pelo código.
+    Vive aqui em cima pelo mesmo motivo do vínculo: quem pede é uma aba, quem
+    atende é outra, e as duas desmontam.
+  */
+  const [aRegistrar, setARegistrar] = useState<Produto | null>(null)
+
   const irPara = useCallback((nova: Aba) => {
     setAba(nova)
     if (nova !== 'conta') setAbrirVinculo(false)
+    // Chegar ao registro pela barra é começar do zero, não retomar o pedido.
+    setARegistrar(null)
   }, [])
 
   return (
@@ -70,6 +83,11 @@ export default function App() {
             renomear={sessao.renomear}
             envio={envio}
             abrirVinculo={abrirVinculo}
+            aRegistrar={aRegistrar}
+            aoPedirRegistro={(produto) => {
+              setAba('registrar')
+              setARegistrar(produto)
+            }}
           />
         )}
 
@@ -114,6 +132,8 @@ function Abas({
   renomear,
   envio,
   abrirVinculo,
+  aRegistrar,
+  aoPedirRegistro,
 }: {
   aba: Aba
   aoTrocar: (aba: Aba) => void
@@ -122,6 +142,9 @@ function Abas({
   envio: ReturnType<typeof useEnvio>
   /** Chegou aqui pelo convite: a linha do e-mail já vem aberta. */
   abrirVinculo: boolean
+  /** Produto vindo da lista, já escolhido: o registro abre direto no preço. */
+  aRegistrar: Produto | null
+  aoPedirRegistro: (produto: Produto) => void
 }) {
   const locais = useMercados()
 
@@ -130,7 +153,12 @@ function Abas({
        Sem isso o React reaproveita o nó e a troca fica seca. */
     <div key={aba} className="anima-surgir flex flex-1 flex-col">
       {aba === 'lista' && (
-        <Lista usuarioId={perfil.id} locais={locais} aoIrPara={aoTrocar} />
+        <Lista
+          usuarioId={perfil.id}
+          locais={locais}
+          aoIrPara={aoTrocar}
+          aoRegistrar={aoPedirRegistro}
+        />
       )}
       {aba === 'buscar' && (
         <Consulta
@@ -141,7 +169,13 @@ function Abas({
         />
       )}
       {aba === 'registrar' && (
-        <Escaneamento usuarioId={perfil.id} locais={locais} envio={envio} />
+        <Escaneamento
+          usuarioId={perfil.id}
+          locais={locais}
+          envio={envio}
+          produtoInicial={aRegistrar}
+          aoVoltarParaLista={() => aoTrocar('lista')}
+        />
       )}
       {aba === 'conta' && (
         <Conta

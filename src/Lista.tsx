@@ -26,11 +26,14 @@ export function Lista({
   usuarioId,
   locais,
   aoIrPara,
+  aoRegistrar,
 }: {
   usuarioId: string
   /** Catálogo de mercados e posição, vindos de cima: um só por app. */
   locais: EstadoMercados
   aoIrPara: (aba: 'buscar' | 'registrar') => void
+  /** Abre o registro com o produto já escolhido. */
+  aoRegistrar: (produto: Produto) => void
 }) {
   const { mercados, cidade, posicao } = locais
   const [listaId, setListaId] = useState<string | null>(null)
@@ -270,14 +273,13 @@ export function Lista({
 
       {semPreco.length > 0 && (
         <div className="flex flex-col gap-2">
-          <p className="text-sm text-tinta-suave">
-            Ainda sem preço. Registre quando vir na prateleira.
-          </p>
+          <p className="text-sm text-tinta-suave">Ainda sem preço</p>
           <ul className="flex flex-col gap-2">
             {semPreco.map((i) => (
               <ItemLinha
                 key={i.itemId}
                 item={i}
+                aoRegistrar={() => aoRegistrar(i.produto)}
                 aoMudar={(q) => void mudar(i, q)}
                 aoMarcar={(p) => void marcar(i, p)}
               />
@@ -438,10 +440,13 @@ function ItemLinha({
   item,
   aoMudar,
   aoMarcar,
+  aoRegistrar,
 }: {
   item: ItemDaLista
   aoMudar: (quantidade: number) => void
   aoMarcar: (pego: boolean) => void
+  /** Só nos itens sem preço: leva ao registro com este produto. */
+  aoRegistrar?: () => void
 }) {
   const { melhor, produto, quantidade, pego } = item
 
@@ -528,9 +533,19 @@ function ItemLinha({
           ) : (
             /* O espaço do preço não colapsa quando não há preço: a lista
                continua alinhada, e a ausência fica evidente por comparação. */
-            <p className="text-preco-menor font-normal text-tinta-fraca">
-              sem preço
-            </p>
+            aoRegistrar ? (
+              <button
+                type="button"
+                onClick={aoRegistrar}
+                className="min-h-11 rounded-lg border border-borda-forte px-4 text-sm font-medium text-marca-forte"
+              >
+                Registrar preço
+              </button>
+            ) : (
+              <p className="text-preco-menor font-normal text-tinta-fraca">
+                sem preço
+              </p>
+            )
           )}
         </div>
 

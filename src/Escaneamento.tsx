@@ -39,6 +39,8 @@ export function Escaneamento({
   usuarioId,
   locais,
   envio,
+  produtoInicial,
+  aoVoltarParaLista,
 }: {
   usuarioId: string
   /**
@@ -53,8 +55,15 @@ export function Escaneamento({
    * mesmo app dariam dois laços de esvaziamento disputando a mesma fila.
    */
   envio: ReturnType<typeof useEnvio>
+  /** Veio da lista com o produto escolhido: pula direto para o preço. */
+  produtoInicial: Produto | null
+  aoVoltarParaLista: () => void
 }) {
-  const [resultado, setResultado] = useState<Resultado>({ tipo: 'nenhum' })
+  const [resultado, setResultado] = useState<Resultado>(
+    produtoInicial
+      ? { tipo: 'achado', produto: produtoInicial }
+      : { tipo: 'nenhum' },
+  )
   const { carregando, mercados, sugerido, posicao, cidade } = locais
   const [escolhaManual, setEscolhaManual] = useState<Mercado | null>(null)
   const [modo, setModo] = useState<'codigo' | 'catalogo'>('codigo')
@@ -172,6 +181,15 @@ export function Escaneamento({
           usuarioId={usuarioId}
           registrar={registrar}
           aoSalvar={() => {
+            // Quem veio da lista volta para ela: o preço que faltava agora
+            // está lá, e é isso que a pessoa quer ver.
+            if (
+              produtoInicial &&
+              resultado.produto.id === produtoInicial.id
+            ) {
+              aoVoltarParaLista()
+              return
+            }
             setSalvos((n) => n + 1)
             recomecar()
             /*
