@@ -394,12 +394,17 @@ function ItemLinha({
           aria-checked={pego}
           onClick={() => aoMarcar(!pego)}
           aria-label={`${pego ? 'Tirar do' : 'Pôr no'} carrinho: ${nomeDeProduto(produto.nome)}`}
-          className={`mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border-2 ${
-            pego
-              ? 'border-marca bg-marca text-sobre-marca'
-              : 'border-borda-forte'
-          }`}
+          /* 44 px de toque (RNF-07) em volta de um círculo de 24. A margem
+             negativa devolve ao layout o espaço que a área maior tomaria. */
+          className="-mx-2.5 -mt-2 -mb-2.5 flex size-11 shrink-0 items-center justify-center rounded-full"
         >
+          <span
+            className={`flex size-6 items-center justify-center rounded-full border-2 ${
+              pego
+                ? 'border-marca bg-marca text-sobre-marca'
+                : 'border-borda-forte'
+            }`}
+          >
           {pego && (
             <svg
               viewBox="0 0 24 24"
@@ -414,6 +419,7 @@ function ItemLinha({
               <path d="M20 6 9 17l-5-5" />
             </svg>
           )}
+          </span>
         </button>
 
         <div className="min-w-0 flex-1">
