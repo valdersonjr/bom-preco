@@ -105,6 +105,7 @@ referenciam o `RF-xx` de origem.
 | RF-23 | O sistema deve sugerir a divisão da lista entre dois ou três mercados | ❌ | `Elic` |
 | RF-49 | O sistema deve permitir marcar um item da lista como já posto no carrinho, e desmarcar | ✅ | `Der` |
 | RF-52 | O sistema deve permitir pôr na lista um item de qualquer marca, identificado por um termo, e indicar para ele o produto mais barato por unidade entre os que casam com o termo; e deve permitir ao usuário recusar um produto sugerido ou fixar o item em um produto | ✅ | `Elic` · RD-16 |
+| RF-53 | O sistema deve sugerir, na montagem da lista, os itens que o usuário já comprou e que não estão nela, dos mais frequentes aos menos | ✅ | `Der` |
 | RF-50 | O sistema deve permitir concluir a compra, retirando da lista os itens postos no carrinho e guardando-os como compra feita, com a possibilidade de desfazer | ✅ | `Der` |
 
 ### Confiança no dado · UC-05
@@ -135,7 +136,7 @@ referenciam o `RF-xx` de origem.
 | RF-30 | O sistema deve importar carga inicial de preços de base pública | ❌ | `Elic` |
 | RF-31 | O sistema deve atribuir pontos e distintivos a contribuidores | ❌ | `Elic` |
 
-**Resumo:** 52 requisitos funcionais, 36 no MVP.
+**Resumo:** 53 requisitos funcionais, 37 no MVP.
 
 ---
 

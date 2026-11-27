@@ -4,6 +4,7 @@ import {
   acrescentarTermo,
   carregarLista,
   concluirCompra,
+  costumes,
   desfazerCompra,
   fixarProduto,
   marcarPego,
@@ -11,6 +12,7 @@ import {
   normalizarTermo,
   obterOuCriarLista,
   recusarOpcao,
+  type Costume,
   type ItemDaLista,
 } from './lib/lista'
 import { buscarProduto, type ProdutoAchado } from './lib/consulta'
@@ -61,6 +63,7 @@ export function Lista({
     diferentes porque pedem coisas diferentes: tentar de novo, ou refazer o
     toque.
   */
+  const [costumeiros, setCostumeiros] = useState<Costume[]>([])
   const [falha, setFalha] = useState<'carregar' | 'salvar' | null>(null)
   const [tentativa, setTentativa] = useState(0)
 
@@ -141,6 +144,17 @@ export function Lista({
       ativo = false
     }
   }, [listaId, daCidade, tentativa])
+
+  // Relido quando uma compra é concluída ou desfeita: é aí que o costume muda.
+  useEffect(() => {
+    let ativo = true
+    void costumes().then((r) => {
+      if (ativo) setCostumeiros(r)
+    })
+    return () => {
+      ativo = false
+    }
+  }, [concluida])
 
   useEffect(() => {
     let ativo = true
@@ -224,6 +238,12 @@ export function Lista({
   const aComprar = todos.filter((i) => !i.pego && i.melhor)
   const semPreco = todos.filter((i) => !i.pego && !i.melhor)
 
+  // Só o que não está na lista: sugerir o que já foi acrescentado seria ruído.
+  const naLista = new Set(
+    todos.map((i) => (i.termo ? `t:${i.termo}` : `p:${i.produto?.id}`)),
+  )
+  const sugestoes = costumeiros.filter((c) => !naLista.has(c.chave)).slice(0, 8)
+
   return (
     <section className="flex flex-col gap-3">
       <h2 className="font-medium text-tinta">Lista de compras</h2>
@@ -300,6 +320,38 @@ export function Lista({
         </ul>
       )}
 
+      {/*
+        O que a pessoa costuma comprar, a um toque.
+
+        Some enquanto ela digita: aí ela já sabe o que quer, e as duas listas
+        juntas disputariam o mesmo espaço. Aparece só com a lista carregada,
+        para não oferecer de volta um item que ela já tem.
+      */}
+      {itens !== null && sugestoes.length > 0 && !termo.trim() && (
+        <div className="flex flex-col gap-2">
+          <p className="text-sm text-tinta-suave">Comprados antes</p>
+          <ul className="flex flex-wrap gap-2">
+            {sugestoes.map((c) => (
+              <li key={c.chave}>
+                <button
+                  type="button"
+                  onClick={() =>
+                    void salvar(async () => {
+                      if (!listaId) return
+                      if (c.termo) await acrescentarTermo(listaId, c.termo)
+                      else if (c.produto) await acrescentar(listaId, c.produto.id)
+                    })
+                  }
+                  className="min-h-11 rounded-full border border-borda-forte px-4 text-sm text-tinta"
+                >
+                  + {nomeDeProduto(c.termo ?? c.produto?.nome ?? '')}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {concluida && (
         <Desfazer
           marca={concluida}
@@ -367,7 +419,9 @@ export function Lista({
 
       {/* Quem acabou de concluir a compra esvaziou a lista de propósito: o
           cartão de primeira vez, ali, seria apresentar o app a quem já o usa. */}
-      {itens?.length === 0 && !concluida && <PrimeiraVez aoIrPara={aoIrPara} />}
+      {itens?.length === 0 && !concluida && sugestoes.length === 0 && (
+        <PrimeiraVez aoIrPara={aoIrPara} />
+      )}
 
       {aComprar.length > 0 && (
         <ul className="flex flex-col gap-2">

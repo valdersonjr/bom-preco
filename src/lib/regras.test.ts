@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { maisRecentePor } from './consulta'
 import { idadeEmTexto } from './formato'
-import { escolherOpcoes, normalizarTermo, type Candidato } from './lista'
+import {
+  escolherOpcoes,
+  normalizarTermo,
+  ordenarCostumes,
+  type Candidato,
+} from './lista'
 import type { Mercado } from './mercado'
 import type { Produto } from './produto'
 import { lerValor, longeDoEsperado } from './registro'
@@ -169,5 +174,40 @@ describe('escolherOpcoes (RD-16)', () => {
 
   it('devolve vazio sem candidatos', () => {
     expect(escolherOpcoes([], AGORA)).toEqual([])
+  })
+})
+
+describe('ordenarCostumes (RF-53)', () => {
+  const p = (id: string): Produto => ({
+    id,
+    gtin: null,
+    nome: id,
+    marca: null,
+    quantidade: 1,
+    unidade_medida: 'un',
+    quantidade_base: 1,
+    dimensao: 'contagem',
+  })
+
+  it('põe o mais frequente primeiro, e o mais recente desempata', () => {
+    const ordem = ordenarCostumes([
+      { produto: p('cafe'), termo: null, em: dia(1) },
+      { produto: p('leite'), termo: null, em: dia(1) },
+      { produto: p('leite'), termo: null, em: dia(8) },
+      { produto: p('pao'), termo: null, em: dia(20) },
+    ])
+    expect(ordem.map((c) => c.chave)).toEqual(['p:leite', 'p:pao', 'p:cafe'])
+    expect(ordem[0].vezes).toBe(2)
+    expect(ordem[0].ultimaEm).toEqual(dia(8))
+  })
+
+  it('trata o item de qualquer marca pelo termo, separado do produto', () => {
+    const ordem = ordenarCostumes([
+      { produto: null, termo: 'arroz', em: dia(1) },
+      { produto: null, termo: 'arroz', em: dia(8) },
+      { produto: p('arroz'), termo: null, em: dia(9) },
+    ])
+    expect(ordem.map((c) => c.chave)).toEqual(['t:arroz', 'p:arroz'])
+    expect(ordem[0].produto).toBeNull()
   })
 })

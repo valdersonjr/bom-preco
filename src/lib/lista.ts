@@ -586,3 +586,73 @@ export function escolherOpcoes(candidatos: Candidato[], agora: number): Opcao[] 
       idadeEmDias: Math.floor((agora - c.vistoEm.getTime()) / 86_400_000),
     }))
 }
+
+/** Algo que a pessoa já comprou e que pode voltar para a lista com um toque. */
+export type Costume = {
+  /** Identifica a sugestão: o produto, ou o termo do item de qualquer marca. */
+  chave: string
+  produto: Produto | null
+  termo: string | null
+  /** Em quantas compras apareceu. */
+  vezes: number
+  ultimaEm: Date
+}
+
+/**
+ * O que a pessoa costuma comprar, do mais frequente ao menos (RF-53).
+ *
+ * Frequência antes de recência: o que entra em toda compra é o que ela mais
+ * quer não precisar digitar. O mais recente só desempata.
+ *
+ * Função pura, com os dados já lidos, pelo mesmo motivo de `escolherOpcoes`:
+ * é regra de leitura, e regra de leitura tem teste.
+ */
+export function ordenarCostumes(
+  comprados: { produto: Produto | null; termo: string | null; em: Date }[],
+): Costume[] {
+  const porChave = new Map<string, Costume>()
+  for (const c of comprados) {
+    const chave = c.termo ? `t:${c.termo}` : c.produto ? `p:${c.produto.id}` : null
+    if (!chave) continue
+    const atual = porChave.get(chave)
+    if (!atual) {
+      porChave.set(chave, {
+        chave,
+        produto: c.termo ? null : c.produto,
+        termo: c.termo,
+        vezes: 1,
+        ultimaEm: c.em,
+      })
+    } else {
+      atual.vezes += 1
+      if (c.em > atual.ultimaEm) atual.ultimaEm = c.em
+    }
+  }
+  return [...porChave.values()].sort(
+    (a, b) => b.vezes - a.vezes || b.ultimaEm.getTime() - a.ultimaEm.getTime(),
+  )
+}
+
+/**
+ * Lê as compras concluídas da pessoa e devolve os costumes.
+ *
+ * As políticas de dono já restringem `item_compra` às compras de quem chama.
+ * Trezentas linhas são meses de compra semanal; além disso o que se perde é o
+ * que a pessoa já deixou de comprar. Falha devolve vazio: é sugestão, e a
+ * lista funciona sem ela.
+ */
+export async function costumes(): Promise<Costume[]> {
+  const { data } = await supabase
+    .from('item_compra')
+    .select(`termo, produto:produto_id (${COLUNAS_PRODUTO}), compra:compra_id (concluida_em)`)
+    .order('id')
+    .limit(300)
+
+  return ordenarCostumes(
+    (data ?? []).flatMap((i) =>
+      i.compra
+        ? [{ produto: i.produto, termo: i.termo, em: new Date(i.compra.concluida_em) }]
+        : [],
+    ),
+  )
+}
