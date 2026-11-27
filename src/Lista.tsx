@@ -15,7 +15,7 @@ import {
   type Costume,
   type ItemDaLista,
 } from './lib/lista'
-import { buscarProduto, type ProdutoAchado } from './lib/consulta'
+import { buscarProduto, confirmar, type ProdutoAchado } from './lib/consulta'
 import {
   conferidoNoLocal,
   distanciaAte,
@@ -56,6 +56,7 @@ export function Lista({
   const [achados, setAchados] = useState<ProdutoAchado[]>([])
   const [removido, setRemovido] = useState<Removido | null>(null)
   const [concluida, setConcluida] = useState<Concluida | null>(null)
+  const [aConferir, setAConferir] = useState<AConferir | null>(null)
   const [carrinhoAberto, setCarrinhoAberto] = useState(false)
   /*
     O que deu errado, se deu. "carregar" é não ter lista para mostrar; "salvar"
@@ -70,6 +71,7 @@ export function Lista({
   /** Estável de propósito: identidade nova reiniciaria o relógio do desfazer. */
   const dispensar = useCallback(() => setRemovido(null), [])
   const dispensarConcluida = useCallback(() => setConcluida(null), [])
+  const dispensarConferencia = useCallback(() => setAConferir(null), [])
 
   const daCidade = useMemo(() => naCidade(mercados, cidade), [mercados, cidade])
 
@@ -222,8 +224,32 @@ export function Lista({
     })
   }
 
+  /**
+   * Marcar um item dentro do mercado é o melhor momento para confirmar o
+   * preço dele: a pessoa acabou de olhar a etiqueta, e a resposta custa um
+   * toque. Na tela de consulta ninguém entra com o carrinho na mão.
+   *
+   * Só pergunta quando sabe onde a pessoa está — GPS conferido, ou mercado
+   * escolhido à mão nas últimas horas — e quando existe preço daquele mercado.
+   * É a confirmação que mantém o preço dentro dos trinta dias enquanto há
+   * pouca gente registrando (RD-03).
+   */
   async function marcar(item: ItemDaLista, pego: boolean) {
-    await salvar(() => marcarPego(item.itemId, pego))
+    const salvou = await salvar(() => marcarPego(item.itemId, pego))
+    if (!salvou || !pego || !item.produto || item.termo) return
+
+    const aqui =
+      sugerido && conferidoNoLocal(sugerido, posicao, mercados)
+        ? sugerido
+        : escolhaRecente(mercados)
+    const preco = aqui && item.precos.find((p) => p.mercadoId === aqui.id)
+    if (preco) {
+      setAConferir({
+        registroId: preco.registroId,
+        valor: preco.valor,
+        produto: item.produto,
+      })
+    }
   }
 
   /*
@@ -350,6 +376,18 @@ export function Lista({
             ))}
           </ul>
         </div>
+      )}
+
+      {aConferir && (
+        <Conferencia
+          aConferir={aConferir}
+          aoConferir={() => {
+            void confirmar(aConferir.registroId, usuarioId)
+            setAConferir(null)
+          }}
+          aoMudar={() => aoRegistrar(aConferir.produto)}
+          aoDispensar={dispensarConferencia}
+        />
       )}
 
       {concluida && (
@@ -575,6 +613,59 @@ type Removido = {
 /** Como o item se chama na tela: o termo, ou o nome do produto. */
 function nomeDoItem(item: ItemDaLista): string {
   return nomeDeProduto(item.termo ?? item.produto?.nome ?? '')
+}
+
+/** O preço do item recém-marcado, no mercado onde a pessoa está. */
+type AConferir = { registroId: string; valor: number; produto: Produto }
+
+/**
+ * A pergunta de um toque sobre o preço do item que acabou de ir para o
+ * carrinho. Some sozinha, como o desfazer: ignorar é uma resposta válida, e
+ * ela não pode ficar no caminho de quem está andando pelo corredor.
+ */
+function Conferencia({
+  aConferir,
+  aoConferir,
+  aoMudar,
+  aoDispensar,
+}: {
+  aConferir: AConferir
+  aoConferir: () => void
+  aoMudar: () => void
+  aoDispensar: () => void
+}) {
+  useEffect(() => {
+    const t = setTimeout(aoDispensar, SEGUNDOS_PARA_DESFAZER * 1000)
+    return () => clearTimeout(t)
+  }, [aConferir, aoDispensar])
+
+  return (
+    <div
+      role="status"
+      className="anima-subir flex items-center justify-between gap-2 rounded-xl bg-inverso p-3 text-sobre-inverso"
+    >
+      <span className="min-w-0 truncate text-sm">
+        {nomeDeProduto(aConferir.produto.nome)} a{' '}
+        {precoEmTexto(aConferir.valor)}?
+      </span>
+      <span className="flex shrink-0 gap-1">
+        <button
+          type="button"
+          onClick={aoConferir}
+          className="min-h-11 rounded-lg px-3 font-medium text-sobre-inverso underline"
+        >
+          Confere
+        </button>
+        <button
+          type="button"
+          onClick={aoMudar}
+          className="min-h-11 rounded-lg px-3 text-sobre-inverso underline"
+        >
+          Mudou
+        </button>
+      </span>
+    </div>
+  )
 }
 
 /** A compra recém-concluída, com o que o desfazer precisa devolver à lista. */

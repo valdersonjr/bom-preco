@@ -30,6 +30,12 @@ export type ItemDaLista = {
   opcoes: Opcao[]
   /** Produtos que a pessoa disse que não servem a este item. */
   excluidos: string[]
+  /**
+   * O preço vigente deste produto em cada mercado, com o registro de origem.
+   * É o que permite perguntar "confere?" sobre o preço do mercado onde a pessoa
+   * está, que nem sempre é o mais barato. Vazio no item de qualquer marca.
+   */
+  precos: { mercadoId: string; registroId: string; valor: number }[]
   quantidade: number
   /** Já está no carrinho. Guarda o instante, para desmarcar sem inventar estado. */
   pego: boolean
@@ -340,7 +346,7 @@ export async function carregarLista(
 
   const { data: precos, error: aoLerPrecos } = await supabase
     .from('preco_publico')
-    .select('produto_id, mercado_id, valor, visto_em, observado_em')
+    .select('id, produto_id, mercado_id, valor, visto_em, observado_em')
     .in('produto_id', produtoIds)
     .gte('visto_em', corteDeValidade())
 
@@ -351,9 +357,10 @@ export async function carregarLista(
   const vigentes = maisRecentePor(
     (precos ?? []).flatMap((p) => {
       const mercado = p.mercado_id ? porMercado.get(p.mercado_id) : undefined
-      if (!mercado || !p.produto_id) return []
+      if (!mercado || !p.produto_id || !p.id) return []
       return [
         {
+          registroId: p.id,
           produtoId: p.produto_id,
           mercado,
           valor: Number(p.valor),
@@ -443,6 +450,7 @@ export async function carregarLista(
           termo: i.termo,
           produto: primeira?.produto ?? null,
           opcoes,
+          precos: [],
           melhor: primeira
             ? {
                 mercado: primeira.mercado,
@@ -463,6 +471,13 @@ export async function carregarLista(
         termo: null,
         produto: i.produto,
         opcoes: [],
+        precos: vigentes
+          .filter((v) => v.produtoId === i.produto!.id)
+          .map((v) => ({
+            mercadoId: v.mercado.id,
+            registroId: v.registroId,
+            valor: v.valor,
+          })),
         melhor: melhorPorProduto.get(i.produto.id) ?? null,
         vencido: vencidoPorProduto.get(i.produto.id) ?? null,
       },
