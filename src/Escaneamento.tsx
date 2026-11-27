@@ -64,7 +64,7 @@ export function Escaneamento({
       ? { tipo: 'achado', produto: produtoInicial }
       : { tipo: 'nenhum' },
   )
-  const { carregando, mercados, sugerido, posicao, cidade } = locais
+  const { carregando, localizando, mercados, sugerido, posicao, cidade } = locais
   const [escolhaManual, setEscolhaManual] = useState<Mercado | null>(null)
   const [modo, setModo] = useState<'codigo' | 'catalogo'>('codigo')
   const [salvos, setSalvos] = useState(0)
@@ -73,7 +73,14 @@ export function Escaneamento({
 
   // Derivado, não guardado: a sugestão chega depois da localização, e guardá-la
   // em estado exigiria um efeito que dispara outro render sem necessidade.
-  const mercado = escolhaManual ?? escolhaRecente(mercados) ?? sugerido
+  //
+  // Enquanto o GPS não responde, `sugerido` é só o último mercado lembrado —
+  // um palpite de ontem. Aqui ele não serve: o registro abriria numa loja e
+  // trocaria para outra com a pessoa no meio do preço. Então espera-se a
+  // posição, a menos que haja escolha feita à mão nas últimas horas.
+  const escolhido = escolhaManual ?? escolhaRecente(mercados)
+  const esperandoPosicao = localizando && !escolhido
+  const mercado = escolhido ?? (localizando ? null : sugerido)
   const conferido = mercado ? conferidoNoLocal(mercado, posicao, mercados) : false
   // Memorizado porque é dependência do efeito que busca os preços conhecidos:
   // array novo a cada render refaria a consulta a cada tecla do preço.
@@ -134,7 +141,7 @@ export function Escaneamento({
         conferido={conferido}
         posicao={posicao}
         cidade={cidade}
-        carregando={carregando}
+        carregando={carregando || esperandoPosicao}
         aoEscolher={(m) => {
           lembrarMercado(m.id)
           setEscolhaManual(m)

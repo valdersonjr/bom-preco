@@ -154,7 +154,14 @@ export function escolhaRecente(mercados: Mercado[]): Mercado | null {
 }
 
 export type EstadoMercados = {
+  /** O catálogo ainda não chegou. */
   carregando: boolean
+  /**
+   * O GPS ainda não respondeu. Separado de `carregando` porque são esperas de
+   * tamanhos muito diferentes: o catálogo volta em meio segundo, a posição pode
+   * levar oito — e a lista de compras só precisa do primeiro.
+   */
+  localizando: boolean
   mercados: Mercado[]
   /** O mais próximo quando há posição; o último escolhido quando não há. */
   sugerido: Mercado | null
@@ -163,9 +170,35 @@ export type EstadoMercados = {
   cidade: string | null
 }
 
+/** O mercado com coordenada mais perto da posição. */
+function maisProximo(mercados: Mercado[], posicao: Posicao): Mercado | null {
+  return (
+    comCoordenada(mercados)
+      .map((m) => ({
+        m,
+        d: distanciaM(posicao.lat, posicao.lon, m.latitude!, m.longitude!),
+      }))
+      .sort((a, b) => a.d - b.d)[0]?.m ?? null
+  )
+}
+
+/**
+ * Catálogo de mercados e posição, em duas etapas.
+ *
+ * Antes as duas coisas eram esperadas juntas, e a posição tem até oito
+ * segundos para responder. Nesse intervalo a lista de compras não tinha
+ * mercado nenhum para casar com os preços, e mostrava todos os itens como "sem
+ * preço" — uma afirmação falsa que durava o tempo do GPS.
+ *
+ * Agora o catálogo é publicado assim que chega, com o último mercado escolhido
+ * como palpite de onde a pessoa compra; a posição, quando vem, corrige o
+ * palpite. Quem depende de saber *onde a pessoa está agora* — o registro de
+ * preço — olha `localizando` e espera; quem só precisa do catálogo, não.
+ */
 export function useMercados(): EstadoMercados {
   const [estado, setEstado] = useState<EstadoMercados>({
     carregando: true,
+    localizando: true,
     mercados: [],
     sugerido: null,
     posicao: null,
@@ -174,15 +207,13 @@ export function useMercados(): EstadoMercados {
 
   useEffect(() => {
     let ativo = true
+    const aPosicao = obterPosicao()
 
     async function carregar() {
-      const [{ data }, posicao] = await Promise.all([
-        supabase
-          .from('mercado')
-          .select('id, nome, endereco, latitude, longitude, cidade, rede(nome)')
-          .order('nome'),
-        obterPosicao(),
-      ])
+      const { data } = await supabase
+        .from('mercado')
+        .select('id, nome, endereco, latitude, longitude, cidade, rede(nome)')
+        .order('nome')
       if (!ativo) return
 
       const mercados: Mercado[] = (data ?? []).map((m) => ({
@@ -195,30 +226,28 @@ export function useMercados(): EstadoMercados {
         cidade: m.cidade,
       }))
 
-      let sugerido: Mercado | null = null
-      if (posicao) {
-        const comCoordenada = mercados.filter(
-          (m) => m.latitude !== null && m.longitude !== null,
-        )
-        sugerido =
-          comCoordenada
-            .map((m) => ({
-              m,
-              d: distanciaM(posicao.lat, posicao.lon, m.latitude!, m.longitude!),
-            }))
-            .sort((a, b) => a.d - b.d)[0]?.m ?? null
-      }
-
       // Sem posição, o último mercado escolhido é o melhor palpite que existe,
       // por mais antigo que seja: ele diz ao menos em que cidade a pessoa
       // compra, e sem cidade a comparação misturaria todas.
-      if (!posicao) {
-        const id = mercadoLembrado()?.id
-        sugerido = mercados.find((m) => m.id === id) ?? null
-      }
+      const id = mercadoLembrado()?.id
+      const lembrado = mercados.find((m) => m.id === id) ?? null
 
       setEstado({
         carregando: false,
+        localizando: true,
+        mercados,
+        sugerido: lembrado,
+        posicao: null,
+        cidade: lembrado?.cidade ?? null,
+      })
+
+      const posicao = await aPosicao
+      if (!ativo) return
+
+      const sugerido = posicao ? maisProximo(mercados, posicao) : lembrado
+      setEstado({
+        carregando: false,
+        localizando: false,
         mercados,
         sugerido,
         posicao,
