@@ -24,6 +24,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Testes
+        run: npm test
+
       # O build precisa das variáveis para compilar, mas nada de secreto:
       # ambas são públicas por natureza e aparecem no navegador de qualquer
       # usuário. O que protege o banco são as políticas e os privilégios.

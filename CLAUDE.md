@@ -34,6 +34,7 @@ Antes de implementar qualquer coisa, leia o requisito citado na issue. Os identi
 npm run dev        # servidor local
 npm run lint       # oxlint
 npm run typecheck  # tsc -b
+npm test           # vitest: regras puras de leitura de preço
 npm run build      # typecheck + build + service worker
 npm run tipos      # regenera src/tipos/banco.ts a partir do banco
 ```
@@ -123,7 +124,7 @@ Issues fora do MVP têm label `pos-mvp` e não devem ser puxadas sem decisão ex
    corpo ("Depende de #N")
 2. **Mover para In Progress antes de escrever a primeira linha** — comando abaixo
 3. **Implementar** até as caixas do critério de aceitação fecharem
-4. **Verificar**: `npm run lint && npm run typecheck && npm run build`
+4. **Verificar**: `npm run lint && npm run typecheck && npm test && npm run build`
 5. **Commitar** com `Closes #N` no corpo
 
 O passo 5 fecha a issue, e o board move o cartão para Done sozinho — a automação nativa do
@@ -164,7 +165,7 @@ para fechá-la: `Closes #12`.
 ## Definition of Done
 
 - [ ] Todas as caixas do critério de aceitação da issue marcadas
-- [ ] `npm run lint`, `npm run typecheck` e `npm run build` passam
+- [ ] `npm run lint`, `npm run typecheck`, `npm test` e `npm run build` passam
 - [ ] Nenhum invariante acima violado
 - [ ] Se mexeu no esquema: migração nova, nunca editar migração já aplicada
 - [ ] Se mexeu no esquema: `npm run tipos` rodado e o resultado commitado

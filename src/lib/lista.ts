@@ -535,36 +535,54 @@ async function opcoesPorTermo(
       ]
     })
 
-    const vigentes = maisRecentePor(
-      candidatos,
-      (c) => `${c.produto.id}|${c.mercado.id}`,
-    )
-
-    const contagem = new Map<string | null, number>()
-    for (const c of vigentes) {
-      contagem.set(c.produto.dimensao, (contagem.get(c.produto.dimensao) ?? 0) + 1)
-    }
-    const dimensao = [...contagem.entries()].sort((a, b) => b[1] - a[1])[0]?.[0]
-
-    resultado.set(
-      termo,
-      vigentes
-        .filter((c) => c.produto.dimensao === dimensao)
-        .sort(
-          (a, b) =>
-            (a.porUnidade ?? Infinity) - (b.porUnidade ?? Infinity) ||
-            a.valor - b.valor,
-        )
-        .slice(0, OPCOES_POR_ITEM)
-        .map((c) => ({
-          produto: c.produto,
-          mercado: c.mercado,
-          valor: c.valor,
-          porUnidade: c.porUnidade,
-          idadeEmDias: Math.floor((Date.now() - c.vistoEm.getTime()) / 86_400_000),
-        })),
-    )
+    resultado.set(termo, escolherOpcoes(candidatos, Date.now()))
   }
 
   return resultado
+}
+
+/** Um preço de um produto que casou com o termo, antes de qualquer escolha. */
+export type Candidato = {
+  produto: Produto
+  mercado: Mercado
+  valor: number
+  porUnidade: number | null
+  vistoEm: Date
+  observadoEm: Date
+}
+
+/**
+ * Dos candidatos de um termo, as opções em ordem — a parte da RD-16 que não
+ * depende de rede, e por isso a parte que tem teste.
+ *
+ * Recebe o instante de fora, em vez de ler o relógio, para a idade ser a mesma
+ * toda vez que o teste rodar.
+ */
+export function escolherOpcoes(candidatos: Candidato[], agora: number): Opcao[] {
+  const vigentes = maisRecentePor(
+    candidatos,
+    (c) => `${c.produto.id}|${c.mercado.id}`,
+  )
+
+  const contagem = new Map<string | null, number>()
+  for (const c of vigentes) {
+    contagem.set(c.produto.dimensao, (contagem.get(c.produto.dimensao) ?? 0) + 1)
+  }
+  const dimensao = [...contagem.entries()].sort((a, b) => b[1] - a[1])[0]?.[0]
+
+  return vigentes
+    .filter((c) => c.produto.dimensao === dimensao)
+    .sort(
+      (a, b) =>
+        (a.porUnidade ?? Infinity) - (b.porUnidade ?? Infinity) ||
+        a.valor - b.valor,
+    )
+    .slice(0, OPCOES_POR_ITEM)
+    .map((c) => ({
+      produto: c.produto,
+      mercado: c.mercado,
+      valor: c.valor,
+      porUnidade: c.porUnidade,
+      idadeEmDias: Math.floor((agora - c.vistoEm.getTime()) / 86_400_000),
+    }))
 }

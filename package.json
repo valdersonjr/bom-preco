@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "typecheck": "tsc -b",
+    "test": "vitest run",
     "preview": "vite preview",
     "tipos": "supabase gen types typescript --linked > src/tipos/banco.ts"
   },
@@ -29,6 +30,7 @@
     "tailwindcss": "^4.2.0",
     "typescript": "~6.0.2",
     "vite": "^8.2.0",
-    "vite-plugin-pwa": "^1.0.0"
+    "vite-plugin-pwa": "^1.0.0",
+    "vitest": "^5.1.2"
   }
 }
