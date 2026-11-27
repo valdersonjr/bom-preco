@@ -2,8 +2,35 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { execSync } from 'node:child_process'
+
+/**
+ * A versão que vai escrita na aba Conta: dia do build e commit.
+ *
+ * Na Vercel o commit vem da variável de ambiente, porque o build de lá não tem
+ * o histórico do git; na máquina de desenvolvimento vem do próprio git. Sem
+ * nenhum dos dois, sai só a data — versão incompleta é melhor que build
+ * quebrado por causa de um rótulo.
+ */
+function versao(): string {
+  const dia = new Date().toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    timeZone: 'America/Sao_Paulo',
+  })
+  let commit = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7)
+  if (!commit) {
+    try {
+      commit = execSync('git rev-parse --short HEAD').toString().trim()
+    } catch {
+      commit = undefined
+    }
+  }
+  return commit ? `${dia} · ${commit}` : dia
+}
 
 export default defineConfig({
+  define: { __VERSAO__: JSON.stringify(versao()) },
   plugins: [
     react(),
     tailwindcss(),

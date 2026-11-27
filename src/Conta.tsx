@@ -547,6 +547,10 @@ function Sobre() {
       <p className="px-4 py-3 text-xs text-tinta-fraca">
         Catálogo de produtos sob licença ODbL.
       </p>
+      <div className="flex min-h-14 items-center gap-3 px-4 py-3">
+        <span className="flex-1 text-tinta">Versão</span>
+        <span className="text-sm tabular-nums text-tinta-suave">{__VERSAO__}</span>
+      </div>
     </>
   )
 }

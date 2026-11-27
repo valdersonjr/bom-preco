@@ -9,3 +9,6 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }
+
+/** Dia do build e commit, injetados pelo Vite. Ver `versao()` em vite.config.ts. */
+declare const __VERSAO__: string
