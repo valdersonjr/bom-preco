@@ -52,6 +52,15 @@ faz com registro novo; o mais recente do dia prevalece (RD-04). Nem o mantenedor
 dispositivo, comparando com a coordenada do mercado que já veio do catálogo. Só o booleano
 `local_conferido` sobe. Não existe coluna para latitude ou longitude de usuário.
 
+Há **uma** exceção, e ela não é precedente: o botão "Estou aqui agora", num mercado sem
+coordenada, envia a posição daquele instante para virar a coordenada do mercado
+(`marcar_local_do_mercado`, RD-17). É toque explícito, com finalidade declarada na §6.
+Nenhuma outra tela, consulta ou função deve receber posição de usuário.
+
+**A confiança de uma conta nunca sai do banco (RD-17).** `confianca_do_usuario` não é
+concedida a papel de cliente. O que o app lê é `mercado_confianca`, por mercado. Os pesos
+são provisórios e moram só nessa função e no limiar da visão.
+
 **Autoria de preço não é exposta (RNF-12).** Leitura passa pela visão `preco_publico`.
 As tabelas `registro_preco`, `confirmacao` e a visão `registro_vigente` não são legíveis
 pelo cliente — a revogação é de privilégio, não só de política.

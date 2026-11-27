@@ -11,6 +11,13 @@ export type Mercado = {
   cidade: string
   /** Identificador no OpenStreetMap. Nulo nos mercados cadastrados à mão. */
   osmId: string | null
+  /**
+   * O quanto se confia no local do mercado (RF-55): sem coordenada, com
+   * coordenada marcada por um usuário e ainda não confirmada por outros, ou
+   * confirmada — por fonte externa, pelo mantenedor ou por gente suficiente.
+   * Quem decide é a visão `mercado_confianca`; o app só mostra.
+   */
+  situacao: 'sem_local' | 'a_confirmar' | 'confirmado'
 }
 
 /** Um mercado do catálogo importado que ainda ninguém ativou (RF-54). */
@@ -288,6 +295,33 @@ export async function ativarMercado(c: Candidato): Promise<Mercado> {
     rede: null,
     cidade: c.cidade,
     osmId: c.osmId,
+    // Veio do catálogo: a fonte externa já vale a confirmação.
+    situacao: 'confirmado',
+  }
+}
+
+/**
+ * "Estou aqui agora": dá coordenada a um mercado que não tem (RF-55).
+ *
+ * É o único ponto do app em que a posição da pessoa é enviada, e só acontece
+ * por um toque dela num botão que diz o que faz. A posição vira a coordenada
+ * do mercado; ver a exceção à RD-13 na migração `confianca_do_mercado`.
+ *
+ * O mercado volta "a confirmar": o alfinete de uma pessoa só passa a valer
+ * como certo quando outras contas registrarem preço ali estando no local.
+ */
+export async function marcarLocal(mercado: Mercado, posicao: Posicao): Promise<Mercado> {
+  const { error } = await supabase.rpc('marcar_local_do_mercado', {
+    p_mercado: mercado.id,
+    p_latitude: posicao.lat,
+    p_longitude: posicao.lon,
+  })
+  if (error) throw new Error(error.message)
+  return {
+    ...mercado,
+    latitude: posicao.lat,
+    longitude: posicao.lon,
+    situacao: 'a_confirmar',
   }
 }
 
@@ -309,7 +343,10 @@ export type EstadoMercados = {
    * dela, ou, sem posição, a do último mercado escolhido. Nula se nenhuma.
    */
   cidade: string | null
-  /** Acrescenta ao catálogo em memória o mercado que a pessoa acabou de ativar. */
+  /**
+   * Põe no catálogo em memória o mercado que a pessoa acabou de ativar, ou
+   * troca pela versão nova o que ela acabou de marcar no mapa.
+   */
   incluir: (mercado: Mercado) => void
 }
 
@@ -369,11 +406,12 @@ export function useMercados(): EstadoMercados {
   })
 
   const incluir = useCallback((mercado: Mercado) => {
-    setEstado((e) =>
-      e.mercados.some((m) => m.id === mercado.id)
-        ? e
-        : { ...e, mercados: [...e.mercados, mercado] },
-    )
+    setEstado((e) => ({
+      ...e,
+      mercados: e.mercados.some((m) => m.id === mercado.id)
+        ? e.mercados.map((m) => (m.id === mercado.id ? mercado : m))
+        : [...e.mercados, mercado],
+    }))
   }, [])
 
   useEffect(() => {
@@ -381,12 +419,13 @@ export function useMercados(): EstadoMercados {
     const aPosicao = obterPosicao()
 
     async function carregar() {
-      const [{ data }, { data: atendidas }] = await Promise.all([
+      const [{ data }, { data: atendidas }, { data: confiancas }] = await Promise.all([
         supabase
           .from('mercado')
           .select('id, nome, endereco, latitude, longitude, cidade, osm_id, rede(nome)')
           .order('nome'),
         supabase.from('cidade_atendida').select('cidade, latitude, longitude'),
+        supabase.from('mercado_confianca').select('mercado_id, situacao'),
       ])
       if (!ativo) return
 
@@ -394,6 +433,10 @@ export function useMercados(): EstadoMercados {
         c.cidade && c.latitude !== null && c.longitude !== null
           ? [{ cidade: c.cidade, latitude: c.latitude, longitude: c.longitude }]
           : [],
+      )
+
+      const situacaoDe = new Map(
+        (confiancas ?? []).map((c) => [c.mercado_id, c.situacao]),
       )
 
       const mercados: Mercado[] = (data ?? []).map((m) => ({
@@ -405,6 +448,11 @@ export function useMercados(): EstadoMercados {
         rede: m.rede?.nome ?? null,
         cidade: m.cidade,
         osmId: m.osm_id,
+        // Se a visão não respondeu, vale o que a coordenada diz: ter local é
+        // o que o app sabia antes de existir a conta de confiança.
+        situacao:
+          (situacaoDe.get(m.id) as Mercado['situacao'] | undefined) ??
+          (m.latitude === null ? 'sem_local' : 'confirmado'),
       }))
 
       // Sem posição, o último mercado escolhido é o melhor palpite que existe,

@@ -77,6 +77,7 @@ primeira abertura, `anon` não precisa alcançar tabela alguma, e não alcança.
 | `perfil` | só o próprio | só o próprio | só o próprio | por função de servidor |
 | `rede`, `mercado` | todos | **mantenedor**, ou ativação pelo usuário | **mantenedor** | **mantenedor** |
 | `mercado_candidato`, `cidade_atendida` | todos | — | — | — |
+| `mercado_confianca` | todos, só o resultado por mercado | — | — | — |
 | `produto` | todos | só com GTIN | **mantenedor** | **mantenedor** |
 | `registro_preco` | **não** | só como autor | **ninguém** | **ninguém** |
 | `confirmacao` | **não** | só como autor | não | não |
@@ -99,6 +100,17 @@ Quem filtra "só os que estão perto" é o aparelho, que baixa o catálogo da ci
 compara localmente. Em que cidade ele está, descobre do mesmo jeito, contra o centro de cada
 cidade em `cidade_atendida`. O que alguém mal-intencionado consegue é ativar de longe um
 mercado que existe — nunca inventar um.
+
+**A confiança do mercado é calculada no banco e sai sem autoria.** `mercado_confianca` soma
+os sinais da RD-17 e devolve, por mercado, uma de três situações. Ela chama
+`confianca_do_usuario`, que lê os registros de cada conta — e essa função **não é concedida a
+papel de cliente**: o juízo sobre uma pessoa não sai do banco, nem para ela. Os pesos estão
+todos nessa função e no limiar da visão, são provisórios e foram escolhidos sem dado; devem
+ser revistos contra o histórico quando houver mais de uma pessoa registrando.
+
+`marcar_local_do_mercado` é a única função do sistema que recebe uma coordenada de usuário.
+Só grava onde não há coordenada, tem teto de três por pessoa por dia, e o que guarda é o
+local do mercado.
 
 Quatro linhas merecem atenção:
 

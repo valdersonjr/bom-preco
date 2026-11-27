@@ -67,6 +67,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "compra_mercado_id_fkey"
+            columns: ["mercado_id"]
+            isOneToOne: false
+            referencedRelation: "mercado_confianca"
+            referencedColumns: ["mercado_id"]
+          },
+          {
             foreignKeyName: "compra_usuario_id_fkey"
             columns: ["usuario_id"]
             isOneToOne: false
@@ -307,6 +314,8 @@ export type Database = {
           endereco: string
           id: string
           latitude: number | null
+          local_marcado_em: string | null
+          local_marcado_por: string | null
           localizacao: unknown
           longitude: number | null
           nome: string
@@ -320,6 +329,8 @@ export type Database = {
           endereco: string
           id?: string
           latitude?: number | null
+          local_marcado_em?: string | null
+          local_marcado_por?: string | null
           localizacao?: unknown
           longitude?: number | null
           nome: string
@@ -333,6 +344,8 @@ export type Database = {
           endereco?: string
           id?: string
           latitude?: number | null
+          local_marcado_em?: string | null
+          local_marcado_por?: string | null
           localizacao?: unknown
           longitude?: number | null
           nome?: string
@@ -343,6 +356,13 @@ export type Database = {
           {
             foreignKeyName: "mercado_ativado_por_fkey"
             columns: ["ativado_por"]
+            isOneToOne: false
+            referencedRelation: "perfil"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mercado_local_marcado_por_fkey"
+            columns: ["local_marcado_por"]
             isOneToOne: false
             referencedRelation: "perfil"
             referencedColumns: ["id"]
@@ -513,6 +533,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "registro_preco_mercado_id_fkey"
+            columns: ["mercado_id"]
+            isOneToOne: false
+            referencedRelation: "mercado_confianca"
+            referencedColumns: ["mercado_id"]
+          },
+          {
             foreignKeyName: "registro_preco_produto_id_fkey"
             columns: ["produto_id"]
             isOneToOne: false
@@ -536,6 +563,13 @@ export type Database = {
           cidade: string | null
           latitude: number | null
           longitude: number | null
+        }
+        Relationships: []
+      }
+      mercado_confianca: {
+        Row: {
+          mercado_id: string | null
+          situacao: string | null
         }
         Relationships: []
       }
@@ -576,6 +610,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "registro_preco_mercado_id_fkey"
+            columns: ["mercado_id"]
+            isOneToOne: false
+            referencedRelation: "mercado_confianca"
+            referencedColumns: ["mercado_id"]
+          },
+          {
             foreignKeyName: "registro_preco_produto_id_fkey"
             columns: ["produto_id"]
             isOneToOne: false
@@ -605,6 +646,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "mercado"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registro_preco_mercado_id_fkey"
+            columns: ["mercado_id"]
+            isOneToOne: false
+            referencedRelation: "mercado_confianca"
+            referencedColumns: ["mercado_id"]
           },
           {
             foreignKeyName: "registro_preco_produto_id_fkey"
@@ -637,6 +685,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "registro_preco_mercado_id_fkey"
+            columns: ["mercado_id"]
+            isOneToOne: false
+            referencedRelation: "mercado_confianca"
+            referencedColumns: ["mercado_id"]
+          },
+          {
             foreignKeyName: "registro_preco_produto_id_fkey"
             columns: ["produto_id"]
             isOneToOne: false
@@ -659,7 +714,12 @@ export type Database = {
         Args: { p_lista: string; p_mercado?: string }
         Returns: string
       }
+      confianca_do_usuario: { Args: { p_usuario: string }; Returns: number }
       e_mantenedor: { Args: never; Returns: boolean }
+      marcar_local_do_mercado: {
+        Args: { p_latitude: number; p_longitude: number; p_mercado: string }
+        Returns: undefined
+      }
       precos_por_termo: {
         Args: { p_desde: string; p_termos: string[] }
         Returns: {

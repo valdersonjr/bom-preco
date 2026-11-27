@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   ativarMercado,
   candidatosPerto,
+  marcarLocal,
   distanciaAte,
   type Candidato,
   type Mercado,
@@ -56,6 +57,7 @@ export function EscolhaDeMercado({
   */
   const [novos, setNovos] = useState<{ candidato: Candidato; distancia: number }[]>([])
   const [ativando, setAtivando] = useState<string | null>(null)
+  const [marcando, setMarcando] = useState<'nao' | 'sim' | 'falhou'>('nao')
   const [falhou, setFalhou] = useState(false)
   const escolhendo = !carregando && (!escolhido || trocando)
 
@@ -115,6 +117,38 @@ export function EscolhaDeMercado({
               <span className="text-tinta-fraca"> · {escolhido.cidade}</span>
             )}
           </p>
+          {/*
+            Mercado sem coordenada, e a pessoa com localização: ela pode dizer
+            onde ele fica. É o único envio de posição do app, e por isso é um
+            botão com o nome do que faz, nunca um efeito de outra ação.
+          */}
+          {escolhido.situacao === 'sem_local' && posicao && (
+            <button
+              type="button"
+              disabled={marcando === 'sim'}
+              onClick={async () => {
+                setMarcando('sim')
+                try {
+                  const marcado = await marcarLocal(escolhido, posicao)
+                  aoIncluir(marcado)
+                  aoEscolher(marcado)
+                  setMarcando('nao')
+                } catch {
+                  setMarcando('falhou')
+                }
+              }}
+              className="mt-2 min-h-11 rounded-lg border border-borda-forte px-3 text-sm font-medium text-marca-forte disabled:opacity-60"
+            >
+              {marcando === 'sim'
+                ? 'Marcando…'
+                : marcando === 'falhou'
+                  ? 'Não deu. Tentar de novo'
+                  : 'Estou aqui agora'}
+            </button>
+          )}
+          {escolhido.situacao === 'a_confirmar' && (
+            <p className="mt-1 text-xs text-tinta-fraca">Local a confirmar</p>
+          )}
           {conferido && (
             <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-marca-fraca px-2.5 py-1 text-xs font-medium text-marca-forte">
               <svg

@@ -62,6 +62,7 @@ referenciam o `RF-xx` de origem.
 | RF-05 | O sistema deve impedir que o usuário crie produto que não possua código de barras — esses vêm apenas do catálogo curado | ✅ | `Dom` RD-08 |
 | RF-06 | O sistema deve sugerir o mercado mais próximo a partir da localização do usuário | ✅ | `Elic` |
 | RF-07 | O sistema deve permitir corrigir o mercado sugerido, escolhendo outro da lista | ✅ | `Der` |
+| RF-55 | O sistema deve permitir ao usuário marcar, com a própria posição, o local de um mercado que não tem coordenada, e deve classificar o local de cada mercado como sem local, a confirmar ou confirmado, cruzando fonte externa, mantenedor e confirmações de usuários ponderadas | ✅ | `Elic` · RD-17 |
 | RF-54 | O sistema deve oferecer, na escolha do mercado, os mercados do catálogo importado que estão a até 300 m do usuário e ainda não estão em uso, e permitir ativá-los com um toque. Sem localização não há ativação | ✅ | `Elic` · RD-10 |
 | RF-46 | O sistema deve permitir filtrar a lista de mercados por nome, rede ou endereço, ignorando acentuação | ✅ | `Der` |
 | RF-08 | O sistema deve registrar o preço observado de um produto em um mercado | ✅ | `Elic` |
@@ -137,7 +138,7 @@ referenciam o `RF-xx` de origem.
 | RF-30 | O sistema deve importar carga inicial de preços de base pública | ❌ | `Elic` |
 | RF-31 | O sistema deve atribuir pontos e distintivos a contribuidores | ❌ | `Elic` |
 
-**Resumo:** 54 requisitos funcionais, 38 no MVP.
+**Resumo:** 55 requisitos funcionais, 39 no MVP.
 
 ---
 
@@ -179,7 +180,7 @@ método de verificação, o requisito não é verificável e portanto não é um
 | -- | --------- | -------------- | ----------- |
 | RNF-10 | A coleta de geolocalização exige consentimento explícito e revogável | Critério de aceitação em UC-01 e item de *definition of done* | Revogar a permissão e confirmar que o app degrada sem quebrar |
 | RNF-11 | Só devem ser coletados os dados pessoais necessários à função | Item de *definition of done* | Revisar o modelo de dados contra a lista de finalidades da §6 |
-| RNF-13 | A coordenada do dispositivo não deve ser persistida; só o mercado escolhido e o indicador de conferência | Modelagem | Inspecionar o esquema: nenhuma coluna de latitude ou longitude em `registro_preco` |
+| RNF-13 | A coordenada do dispositivo não deve ser persistida; só o mercado escolhido e o indicador de conferência. A exceção é a marcação explícita do local de um mercado (RD-13, RD-17) | Modelagem | Inspecionar o esquema: nenhuma coluna de latitude ou longitude em `registro_preco`; a única função que recebe coordenada é `marcar_local_do_mercado` |
 | RNF-12 | A identidade de quem cadastrou um preço não deve ser exposta a outros usuários | Modelagem e critério de aceitação em UC-03 | Inspecionar a resposta da API de consulta |
 | RNF-14 | A aplicação deve exibir atribuição ao Open Food Facts e ao OpenStreetMap, como exige a licença ODbL dos dados reutilizados — produtos de um, mercados do outro | Item de *definition of done* | Conferir a presença das duas atribuições na tela de conta |
 
@@ -246,6 +247,7 @@ coletado, para que serve e por quanto tempo fica.
 | Dado | Finalidade | Retenção |
 | ---- | ---------- | -------- |
 | Coordenada do dispositivo | Sugerir o mercado e verificar se coincide com ele no momento do registro | **Não é armazenada.** Usada na hora e descartada; persiste apenas o mercado escolhido e o indicador de conferência (RNF-13) |
+| Posição no instante em que a pessoa toca em "Estou aqui agora", com a autoria da marcação | Dar coordenada a um mercado que não tem. A posição passa a ser a coordenada do mercado; a autoria serve ao limite diário e a não contar a própria pessoa como confirmação | A coordenada fica com o mercado. A autoria, até a exclusão da conta, quando é anonimizada. É o único envio de posição do app, e só acontece por esse toque |
 | Identificador do usuário | Atribuir autoria, aplicar o limite diário por produto e mercado, distinguir auto-confirmação de confirmação de terceiro | Até a exclusão da conta, quando a autoria é anonimizada e o preço permanece (RD-11) |
 | Apelido | Identificar a pessoa na interface para ela mesma | Idem |
 | E-mail ou identidade Google | Recuperar a conta em outro aparelho. Só existe se a pessoa optar por vincular | Até a exclusão da conta |
