@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { lerValor, montarRegistro, type Tipo } from './lib/registro'
 import type { Mercado } from './lib/mercado'
-import { precoEmTexto } from './lib/formato'
+import { idadeEmTexto, precoEmTexto } from './lib/formato'
+import { precosDoProduto, type PrecoNoMercado } from './lib/consulta'
 import { descricaoDoProduto, nomeDeProduto } from './lib/texto'
 import {
   precoPorUnidade,
@@ -12,6 +13,8 @@ import {
 type Props = {
   produto: Produto
   mercado: Mercado
+  /** Mercados da cidade deste: é entre eles que "o menor em outro" faz sentido. */
+  mercados: Mercado[]
   conferido: boolean
   usuarioId: string
   /** Enfileira e tenta enviar. Nunca falha por falta de rede — ver `useEnvio`. */
@@ -30,6 +33,7 @@ type Props = {
 export function RegistroDePreco({
   produto,
   mercado,
+  mercados,
   conferido,
   usuarioId,
   registrar,
@@ -41,7 +45,41 @@ export function RegistroDePreco({
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
+  /*
+    O que já se sabe deste produto, buscado enquanto a pessoa digita.
+
+    Registrar não devolvia nada a quem registra: escaneava, digitava, salvava,
+    e a tela voltava para a câmera. Com uma pessoa só na base, a memória do
+    próprio preço é a primeira resposta que o app tem para dar — "da última
+    vez, aqui, era tanto" já vale a partir da segunda compra.
+
+    Não bloqueia nada: sem conexão `precosDoProduto` devolve vazio, e o
+    formulário é o mesmo de sempre (RNF-06).
+  */
+  const [conhecidos, setConhecidos] = useState<PrecoNoMercado[]>([])
+  useEffect(() => {
+    let ativo = true
+    precosDoProduto(produto.id, mercados, null, null)
+      .then((r) => {
+        if (ativo) setConhecidos(r)
+      })
+      .catch(() => {})
+    return () => {
+      ativo = false
+    }
+  }, [produto.id, mercados])
+
+  // Aqui vale o último visto, por mais velho que seja: a idade vai escrita ao
+  // lado. Fora daqui só o recente, porque é uma sugestão de onde comprar hoje.
+  const aqui = conhecidos.find((p) => p.mercado.id === mercado.id) ?? null
+  // `precosDoProduto` já devolve do mais barato para o mais caro.
+  const emOutro =
+    conhecidos.find((p) => p.mercado.id !== mercado.id && !p.desatualizado) ??
+    null
+
   const valor = lerValor(texto)
+  const diferenca =
+    valor !== null && aqui ? Math.round((valor - aqui.valor) * 100) / 100 : null
   const porUnidade = valor === null ? null : precoPorUnidade(produto, valor)
 
   async function salvar() {
@@ -99,6 +137,31 @@ export function RegistroDePreco({
         </button>
       </header>
 
+      {(aqui || emOutro) && (
+        <dl className="-mt-1 flex flex-col gap-1 text-sm">
+          {aqui && (
+            <div className="flex items-baseline justify-between gap-3">
+              <dt className="text-tinta-suave">
+                Aqui, {idadeEmTexto(aqui.idadeEmDias).replace('visto ', '')}
+              </dt>
+              <dd className="tabular-nums text-tinta">
+                {precoEmTexto(aqui.valor)}
+              </dd>
+            </div>
+          )}
+          {emOutro && (
+            <div className="flex items-baseline justify-between gap-3">
+              <dt className="min-w-0 truncate text-tinta-suave">
+                {emOutro.mercado.nome}
+              </dt>
+              <dd className="tabular-nums text-tinta">
+                {precoEmTexto(emOutro.valor)}
+              </dd>
+            </div>
+          )}
+        </dl>
+      )}
+
       {/*
         O campo de preço é a ação principal do app inteiro, e estava do tamanho
         de um campo de e-mail. Aqui ele tem o mesmo corpo do preço exibido nas
@@ -125,6 +188,14 @@ export function RegistroDePreco({
         {porUnidade !== null && (
           <span id="por-unidade" className="text-sm text-marca-forte">
             Sai a {precoEmTexto(porUnidade)} por {unidadeDeComparacao(produto)}
+          </span>
+        )}
+        {diferenca !== null && diferenca !== 0 && (
+          <span
+            className={`text-sm ${diferenca > 0 ? 'text-alerta-tinta' : 'text-marca-forte'}`}
+          >
+            {precoEmTexto(Math.abs(diferenca))}{' '}
+            {diferenca > 0 ? 'a mais' : 'a menos'} que da última vez
           </span>
         )}
       </label>

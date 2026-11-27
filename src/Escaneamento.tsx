@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useLeitorDeCodigo } from './lib/leitor'
 import { buscarPorGtin, type Produto } from './lib/produto'
 import { ProdutoNovo } from './ProdutoNovo'
@@ -8,6 +8,7 @@ import {
   conferidoNoLocal,
   escolhaRecente,
   lembrarMercado,
+  naCidade,
   type EstadoMercados,
   type Mercado,
 } from './lib/mercado'
@@ -65,6 +66,13 @@ export function Escaneamento({
   // em estado exigiria um efeito que dispara outro render sem necessidade.
   const mercado = escolhaManual ?? escolhaRecente(mercados) ?? sugerido
   const conferido = mercado ? conferidoNoLocal(mercado, posicao, mercados) : false
+  // Memorizado porque é dependência do efeito que busca os preços conhecidos:
+  // array novo a cada render refaria a consulta a cada tecla do preço.
+  const cidadeDoMercado = mercado?.cidade ?? null
+  const vizinhos = useMemo(
+    () => naCidade(mercados, cidadeDoMercado),
+    [mercados, cidadeDoMercado],
+  )
 
   const aoLer = useCallback(async (gtin: string) => {
     setResultado({ tipo: 'buscando', gtin })
@@ -159,6 +167,7 @@ export function Escaneamento({
         <RegistroDePreco
           produto={resultado.produto}
           mercado={mercado}
+          mercados={vizinhos}
           conferido={conferido}
           usuarioId={usuarioId}
           registrar={registrar}
