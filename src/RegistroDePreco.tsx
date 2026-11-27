@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react'
-import { lerValor, montarRegistro, type Tipo } from './lib/registro'
+import {
+  lerValor,
+  longeDoEsperado,
+  montarRegistro,
+  type Tipo,
+} from './lib/registro'
 import type { Mercado } from './lib/mercado'
 import { idadeEmTexto, precoEmTexto } from './lib/formato'
 import { precosDoProduto, type PrecoNoMercado } from './lib/consulta'
@@ -44,6 +49,8 @@ export function RegistroDePreco({
   const [tipo, setTipo] = useState<Tipo>('tabela')
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
+  /** O valor que a pessoa já confirmou apesar de estranho. Outro valor, outra pergunta. */
+  const [confirmado, setConfirmado] = useState<number | null>(null)
 
   /*
     O que já se sabe deste produto, buscado enquanto a pessoa digita.
@@ -81,10 +88,20 @@ export function RegistroDePreco({
   const diferenca =
     valor !== null && aqui ? Math.round((valor - aqui.valor) * 100) / 100 : null
   const porUnidade = valor === null ? null : precoPorUnidade(produto, valor)
+  // A referência é o preço daqui; sem ele, o de outro mercado. Um é o mesmo
+  // produto na mesma loja, o outro é o mesmo produto — os dois denunciam uma
+  // vírgula esquecida.
+  const referencia = aqui?.valor ?? emOutro?.valor ?? null
+  const estranho = valor !== null && longeDoEsperado(valor, referencia)
+  const pedindoConfirmacao = estranho && confirmado === valor
 
   async function salvar() {
     if (valor === null) {
       setErro('Digite o preço, como 12,90.')
+      return
+    }
+    if (estranho && confirmado !== valor) {
+      setConfirmado(valor)
       return
     }
     setSalvando(true)
@@ -99,6 +116,7 @@ export function RegistroDePreco({
     setSalvando(false)
     setTexto('')
     setTipo('tabela')
+    setConfirmado(null)
     aoSalvar()
   }
 
@@ -237,12 +255,24 @@ export function RegistroDePreco({
 
       {erro && <p className="text-perigo-tinta">{erro}</p>}
 
+      {/* Uma das poucas frases que ficam: é a confirmação do que não tem
+          volta. Os dois números lado a lado são a pergunta inteira. */}
+      {pedindoConfirmacao && valor !== null && referencia !== null && (
+        <p role="alert" className="rounded-xl bg-alerta-fraca px-4 py-3 text-alerta-tinta">
+          {precoEmTexto(valor)}? O último preço era {precoEmTexto(referencia)}.
+        </p>
+      )}
+
       <button
         type="submit"
         disabled={salvando}
         className="min-h-14 rounded-xl bg-marca px-4 text-lg font-medium text-sobre-marca disabled:opacity-60"
       >
-        {salvando ? 'Salvando…' : 'Salvar preço'}
+        {salvando
+          ? 'Salvando…'
+          : pedindoConfirmacao
+            ? 'Está certo, salvar'
+            : 'Salvar preço'}
       </button>
 
     </form>

@@ -100,6 +100,22 @@ function recusaDoBanco(codigo: string | undefined): boolean {
   return codigo.startsWith('22') || codigo.startsWith('23') || codigo === '42501'
 }
 
+/**
+ * O valor digitado está longe demais do último preço conhecido?
+ *
+ * A vírgula esquecida transforma 12,90 em 1290, e o registro é imutável
+ * (RD-02): o engano fica no histórico para sempre. Triplo e terço são folgados
+ * de propósito — promoção forte e reajuste grande cabem dentro, e o que sobra
+ * fora é quase só erro de digitação.
+ *
+ * Quem responde "sim" não é barrado: a tela pede um segundo toque e segue.
+ * Preço absurdo às vezes é verdadeiro.
+ */
+export function longeDoEsperado(valor: number, referencia: number | null): boolean {
+  if (referencia === null || referencia <= 0) return false
+  return valor > referencia * 3 || valor < referencia / 3
+}
+
 /** Aceita "12,90" e "12.90"; recusa o resto. */
 export function lerValor(texto: string): number | null {
   const limpo = texto.trim().replace(/\s/g, '').replace(',', '.')

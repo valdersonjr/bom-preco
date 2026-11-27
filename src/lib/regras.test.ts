@@ -4,7 +4,7 @@ import { idadeEmTexto } from './formato'
 import { escolherOpcoes, normalizarTermo, type Candidato } from './lista'
 import type { Mercado } from './mercado'
 import type { Produto } from './produto'
-import { lerValor } from './registro'
+import { lerValor, longeDoEsperado } from './registro'
 
 const dia = (n: number) => new Date(Date.UTC(2026, 10, n, 12))
 const AGORA = dia(27).getTime()
@@ -41,6 +41,24 @@ describe('lerValor', () => {
     expect(lerValor('1,999')).toBeNull()
     expect(lerValor('doze')).toBeNull()
     expect(lerValor('')).toBeNull()
+  })
+})
+
+describe('longeDoEsperado', () => {
+  it('acusa a vírgula esquecida, para cima e para baixo', () => {
+    expect(longeDoEsperado(1290, 12.9)).toBe(true)
+    expect(longeDoEsperado(1.29, 12.9)).toBe(true)
+  })
+
+  it('deixa passar promoção forte e reajuste grande', () => {
+    expect(longeDoEsperado(6.45, 12.9)).toBe(false)
+    expect(longeDoEsperado(25, 12.9)).toBe(false)
+    expect(longeDoEsperado(38.7, 12.9)).toBe(false)
+  })
+
+  it('não acusa nada sem referência', () => {
+    expect(longeDoEsperado(1290, null)).toBe(false)
+    expect(longeDoEsperado(1290, 0)).toBe(false)
   })
 })
 

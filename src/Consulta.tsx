@@ -25,7 +25,12 @@ import { Acao, AcaoDeLocalizacao } from './Mercado'
 import { descricaoDoProduto, nomeDeProduto } from './lib/texto'
 import { useLeitorDeCodigo } from './lib/leitor'
 import type { useEnvio } from './lib/envio'
-import { montarRegistro, lerValor, type Tipo } from './lib/registro'
+import {
+  montarRegistro,
+  lerValor,
+  longeDoEsperado,
+  type Tipo,
+} from './lib/registro'
 
 /** Padrão: cidade inteira. Ajustável pela pessoa (RF-36). */
 const RAIOS = [
@@ -715,7 +720,11 @@ function Correcao({
   const [texto, setTexto] = useState('')
   const [tipo, setTipo] = useState<Tipo>('tabela')
   const [salvando, setSalvando] = useState(false)
+  const [confirmado, setConfirmado] = useState<number | null>(null)
   const valor = lerValor(texto)
+  // Mesma trava do registro: aqui a referência é o próprio preço da linha.
+  const estranho = valor !== null && longeDoEsperado(valor, preco.valor)
+  const pedindoConfirmacao = estranho && confirmado === valor
 
   return (
     <form
@@ -723,6 +732,10 @@ function Correcao({
       onSubmit={async (e) => {
         e.preventDefault()
         if (valor === null) return
+        if (estranho && confirmado !== valor) {
+          setConfirmado(valor)
+          return
+        }
         setSalvando(true)
         await registrar(
           montarRegistro({
@@ -778,13 +791,23 @@ function Correcao({
         ))}
       </div>
 
+      {pedindoConfirmacao && valor !== null && (
+        <p role="alert" className="rounded-xl bg-alerta-fraca px-3 py-2 text-sm text-alerta-tinta">
+          {precoEmTexto(valor)}? O último preço era {precoEmTexto(preco.valor)}.
+        </p>
+      )}
+
       <div className="flex gap-2">
         <button
           type="submit"
           disabled={salvando || valor === null}
           className="min-h-11 flex-1 rounded-lg bg-marca px-4 font-medium text-sobre-marca disabled:opacity-40"
         >
-          {salvando ? 'Salvando…' : 'Salvar correção'}
+          {salvando
+            ? 'Salvando…'
+            : pedindoConfirmacao
+              ? 'Está certo, salvar'
+              : 'Salvar correção'}
         </button>
         <button
           type="button"
