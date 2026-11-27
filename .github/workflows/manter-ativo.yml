@@ -14,7 +14,8 @@ jobs:
     steps:
       # O papel anônimo não lê nada do esquema, então a resposta esperada é
       # uma recusa do Postgres — que só existe se a consulta chegou ao banco.
-      # Falha de conexão (000) ou erro do servidor (5xx) é que derruba o job.
+      # Qualquer outra resposta derruba o job: 404, por exemplo, é a API de pé
+      # sem ter falado com o banco.
       - name: Consultar a API
         env:
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
@@ -25,6 +26,4 @@ jobs:
             -H "apikey: $SUPABASE_ANON_KEY" \
             -H "Authorization: Bearer $SUPABASE_ANON_KEY" || true)
           echo "HTTP $codigo"
-          if [ "$codigo" = "000" ] || [ "$codigo" -ge 500 ]; then
-            exit 1
-          fi
+          [ "$codigo" = "401" ] || [ "$codigo" = "200" ]
